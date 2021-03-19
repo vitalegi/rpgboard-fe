@@ -13,7 +13,7 @@ class GuestAuthService {
         cookieUtil.setCookie("auth", name);
         logger.info("guest auth cookie set: " + cookieUtil.getCookies());
         resolve(new User(name, name));
-      }, 1110);
+      }, 100);
     });
   }
 

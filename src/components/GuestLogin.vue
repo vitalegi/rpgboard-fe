@@ -33,9 +33,8 @@ export default Vue.extend({
     guestLogin() {
       logger.info(`start guest login process with: ${this.name}`);
       authService.guestLogin(this.name);
-    },
-    loginCompleted(user: User) {
-      logger.info(`Login completed as ${user}`);
+      this.$store.commit("selectGame", "AA");
+      logger.info(`store: ${this.$store.state.getGameId()}`);
     },
   },
   created() {

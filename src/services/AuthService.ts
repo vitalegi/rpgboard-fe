@@ -14,7 +14,7 @@ class AuthService {
     promise.then(
       (user: User) => {
         logger.info(`login completed, user: ${user}`);
-        RouterUtil.homeView();
+        RouterUtil.toHome();
       },
       (reason: any) => {
         logger.error(`login failed`, reason);

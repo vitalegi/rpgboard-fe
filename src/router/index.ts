@@ -27,12 +27,21 @@ const routes: Array<RouteConfig> = [
     name: "Game",
     component: () =>
       import(/* webpackChunkName: "game" */ "../views/GameView.vue"),
+    props: (route) => {
+      return { gameId: route.params.gameId };
+    },
   },
   {
     path: "/login",
     name: "Login",
     component: () =>
       import(/* webpackChunkName: "login" */ "../views/LoginView.vue"),
+  },
+  {
+    path: "/select-game",
+    name: "SelectGame",
+    component: () =>
+      import(/* webpackChunkName: "login" */ "../views/SelectGameView.vue"),
   },
 ];
 

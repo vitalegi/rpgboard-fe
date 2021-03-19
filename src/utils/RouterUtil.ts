@@ -3,20 +3,20 @@ import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Utils.RouterUtil");
 
 export default class RouterUtil {
-  public static loginView(): void {
+  public static toLogin(): void {
     router.push({
       name: "Login",
     });
   }
-  public static homeView(): void {
+  public static toHome(): void {
     router.push({
       name: "Home",
     });
   }
-  public static navPlayGame(tableId: number, playerId: number): void {
+  public static toGame(gameId: string): void {
     router.push({
-      name: "PlayGame",
-      params: { tableId: "" + tableId, playerId: "" + playerId },
+      name: "Game",
+      params: { gameId: gameId },
     });
   }
 }
