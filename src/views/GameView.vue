@@ -1,5 +1,6 @@
 <template>
   <div class="game">
+    {{ gameId }}
     <board></board>
   </div>
 </template>
@@ -13,5 +14,6 @@ export default Vue.extend({
   components: {
     Board,
   },
+  props: { gameId: String },
 });
 </script>

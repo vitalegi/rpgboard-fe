@@ -1,5 +1,5 @@
 import Game from "@/models/Game";
-import { GameStatus } from "@/models/Types";
+import { GameStatus, GameType } from "@/models/Types";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Service.GameService");
 
@@ -11,7 +11,7 @@ class BackendService {
         const games = [];
         for (let i = 0; i < 10; i++) {
           games.push(
-            this.createGame(`${i}`, `Game ${i}`, `Master ${i}`, "ONGOING")
+            this._createGame(`${i}`, `Game ${i}`, `Master ${i}`, "ONGOING")
           );
         }
         logger.info("getGames - complete");
@@ -30,7 +30,17 @@ class BackendService {
     });
   }
 
-  private createGame(
+  public createGame(name: string, gameType: GameType): Promise<Game> {
+    logger.info("createGame");
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        logger.info("createGame - complete");
+        resolve(this._createGame("123", name, "567", "ONGOING"));
+      }, 500);
+    });
+  }
+
+  private _createGame(
     id: string,
     name: string,
     masterId: string,
