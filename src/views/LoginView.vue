@@ -9,7 +9,7 @@ import Vue from "vue";
 import GuestLogin from "@/components/GuestLogin.vue";
 
 export default Vue.extend({
-  name: "GameView",
+  name: "LoginView",
   components: {
     GuestLogin,
   },

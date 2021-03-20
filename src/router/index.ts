@@ -23,10 +23,10 @@ const routes: Array<RouteConfig> = [
       import(/* webpackChunkName: "about" */ "../views/About.vue"),
   },
   {
-    path: "/game",
+    path: "/game/:gameId",
     name: "Game",
     component: () =>
-      import(/* webpackChunkName: "game" */ "../views/GameView.vue"),
+      import(/* webpackChunkName: "game" */ "../views/GameDD5eView.vue"),
     props: (route) => {
       return { gameId: route.params.gameId };
     },

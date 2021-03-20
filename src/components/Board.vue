@@ -1,34 +1,39 @@
 <template>
-  <v-container>
-    <h1>Canvas</h1>
-    <v-stage :config="configKonva" ref="boardCanvas">
-      <v-layer>
-        <v-circle :config="configCircle"></v-circle>
-        <v-circle
-          v-for="(circle, index) in circles"
-          :key="index"
-          :config="circle"
-          @dragstart="dragStart"
-          @dragmove="dragMove"
-          @dragend="dragEnd"
-        ></v-circle>
-      </v-layer>
-    </v-stage>
+  <v-container fluid>
+    <v-row>
+      <v-col cols="2"> Ciao </v-col>
+      <v-col cols="8">
+        <v-stage :width="boardWidth" :height="boardHeight" ref="boardCanvas">
+          <v-layer>
+            <v-circle :config="circleConfig"></v-circle>
+            <v-circle
+              v-for="(circle, index) in circles"
+              :key="index"
+              :config="circle"
+              @dragstart="dragStart"
+              @dragmove="dragMove"
+              @dragend="dragEnd"
+            ></v-circle>
+          </v-layer>
+        </v-stage>
+      </v-col>
+      <v-col cols="2"> Ciao </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import { factory } from "@/utils/ConfigLog4j";
+const logger = factory.getLogger("Components.Board");
 
 export default Vue.extend({
   name: "Board",
 
   data: () => ({
-    configKonva: {
-      width: 500,
-      height: 300,
-    },
-    configCircle: {
+    boardWidth: 100,
+    boardHeight: 100,
+    circleConfig: {
       x: 50,
       y: 50,
       radius: 70,
@@ -75,14 +80,6 @@ export default Vue.extend({
     getStage() {
       return this.getCanvas().getStage();
     },
-    config: function () {
-      console.log("CANVAS", this.getCanvas());
-      console.log("STAGE", this.getStage());
-      /*setInterval( () =>{
-        const c = this.circles[0];
-        c.x -=1;
-      }, 200);*/
-    },
     dragStart(event: any) {
       console.log("Start");
     },
@@ -95,12 +92,23 @@ export default Vue.extend({
         `X=${event.evt.clientX} Y=${event.evt.clientY} ID=${event.target.attrs.id}`
       );
     },
+    handleResize() {
+      logger.info("resize");
+      this.boardWidth = (this.$refs.boardCanvas as any).$el.clientWidth;
+      this.boardHeight = 400;
+    },
   },
-  updated: function () {
-    this.config();
+  created() {
+    logger.info("Board creation, remove listeners");
+    window.addEventListener("resize", this.handleResize);
   },
-  mounted: function () {
-    this.config();
+  mounted() {
+    logger.info("Mounted, resize");
+    this.handleResize();
+  },
+  beforeDestroy() {
+    logger.info("Board deletion, remove listeners");
+    window.removeEventListener("resize", this.handleResize);
   },
 });
 </script>

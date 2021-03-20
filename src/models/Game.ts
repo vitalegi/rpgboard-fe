@@ -1,8 +1,8 @@
 import { GameStatus, GameType } from "@/models/Types";
+import GamePlayer from "./GamePlayer";
 export default class Game {
   private _id = "";
   private _name = "";
-  private _masterId = "";
   private _gameType: GameType = "DD5e";
   private _status: GameStatus = "ONGOING";
 
@@ -17,12 +17,6 @@ export default class Game {
   }
   public set name(value: string) {
     this._name = value;
-  }
-  public get masterId(): string {
-    return this._masterId;
-  }
-  public set masterId(value: string) {
-    this._masterId = value;
   }
   public get status(): GameStatus {
     return this._status;

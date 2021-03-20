@@ -1,4 +1,5 @@
 import Game from "@/models/Game";
+import GamePlayer from "@/models/GamePlayer";
 import { GameStatus, GameType } from "@/models/Types";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Service.GameService");
@@ -40,6 +41,28 @@ class BackendService {
     });
   }
 
+  public getGamePlayers(gameId: string): Promise<Array<GamePlayer>> {
+    logger.info("getGamePlayers");
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const players = [];
+        for (let i = 0; i < 10; i++) {
+          const gamePlayer = new GamePlayer();
+          gamePlayer.gameId = gameId;
+          gamePlayer.name = `Nome Giocatore ${i}`;
+          gamePlayer.playerId = `${i}`;
+          gamePlayer.roles = ["PLAYER"];
+          if (i == 5) {
+            gamePlayer.roles.push("MASTER");
+          }
+          players.push(gamePlayer);
+        }
+        logger.info("getGamePlayers - complete");
+        resolve(players);
+      }, 500);
+    });
+  }
+
   private _createGame(
     id: string,
     name: string,
@@ -49,7 +72,6 @@ class BackendService {
     const game = new Game();
     game.id = id;
     game.name = name;
-    game.masterId = masterId;
     game.status = status;
     return game;
   }
