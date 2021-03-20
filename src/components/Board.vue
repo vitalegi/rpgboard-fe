@@ -4,7 +4,7 @@
       <v-col cols="2"> Ciao </v-col>
       <v-col cols="8">
         <v-stage :width="boardWidth" :height="boardHeight" ref="boardCanvas">
-          <v-layer>
+          <v-layer :config="layerConfig">
             <v-circle :config="circleConfig"></v-circle>
             <v-circle
               v-for="(circle, index) in circles"
@@ -24,6 +24,10 @@
 
 <script lang="ts">
 import Vue from "vue";
+
+import { Node } from "node_modules/konva/types/Node";
+import { Vector2d } from "node_modules/konva/types/types";
+
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Components.Board");
 
@@ -33,6 +37,10 @@ export default Vue.extend({
   data: () => ({
     boardWidth: 100,
     boardHeight: 100,
+    layerConfig: {
+      visible: true,
+      draggable: true,
+    },
     circleConfig: {
       x: 50,
       y: 50,
@@ -60,6 +68,25 @@ export default Vue.extend({
         stroke: "black",
         strokeWidth: 4,
         draggable: true,
+        //dragBoundFunc(position: Vector2d): { x: number; y: number } {
+        dragBoundFunc(position: Vector2d): Vector2d {
+          let x = position.x;
+          let y = position.y;
+          if (x < 0) {
+            x = 0;
+          }
+          if (x > 500) {
+            x = 500;
+          }
+          if (y < 70) {
+            y = 70;
+          }
+          if (y > 100) {
+            y = 100;
+          }
+
+          return { x: x, y: y };
+        },
       },
       {
         id: "c3",
