@@ -1,23 +1,51 @@
 <template>
   <div class="game">
-    {{ gameId }}
-    <game-players-summary v-bind:players="gamePlayers" />
-
     <v-container fluid>
       <v-row>
-        <v-col cols="2">
-          <board-manager :layers="boardContent" />
-        </v-col>
-        <v-col cols="8">
+        <v-col cols="9">
           <board
             :boardHeight="400"
             :layers="boardContent"
             @moveShape="move"
           ></board>
         </v-col>
-        <v-col cols="2">
-          <file-upload @upload="addAsset" />
-          <assets-summary :assets="assets" />
+        <v-col cols="3">
+          <v-card color="basil">
+            <v-tabs
+              v-model="tab"
+              background-color="transparent"
+              color="basil"
+              grow
+            >
+              <v-tab key="board-manager">Board</v-tab>
+              <v-tab key="assets-manager">Assets</v-tab>
+              <v-tab key="players">Players</v-tab>
+            </v-tabs>
+            <v-tabs-items v-model="tab">
+              <v-tab-item key="board-manager">
+                <v-card color="basil" flat height="400" class="overflow-y-auto">
+                  <v-card-text>
+                    <board-manager :layers="boardContent" />
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+              <v-tab-item key="assets-manager">
+                <v-card color="basil" flat height="400" class="overflow-y-auto">
+                  <v-card-text>
+                    <file-upload @upload="addAsset" />
+                    <assets-summary :assets="assets" />
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+              <v-tab-item key="players">
+                <v-card color="basil" flat height="400" class="overflow-y-auto">
+                  <v-card-text>
+                    <game-players-summary v-bind:players="gamePlayers" />
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+            </v-tabs-items>
+          </v-card>
         </v-col>
       </v-row>
     </v-container>
@@ -50,10 +78,12 @@ export default Vue.extend({
     AssetsSummary,
     FileUpload,
   },
+  props: { gameId: String },
   data: () => ({
     gamePlayers: new Array<GamePlayer>(),
     boardContent: new Array<Layer>(),
     assets: new Array<FileContent>(),
+    tab: "k2",
   }),
   methods: {
     updatePlayers(players: Array<GamePlayer>) {
@@ -70,7 +100,6 @@ export default Vue.extend({
       this.assets.push(file);
     },
   },
-  props: { gameId: String },
   created() {
     logger.info(`Start game`);
     backendService

@@ -1,16 +1,14 @@
 <template>
-  <v-card class="mx-auto">
-    <v-list max-height="400" class="overflow-y-auto">
-      <v-list-item v-for="(asset, assetIndex) in getAssets()" :key="assetIndex">
-        <v-list-item-content>
-          {{ asset.name }}
-        </v-list-item-content>
-        <v-list-item-avatar>
-          <v-img :src="asset.content"></v-img>
-        </v-list-item-avatar>
-      </v-list-item>
-    </v-list>
-  </v-card>
+  <v-list v-if="assets.length > 0">
+    <v-list-item v-for="(asset, assetIndex) in getAssets()" :key="assetIndex">
+      <v-list-item-content>
+        {{ asset.name }}
+      </v-list-item-content>
+      <v-list-item-avatar>
+        <v-img :src="asset.content"></v-img>
+      </v-list-item-avatar>
+    </v-list-item>
+  </v-list>
 </template>
 
 <script lang="ts">

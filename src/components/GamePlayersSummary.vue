@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row dense>
-      <v-col v-for="player in players" :key="player.playerId" :cols="2">
+      <v-col v-for="player in players" :key="player.playerId" cols="12">
         <game-player-summary v-bind:player="player" />
       </v-col>
     </v-row>
@@ -22,6 +22,7 @@ export default Vue.extend({
   props: {
     players: Array,
   },
+  computed: {},
 });
 </script>
 

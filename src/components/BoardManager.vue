@@ -1,31 +1,29 @@
 <template>
-  <v-card class="mx-auto">
-    <v-list max-height="400" class="overflow-y-auto">
-      <v-list-group
-        v-for="(layer, layerIndex) in getLayers()"
-        :key="layerIndex"
-        :value="true"
-        prepend-icon="mdi-account-circle"
+  <v-list>
+    <v-list-group
+      v-for="(layer, layerIndex) in getLayers()"
+      :key="layerIndex"
+      :value="true"
+      prepend-icon="mdi-account-circle"
+    >
+      <template v-slot:activator>
+        <v-list-item-title>
+          Layer {{ layerIndex }} {{ layer.config.name }}
+        </v-list-item-title>
+      </template>
+      <v-list-item
+        v-for="(shape, shapeIndex) in layer.shapes"
+        :key="shapeIndex"
+        link
       >
-        <template v-slot:activator>
-          <v-list-item-title>
-            Layer {{ layerIndex }} {{ layer.config.name }}
-          </v-list-item-title>
-        </template>
-        <v-list-item
-          v-for="(shape, shapeIndex) in layer.shapes"
-          :key="shapeIndex"
-          link
-        >
-          <v-list-item-title>
-            {{ shape.config.id }} -
-            {{ shape.config.name }}
-          </v-list-item-title>
-          <v-list-item-content> </v-list-item-content>
-        </v-list-item>
-      </v-list-group>
-    </v-list>
-  </v-card>
+        <v-list-item-title>
+          {{ shape.config.id }} -
+          {{ shape.config.name }}
+        </v-list-item-title>
+        <v-list-item-content> </v-list-item-content>
+      </v-list-item>
+    </v-list-group>
+  </v-list>
 </template>
 
 <script lang="ts">
