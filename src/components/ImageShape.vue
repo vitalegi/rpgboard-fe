@@ -4,6 +4,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import ObjectUtil from "@/utils/ObjectUtil";
 
 type NullableImage = HTMLImageElement | null;
 
@@ -17,7 +18,9 @@ export default Vue.extend({
   },
   computed: {
     combinedConfig: function () {
-      const config = JSON.parse(JSON.stringify(this.config));
+      const config: Record<string, unknown> = ObjectUtil.shallowCopy(
+        this.config
+      );
       config.image = this.renderedImage;
       return config;
     },

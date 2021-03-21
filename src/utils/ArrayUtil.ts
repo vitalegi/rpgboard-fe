@@ -1,4 +1,4 @@
-import { random } from "@/utils/RandomUtil";
+import random from "@/utils/RandomUtil";
 
 export default class ArrayUtil {
   public static shuffle = function <E>(list: E[]): E[] {

@@ -1,12 +1,22 @@
 import moment from "moment";
 
-export class TimeUtil {
+export default class TimeUtil {
   public static parse(date: string): moment.Moment {
     return moment(date);
   }
   public static now(): moment.Moment {
     return moment();
   }
+  public static diffSeconds(
+    date1: moment.Moment,
+    date2: moment.Moment
+  ): number {
+    return date1.diff(date2, "seconds");
+  }
+  public static diffMillis(date1: moment.Moment, date2: moment.Moment): number {
+    return date1.diff(date2, "milliseconds");
+  }
+
   public static formattedOnlineTime(
     dateNew: moment.Moment,
     dateOld: moment.Moment

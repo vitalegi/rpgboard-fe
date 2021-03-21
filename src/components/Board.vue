@@ -1,33 +1,40 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-col cols="2"> Ciao </v-col>
-      <v-col cols="8">
-        <v-stage :width="boardWidth" :height="boardHeight" ref="boardCanvas">
-          <v-layer
-            v-for="(layer, layerIndex) in layers"
-            :key="layerIndex"
-            :config="layer.config"
-          >
-            <generic-shape
-              v-for="(shape, shapeIndex) in layer.shapes"
-              :key="shapeIndex"
-              :component="shape.config.componentName"
-              :config="shape.config"
-              :dragstart="dragStart"
-              :dragmove="dragMove"
-              :dragend="dragEnd"
-            />
-          </v-layer>
-        </v-stage>
-      </v-col>
-      <v-col cols="2"> Ciao </v-col>
-    </v-row>
-  </v-container>
+  <v-stage :width="boardWidth" :height="boardHeight" ref="boardCanvas">
+    <v-layer
+      v-for="(layer, layerIndex) in layers"
+      :key="layerIndex"
+      :config="layer.config"
+    >
+      <v-group
+        :config="{
+          visible: true,
+          x: 0,
+          y: 0,
+          opacity: 1,
+          rotation: 0,
+          draggable: true,
+        }"
+        :dragstart="dragStart"
+        :dragmove="dragMove"
+        :dragend="dragEnd"
+      >
+        <generic-shape
+          v-for="(shape, shapeIndex) in layer.shapes"
+          :key="shapeIndex"
+          :component="shape.config.componentName"
+          :config="shape.config"
+          :dragstart="dragStart"
+          :dragmove="dragMove"
+          :dragend="dragEnd"
+        />
+      </v-group>
+    </v-layer>
+  </v-stage>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import TimeUtil from "@/utils/TimeUtil";
 import GenericShape from "@/components/GenericShape.vue";
 import { Layer, Shape } from "@/models/BoardContent";
 import { Node } from "konva/types/Node";
@@ -50,26 +57,23 @@ export default Vue.extend({
   },
   data: () => ({
     boardWidth: 0,
-    layerConfig: {
-      visible: true,
-      draggable: true,
-    },
+    lastDragDropNotification: TimeUtil.now(),
   }),
   methods: {
-    getStage(): Stage {
-      return (this.$refs.boardCanvas as any).getStage();
-    },
     dragStart(event: any) {
-      console.log("Start");
+      return;
     },
     dragMove(event: any) {
-      console.log("Move");
+      if (
+        TimeUtil.diffMillis(TimeUtil.now(), this.lastDragDropNotification) > 100
+      ) {
+        this.lastDragDropNotification = TimeUtil.now();
+        this.$emit("moveShape", event);
+      }
     },
     dragEnd(event: any) {
-      console.log("End", event);
-      console.log(
-        `X=${event.evt.clientX} Y=${event.evt.clientY} ID=${event.target.attrs.id}`
-      );
+      this.lastDragDropNotification = TimeUtil.now();
+      this.$emit("moveShape", event);
     },
     handleResize() {
       logger.info("resize");

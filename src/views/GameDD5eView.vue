@@ -2,17 +2,34 @@
   <div class="game">
     {{ gameId }}
     <game-players-summary v-bind:players="gamePlayers" />
-    <board :boardHeight="400" :layers="boardContent"></board>
+
+    <v-container fluid>
+      <v-row>
+        <v-col cols="2">
+          <board-manager :layers="boardContent" />
+        </v-col>
+        <v-col cols="8">
+          <board
+            :boardHeight="400"
+            :layers="boardContent"
+            @moveShape="move"
+          ></board>
+        </v-col>
+        <v-col cols="2"> Ciao </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Board from "@/components/Board.vue";
+import BoardManager from "@/components/BoardManager.vue";
 import GamePlayersSummary from "@/components/GamePlayersSummary.vue";
 import backendService from "@/services/BackendService";
 import GamePlayer from "@/models/GamePlayer";
 import ArrayUtil from "@/utils/ArrayUtil";
+import random from "@/utils/RandomUtil";
 import { Shape, Layer } from "@/models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
 import { Vector2d } from "konva/types/types";
@@ -23,6 +40,7 @@ export default Vue.extend({
   components: {
     Board,
     GamePlayersSummary,
+    BoardManager,
   },
   data: () => ({
     gamePlayers: new Array<GamePlayer>(),
@@ -33,6 +51,11 @@ export default Vue.extend({
       logger.info(`Update players, count: ${players.length}`);
       ArrayUtil.removeAll(this.gamePlayers);
       players.forEach((player) => this.gamePlayers.push(player));
+    },
+    move(event: any) {
+      logger.info(
+        `X=${event.evt.clientX} Y=${event.evt.clientY} ID=${event.target.attrs.id}`
+      );
     },
   },
   props: { gameId: String },
@@ -47,6 +70,7 @@ export default Vue.extend({
     layer.shapes.push(
       new Shape({
         componentName: "v-rect",
+        name: "background",
         x: 2,
         y: 2,
         width: 800,
@@ -56,6 +80,20 @@ export default Vue.extend({
       })
     );
 
+    for (let i = 0; i < 100; i++) {
+      layer.shapes.push(
+        new Shape({
+          componentName: "v-circle",
+          id: `ran_${i}`,
+          x: random(500) + 100,
+          y: random(300) + 100,
+          radius: random(50) + 10,
+          fill: "red",
+          stroke: "black",
+          strokeWidth: 4,
+        })
+      );
+    }
     layer.shapes.push(
       new Shape({
         componentName: "image-shape",
