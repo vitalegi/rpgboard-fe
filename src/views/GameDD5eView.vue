@@ -2,14 +2,14 @@
   <div class="game">
     <v-container fluid>
       <v-row>
-        <v-col cols="9">
+        <v-col cols="12" md="8" lg="9">
           <board
-            :boardHeight="400"
+            :boardHeight="600"
             :layers="boardContent"
             @moveShape="move"
           ></board>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="12" md="4" lg="3">
           <v-card color="basil">
             <v-tabs
               v-model="tab"
@@ -21,30 +21,22 @@
               <v-tab key="assets-manager">Assets</v-tab>
               <v-tab key="players">Players</v-tab>
             </v-tabs>
-            <v-tabs-items v-model="tab">
-              <v-tab-item key="board-manager">
-                <v-card color="basil" flat height="400" class="overflow-y-auto">
-                  <v-card-text>
+            <v-card color="basil" flat max-height="600" class="overflow-y-auto">
+              <v-card-text>
+                <v-tabs-items v-model="tab">
+                  <v-tab-item key="board-manager">
                     <board-manager :layers="boardContent" />
-                  </v-card-text>
-                </v-card>
-              </v-tab-item>
-              <v-tab-item key="assets-manager">
-                <v-card color="basil" flat height="400" class="overflow-y-auto">
-                  <v-card-text>
+                  </v-tab-item>
+                  <v-tab-item key="assets-manager">
                     <file-upload @upload="addAsset" />
                     <assets-summary :assets="assets" />
-                  </v-card-text>
-                </v-card>
-              </v-tab-item>
-              <v-tab-item key="players">
-                <v-card color="basil" flat height="400" class="overflow-y-auto">
-                  <v-card-text>
+                  </v-tab-item>
+                  <v-tab-item key="players">
                     <game-players-summary v-bind:players="gamePlayers" />
-                  </v-card-text>
-                </v-card>
-              </v-tab-item>
-            </v-tabs-items>
+                  </v-tab-item>
+                </v-tabs-items>
+              </v-card-text>
+            </v-card>
           </v-card>
         </v-col>
       </v-row>
