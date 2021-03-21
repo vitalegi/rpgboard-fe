@@ -5,15 +5,15 @@
       <v-col cols="8">
         <v-stage :width="boardWidth" :height="boardHeight" ref="boardCanvas">
           <v-layer :config="layerConfig">
-            <v-circle :config="circleConfig"></v-circle>
-            <v-circle
-              v-for="(circle, index) in circles"
+            <generic-shape
+              v-for="(shape, index) in shapes"
               :key="index"
-              :config="circle"
-              @dragstart="dragStart"
-              @dragmove="dragMove"
-              @dragend="dragEnd"
-            ></v-circle>
+              :component="shape.componentName"
+              :config="shape"
+              :dragstart="dragStart"
+              :dragmove="dragMove"
+              :dragend="dragEnd"
+            />
           </v-layer>
         </v-stage>
       </v-col>
@@ -24,33 +24,51 @@
 
 <script lang="ts">
 import Vue from "vue";
-
+import GenericShape from "@/components/GenericShape.vue";
 import { Node } from "node_modules/konva/types/Node";
 import { Vector2d } from "node_modules/konva/types/types";
+import { LayerConfig } from "node_modules/konva/types/Layer";
+import { Canvas } from "node_modules/konva/types/Canvas";
+import { Stage, StageConfig } from "node_modules/konva/types/Stage";
+import { ShapeConfig } from "node_modules/konva/types/Shape";
+import { CircleConfig } from "node_modules/konva/types/shapes/Circle";
 
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Components.Board");
 
 export default Vue.extend({
   name: "Board",
-
+  components: { GenericShape },
+  props: {
+    boardHeight: Number,
+  },
   data: () => ({
-    boardWidth: 100,
-    boardHeight: 100,
+    boardWidth: 0,
     layerConfig: {
       visible: true,
       draggable: true,
     },
-    circleConfig: {
-      x: 50,
-      y: 50,
-      radius: 70,
-      fill: "red",
-      stroke: "black",
-      strokeWidth: 4,
-    },
-    circles: [
+    shapes: [
       {
+        componentName: "v-rect",
+        x: 2,
+        y: 2,
+        width: 800,
+        height: 396,
+        stroke: "black",
+        strokeWidth: 4,
+      },
+      {
+        componentName: "image-shape",
+        x: 200,
+        y: 22,
+        width: 30,
+        height: 30,
+        image: "https://vuejs.org/images/logo.png",
+        draggable: true,
+      },
+      {
+        componentName: "v-circle",
         id: "c1",
         x: 450,
         y: 250,
@@ -60,6 +78,7 @@ export default Vue.extend({
         strokeWidth: 4,
       },
       {
+        componentName: "v-circle",
         id: "c2",
         x: 70,
         y: 50,
@@ -68,7 +87,6 @@ export default Vue.extend({
         stroke: "black",
         strokeWidth: 4,
         draggable: true,
-        //dragBoundFunc(position: Vector2d): { x: number; y: number } {
         dragBoundFunc(position: Vector2d): Vector2d {
           let x = position.x;
           let y = position.y;
@@ -89,6 +107,7 @@ export default Vue.extend({
         },
       },
       {
+        componentName: "v-circle",
         id: "c3",
         x: 90,
         y: 60,
@@ -101,11 +120,8 @@ export default Vue.extend({
     ],
   }),
   methods: {
-    getCanvas() {
-      return this.$refs.boardCanvas as any;
-    },
-    getStage() {
-      return this.getCanvas().getStage();
+    getStage(): Stage {
+      return (this.$refs.boardCanvas as any).getStage();
     },
     dragStart(event: any) {
       console.log("Start");
@@ -122,7 +138,6 @@ export default Vue.extend({
     handleResize() {
       logger.info("resize");
       this.boardWidth = (this.$refs.boardCanvas as any).$el.clientWidth;
-      this.boardHeight = 400;
     },
   },
   created() {

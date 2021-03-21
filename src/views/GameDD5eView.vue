@@ -2,7 +2,7 @@
   <div class="game">
     {{ gameId }}
     <game-players-summary v-bind:players="gamePlayers" />
-    <board></board>
+    <board :boardHeight="400"></board>
   </div>
 </template>
 
