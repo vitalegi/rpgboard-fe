@@ -15,7 +15,10 @@
             @moveShape="move"
           ></board>
         </v-col>
-        <v-col cols="2"> Ciao </v-col>
+        <v-col cols="2">
+          <file-upload @upload="addAsset" />
+          <assets-summary :assets="assets" />
+        </v-col>
       </v-row>
     </v-container>
   </div>
@@ -23,7 +26,9 @@
 
 <script lang="ts">
 import Vue from "vue";
+import FileUpload from "@/components/FileUpload.vue";
 import Board from "@/components/Board.vue";
+import AssetsSummary from "@/components/AssetsSummary.vue";
 import BoardManager from "@/components/BoardManager.vue";
 import GamePlayersSummary from "@/components/GamePlayersSummary.vue";
 import backendService from "@/services/BackendService";
@@ -33,6 +38,7 @@ import random from "@/utils/RandomUtil";
 import { Shape, Layer } from "@/models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
 import { Vector2d } from "konva/types/types";
+import FileContent from "@/models/FileContent";
 const logger = factory.getLogger("Views.GameDD5eView");
 
 export default Vue.extend({
@@ -41,10 +47,13 @@ export default Vue.extend({
     Board,
     GamePlayersSummary,
     BoardManager,
+    AssetsSummary,
+    FileUpload,
   },
   data: () => ({
     gamePlayers: new Array<GamePlayer>(),
     boardContent: new Array<Layer>(),
+    assets: new Array<FileContent>(),
   }),
   methods: {
     updatePlayers(players: Array<GamePlayer>) {
@@ -56,6 +65,9 @@ export default Vue.extend({
       logger.info(
         `X=${event.evt.clientX} Y=${event.evt.clientY} ID=${event.target.attrs.id}`
       );
+    },
+    addAsset(file: FileContent): void {
+      this.assets.push(file);
     },
   },
   props: { gameId: String },
@@ -80,7 +92,7 @@ export default Vue.extend({
       })
     );
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 20; i++) {
       layer.shapes.push(
         new Shape({
           componentName: "v-circle",

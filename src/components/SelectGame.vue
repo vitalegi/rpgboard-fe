@@ -26,10 +26,6 @@ export default Vue.extend({
     },
   },
   methods: {
-    updateAvailableGames(): void {
-      const games = backendService.getGames();
-      games.then((g) => console.log(g));
-    },
     joinGame(gameId: string): void {
       backendService.joinGame(gameId).then(() => {
         logger.info(`Joined game ${gameId}`);
