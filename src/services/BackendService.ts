@@ -2,11 +2,22 @@ import Game from "@/models/Game";
 import GamePlayer from "@/models/GamePlayer";
 import { GameStatus, GameType } from "@/models/Types";
 import { factory } from "@/utils/ConfigLog4j";
+import { WebService } from "@/utils/WebService";
 const logger = factory.getLogger("Service.GameService");
 
 class BackendService {
   public getGames(): Promise<Array<Game>> {
     logger.info("getGames");
+    const ws = new WebService()
+      .url("http://localhost:8888/api/accounts")
+      .get()
+      .call()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log("FAIL", err);
+      });
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         const games = [];

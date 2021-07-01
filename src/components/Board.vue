@@ -81,7 +81,7 @@ export default Vue.extend({
     },
   },
   created() {
-    logger.info("Board creation, remove listeners");
+    logger.info("Board creation, add listeners");
     window.addEventListener("resize", this.handleResize);
   },
   mounted() {

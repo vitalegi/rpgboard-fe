@@ -1,16 +1,16 @@
 <template>
-  <div class="game">
+  <v-card id="game" ref="gameView" :height="viewHeight">
     <v-container fluid>
-      <v-row>
+      <v-row class="child-flex">
         <v-col cols="12" md="8" lg="9">
           <board
-            :boardHeight="600"
+            :boardHeight="internalViewHeight"
             :layers="boardContent"
             @moveShape="move"
           ></board>
         </v-col>
         <v-col cols="12" md="4" lg="3">
-          <v-card color="basil">
+          <v-card color="basil" :max-height="internalViewHeight">
             <v-tabs
               v-model="tab"
               background-color="transparent"
@@ -21,7 +21,12 @@
               <v-tab key="assets-manager">Assets</v-tab>
               <v-tab key="players">Players</v-tab>
             </v-tabs>
-            <v-card color="basil" flat max-height="600" class="overflow-y-auto">
+            <v-card
+              color="basil"
+              flat
+              class="overflow-y-auto"
+              :max-height="internalViewHeight"
+            >
               <v-card-text>
                 <v-tabs-items v-model="tab">
                   <v-tab-item key="board-manager">
@@ -41,7 +46,49 @@
         </v-col>
       </v-row>
     </v-container>
-  </div>
+    <v-speed-dial
+      v-model="fab"
+      direction="left"
+      bottom
+      right
+      fixed
+      transition="slide-x-reverse-transition"
+    >
+      <template v-slot:activator>
+        <v-btn v-model="fab" color="blue darken-2" dark fab fixed right bottom>
+          <v-icon v-if="fab"> mdi-close </v-icon>
+          <v-icon v-else> mdi-account-circle </v-icon>
+        </v-btn>
+      </template>
+      <v-btn fab dark small color="green">
+        <v-icon>mdi-pencil</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="indigo">
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+    </v-speed-dial>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -76,6 +123,9 @@ export default Vue.extend({
     boardContent: new Array<Layer>(),
     assets: new Array<FileContent>(),
     tab: "k2",
+    fab: false,
+    viewHeight: 0,
+    internalViewHeight: 0,
   }),
   methods: {
     updatePlayers(players: Array<GamePlayer>) {
@@ -91,9 +141,17 @@ export default Vue.extend({
     addAsset(file: FileContent): void {
       this.assets.push(file);
     },
+    handleResize() {
+      const gameView = (this.$refs.gameView as any).$el;
+      const rect = gameView.getBoundingClientRect();
+      const remainingHeight = window.innerHeight - rect.top;
+      this.viewHeight = remainingHeight;
+      this.internalViewHeight = this.viewHeight - 25;
+    },
   },
   created() {
     logger.info(`Start game`);
+    window.addEventListener("resize", this.handleResize);
     backendService
       .getGamePlayers(this.gameId)
       .then((players) => this.updatePlayers(players));
@@ -197,6 +255,21 @@ export default Vue.extend({
   },
   beforeDestroy() {
     logger.info("Leaving game");
+    window.removeEventListener("resize", this.handleResize);
+  },
+  mounted() {
+    logger.info("Mounted, resize");
+    this.handleResize();
   },
 });
 </script>
+
+<style scoped lang="scss">
+#game .v-speed-dial__list {
+  position: absolute;
+}
+
+#game .v-btn--floating {
+  position: relative;
+}
+</style>
