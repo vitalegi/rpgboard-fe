@@ -4,41 +4,67 @@ import NumberUtil from "@/utils/NumberUtil";
 const logger = factory.getLogger("Services.EvalFormulaService");
 
 class EvalFormulaService {
-  public evaluate(
+  public evaluateWithRolls(
     formula: string,
-    placeholders: Map<string, number>,
-    allowDiceRolls: boolean
+    placeholders: Map<string, number>
   ): Promise<number> {
-    let startIndex = 0;
+    const elements = this.splitFormula(formula);
     const promises = new Array<Promise<number>>();
-    while (formula.indexOf("+", startIndex) !== -1) {
-      const endIndex = formula.indexOf("+", startIndex);
-      const subset = formula.substring(startIndex, endIndex);
-      promises.push(this.parse(subset, placeholders, allowDiceRolls));
-      logger.debug(`subset ${subset}`);
-      startIndex = endIndex + 1;
+    for (const element of elements) {
+      promises.push(this.parseWithRolls(element, placeholders));
     }
-    const subset = formula.substring(startIndex);
-    promises.push(this.parse(subset, placeholders, allowDiceRolls));
     return Promise.all(promises).then((values) =>
       values.reduce((prev: number, curr: number) => prev + curr)
     );
   }
-  protected parse(
+  public evaluateWithoutRolls(
+    formula: string,
+    placeholders: Map<string, number>
+  ): number {
+    const elements = this.splitFormula(formula);
+    return elements
+      .map((el) => this.parseWithoutRolls(el, placeholders))
+      .reduce((prev, curr) => prev + curr);
+  }
+  protected splitFormula(formula: string): string[] {
+    const elements = [];
+    let startIndex = 0;
+    while (formula.indexOf("+", startIndex) !== -1) {
+      const endIndex = formula.indexOf("+", startIndex);
+      const subset = formula.substring(startIndex, endIndex);
+      elements.push(subset);
+      startIndex = endIndex + 1;
+    }
+    const subset = formula.substring(startIndex);
+    elements.push(subset);
+    return elements;
+  }
+  protected parseWithRolls(
     value: string,
-    placeholders: Map<string, number>,
-    allowDiceRolls: boolean
+    placeholders: Map<string, number>
   ): Promise<number> {
+    if (this.isPlaceholder(value, placeholders)) {
+      return Promise.resolve(this.parsePlaceholder(value, placeholders));
+    }
+    if (this.isNumber(value)) {
+      return Promise.resolve(this.parseNumber(value));
+    }
+    if (this.isDiceRoll(value)) {
+      return this.parseDiceRoll(value);
+    }
+    return Promise.reject(`Formula ${value} is not parsable.`);
+  }
+  protected parseWithoutRolls(
+    value: string,
+    placeholders: Map<string, number>
+  ): number {
     if (this.isPlaceholder(value, placeholders)) {
       return this.parsePlaceholder(value, placeholders);
     }
     if (this.isNumber(value)) {
       return this.parseNumber(value);
     }
-    if (allowDiceRolls && this.isDiceRoll(value)) {
-      return this.parseDiceRoll(value);
-    }
-    return Promise.reject(`Formula ${value} is not parsable.`);
+    throw new Error(`Formula ${value} is not parsable.`);
   }
   protected isPlaceholder(
     value: string,
@@ -51,20 +77,20 @@ class EvalFormulaService {
   protected parsePlaceholder(
     value: string,
     placeholders: Map<string, number>
-  ): Promise<number> {
+  ): number {
     value = value.trim().toUpperCase();
     const result = placeholders.get(value);
     if (result === undefined) {
-      return Promise.reject(`${value} is not a placeholder.`);
+      throw new Error(`${value} is not a placeholder.`);
     } else {
-      return Promise.resolve(result);
+      return result;
     }
   }
   protected isNumber(value: string): boolean {
     return NumberUtil.isNumber(value);
   }
-  protected parseNumber(value: string): Promise<number> {
-    return Promise.resolve(NumberUtil.parse(value));
+  protected parseNumber(value: string): number {
+    return NumberUtil.parse(value);
   }
   protected isDiceRoll(value: string): boolean {
     const diceIndex = value.indexOf("d");
