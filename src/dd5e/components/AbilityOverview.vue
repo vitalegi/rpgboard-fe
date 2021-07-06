@@ -21,8 +21,17 @@
       <v-expansion-panel-content>
         <ul>
           <li>Range: {{ ability.range }}</li>
+          <li v-if="ability.components !== ''">
+            Components: {{ ability.components }}
+          </li>
+          <li v-if="ability.castingTime !== ''">
+            Casting Time: {{ ability.castingTime }}
+          </li>
+          <li v-if="ability.duration !== ''">
+            Duration: {{ ability.duration }}
+          </li>
           <li v-if="ability.attackFormula !== ''">
-            Attack: {{ printableFormula(ability.attackFormula) }}
+            HIT: {{ printableFormula(ability.attackFormula) }}
           </li>
           <li v-if="ability.damages.length > 0">
             Damage: {{ printableDamages(ability.damages) }}

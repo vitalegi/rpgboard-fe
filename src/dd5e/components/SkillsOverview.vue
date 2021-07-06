@@ -3,15 +3,22 @@
     <template v-slot:default>
       <thead>
         <tr>
-          <th colspan="4">Skills</th>
+          <th colspan="2">Skills</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="skill in skills" :key="skill.id">
-          <td>{{ skill.id }}</td>
-          <td>{{ getUsedStat(skill) }}</td>
-          <td>{{ hasProficiency(skill) }}</td>
-          <td>{{ getSkill(skill) }}</td>
+          <td class="tableLabel">
+            <v-icon v-if="hasProficiency(skill)">mdi-check-circle</v-icon>
+            <v-icon v-else>mdi-checkbox-blank-circle-outline</v-icon>
+            {{ skill.id }} (
+            <b>{{ getUsedStat(skill) }}</b>
+            )
+          </td>
+
+          <td>
+            <b>{{ getSkill(skill) }}</b>
+          </td>
         </tr>
       </tbody>
     </template>
@@ -59,4 +66,8 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.tableLabel {
+  text-align: left;
+}
+</style>
