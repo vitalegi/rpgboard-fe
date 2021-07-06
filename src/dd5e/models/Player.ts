@@ -1,3 +1,4 @@
+import Ability from "./Ability";
 import Skills, { Skill } from "./Skills";
 import Stats, { Stat } from "./Stats";
 
@@ -14,6 +15,7 @@ export default class DungeonsDragons5ePG {
   public armorClassFormula = "";
   public initiativeFormula = "";
   public speed = 0;
+  public abilities = new Array<Ability>();
 
   public constructor() {
     this.baseStats = new Stats();

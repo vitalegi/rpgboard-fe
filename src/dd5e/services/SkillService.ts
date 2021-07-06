@@ -4,7 +4,6 @@ import SkillKeys from "../constants/SkillKeys";
 
 class SkillService {
   public getSkill(id: string, player: Player): Skill {
-    console.log(player.skills);
     const skill = player.skills.filter((skill) => skill.id === id);
     if (skill.length > 0) {
       return skill[0];

@@ -10,6 +10,9 @@
       <v-col cols="4">
         <skills-overview :player="player" />
       </v-col>
+      <v-col cols="4">
+        <abilities-overview :player="player" @moveAbility="moveAbility" />
+      </v-col>
     </v-row>
     <v-row>
       <v-text-field
@@ -32,41 +35,27 @@ import Player from "@/dd5e/models/Player";
 import BaseStatsOverview from "@/dd5e/components/BaseStatsOverview.vue";
 import SavingThrowsOverview from "@/dd5e/components/SavingThrowsOverview.vue";
 import SkillsOverview from "@/dd5e/components/SkillsOverview.vue";
+import AbilitiesOverview from "@/dd5e/components/AbilitiesOverview.vue";
 import SkillKeys from "../constants/SkillKeys";
+import Ability, { Damage, Spell } from "../models/Ability";
 
 const logger = factory.getLogger("Components.DD5eCharacterSheet");
 
 export default Vue.extend({
   name: "DD5eCharacterSheet",
-  components: { BaseStatsOverview, SavingThrowsOverview, SkillsOverview },
+  components: {
+    BaseStatsOverview,
+    SavingThrowsOverview,
+    SkillsOverview,
+    AbilitiesOverview,
+  },
   props: {},
   data: () => ({
     formula: "",
     output: "",
+    player: new Player(),
   }),
-  computed: {
-    player(): Player {
-      const player = new Player();
-      player.name = "Sample";
-      player.alignment = "BB";
-      player.playerName = "Sample123";
-      player.proficiencyBonus = 2;
-      player.baseStats.strength = Stat.createBaseStat(2);
-      player.baseStats.dexterity = Stat.createBaseStat(5);
-      player.baseStats.constitution = Stat.createBaseStat(10);
-      player.baseStats.intelligence = Stat.createBaseStat(13);
-      player.baseStats.wisdom = Stat.createBaseStat(22);
-      player.baseStats.charisma = Stat.createBaseStat(17);
-
-      player.savingThrows.strength.proficiency = true;
-      player.savingThrows.charisma.proficiency = true;
-
-      player.skills = skillService.createSkills();
-      skillService.getSkill(SkillKeys.ACROBATICS, player).proficiency = true;
-      skillService.getSkill(SkillKeys.HISTORY, player).proficiency = true;
-      return player;
-    },
-  },
+  computed: {},
   methods: {
     evaluateFormula(formula: string): void {
       statsRetrieverService
@@ -77,6 +66,102 @@ export default Vue.extend({
         })
         .catch((error) => (this.output = error));
     },
+    moveAbility(dragAbility: string, dropAbility: string): void {
+      logger.info(`Move ${dragAbility} before ${dropAbility}`);
+      console.log(this.player.abilities.map((a) => a.name).join(", "));
+      const fromIndex = this.player.abilities.findIndex(
+        (a) => a.name === dragAbility
+      );
+      let toIndex = this.player.abilities.findIndex(
+        (a) => a.name === dropAbility
+      );
+      logger.info(`Move ${fromIndex} to ${toIndex}`);
+      const ability = this.player.abilities.splice(fromIndex, 1)[0];
+      this.player.abilities.splice(toIndex, 0, ability);
+      console.log(this.player.abilities.map((a) => a.name).join(", "));
+    },
+    abilityBastoneFerrato(): Ability {
+      const ability = new Ability();
+      ability.name = "Bastone Ferrato";
+      ability.range = "melee";
+      ability.attackFormula = "DEX + DEX* + 1d20";
+      ability.damages.push(new Damage("DEX + 1d6"));
+      ability.damages.push(new Damage("DEX"));
+      ability.damages.push(new Damage("1d6", "poison"));
+      return ability;
+    },
+    abilityBastoneFerratoVersatile(): Ability {
+      const ability = new Ability();
+      ability.name = "Bastone Ferrato Versatile";
+      ability.range = "melee";
+      ability.attackFormula = "STR + STR* + 1d20";
+      ability.damages.push(new Damage("STR + 1d8"));
+      return ability;
+    },
+    abilityPoisonSpray(): Spell {
+      const ability = new Spell();
+      ability.name = "Poison Spray";
+      ability.description = `You extend your hand toward a creature you can see within range and project a puff of noxious gas from your palm. The creature must succeed on a __Constitution saving throw__ or take __1d12 poison damage__.
+
+This spell's damage increases by 1d12 when you reach __5th__ Level (__2d12__), __11th__ level (__3d12__), and __17th__ level (__4d12__).`;
+      ability.range = "10 feet";
+      const damage = new Damage();
+      damage.formula = "1d12";
+      damage.type = "poison";
+      ability.damages.push(damage);
+
+      ability.components = "V S";
+      ability.castingTime = "1 action";
+      ability.duration = "Instantaneous";
+      ability.spellSlot = 0;
+
+      return ability;
+    },
+    abilityEldrichBlast(): Spell {
+      const ability = new Spell();
+      ability.name = "Eldrich Blast";
+      ability.description = `A beam of crackling energy streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, the target takes __1d10 force damage__.
+
+The spell creates more than one beam when you reach higher levels: __two beams__ at __5th__ level, __three beams__ at __11th__ level, and __four beams__ at __17th__ level. You can direct the beams at the same target or at different ones. Make a separate attack roll for each beam.`;
+
+      ability.attackFormula = "1d20 + PROFICIENCY + CHA";
+      ability.range = "120 feet";
+      const damage = new Damage();
+      damage.formula = "1d10";
+      damage.type = "force";
+      ability.damages.push(damage);
+
+      ability.components = "V S";
+      ability.castingTime = "1 action";
+      ability.duration = "Instantaneous";
+      ability.spellSlot = 0;
+
+      return ability;
+    },
+  },
+  mounted() {
+    this.player.name = "Sample";
+    this.player.alignment = "BB";
+    this.player.playerName = "Sample123";
+    this.player.proficiencyBonus = 2;
+    this.player.baseStats.strength = Stat.createBaseStat(2);
+    this.player.baseStats.dexterity = Stat.createBaseStat(5);
+    this.player.baseStats.constitution = Stat.createBaseStat(10);
+    this.player.baseStats.intelligence = Stat.createBaseStat(13);
+    this.player.baseStats.wisdom = Stat.createBaseStat(22);
+    this.player.baseStats.charisma = Stat.createBaseStat(17);
+
+    this.player.savingThrows.strength.proficiency = true;
+    this.player.savingThrows.charisma.proficiency = true;
+
+    this.player.skills.push(...skillService.createSkills());
+    skillService.getSkill(SkillKeys.ACROBATICS, this.player).proficiency = true;
+    skillService.getSkill(SkillKeys.HISTORY, this.player).proficiency = true;
+
+    this.player.abilities.push(this.abilityBastoneFerrato());
+    this.player.abilities.push(this.abilityPoisonSpray());
+    this.player.abilities.push(this.abilityBastoneFerratoVersatile());
+    this.player.abilities.push(this.abilityEldrichBlast());
   },
 });
 </script>

@@ -26,6 +26,26 @@ class EvalFormulaService {
       .map((el) => this.parseWithoutRolls(el, placeholders))
       .reduce((prev, curr) => prev + curr);
   }
+  public printableFormula(
+    formula: string,
+    placeholders: Map<string, number>
+  ): string {
+    const elements = this.splitFormula(formula);
+    let value = 0;
+    const dice = new Array<string>();
+    for (const element of elements) {
+      const printable = this.printableValue(element, placeholders);
+      if (typeof printable === "number") {
+        value += printable;
+      } else {
+        dice.push(printable);
+      }
+    }
+    if (value !== 0) {
+      return ["" + value, ...dice].join("+");
+    }
+    return dice.join("+");
+  }
   protected splitFormula(formula: string): string[] {
     const elements = [];
     let startIndex = 0;
@@ -38,6 +58,21 @@ class EvalFormulaService {
     const subset = formula.substring(startIndex);
     elements.push(subset);
     return elements;
+  }
+  protected printableValue(
+    value: string,
+    placeholders: Map<string, number>
+  ): string | number {
+    if (this.isPlaceholder(value, placeholders)) {
+      return this.parsePlaceholder(value, placeholders);
+    }
+    if (this.isNumber(value)) {
+      return this.parseNumber(value);
+    }
+    if (this.isDiceRoll(value)) {
+      return value.trim();
+    }
+    throw new Error(`Formula ${value} is not parsable.`);
   }
   protected parseWithRolls(
     value: string,

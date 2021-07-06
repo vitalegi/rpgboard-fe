@@ -34,12 +34,17 @@ class StatsRetrieverService {
   }
   public evaluateStatModifier(stat: Stat, player: Player): number {
     const value = this.evaluateStat(stat, player);
-    const modifier = this.getModifier(value);
     const proficiency = this.getStatProficiency(stat, player.proficiencyBonus);
-    return modifier + proficiency;
+    return value + proficiency;
   }
   public evaluateFormula(formula: string, player: Player): Promise<number> {
     return evalFormulaService.evaluateWithRolls(
+      formula,
+      this.initPlaceholders(player)
+    );
+  }
+  public printableFormula(formula: string, player: Player): string {
+    return evalFormulaService.printableFormula(
       formula,
       this.initPlaceholders(player)
     );
@@ -52,19 +57,14 @@ class StatsRetrieverService {
     const values = new Map<string, number>();
     const t = player.savingThrows;
     const bonus = player.proficiencyBonus;
-    values.set("STR", player.baseStats.strength.value);
-    values.set("STR*", this.getStatProficiency(t.strength, bonus));
-    values.set("DEX", player.baseStats.dexterity.value);
-    values.set("DEX*", this.getStatProficiency(t.dexterity, bonus));
-    values.set("COS", player.baseStats.constitution.value);
-    values.set("COS*", this.getStatProficiency(t.constitution, bonus));
-    values.set("INT", player.baseStats.intelligence.value);
-    values.set("INT*", this.getStatProficiency(t.intelligence, bonus));
-    values.set("WIS", player.baseStats.wisdom.value);
-    values.set("WIS*", this.getStatProficiency(t.wisdom, bonus));
-    values.set("CHA", player.baseStats.charisma.value);
-    values.set("CHA*", this.getStatProficiency(t.charisma, bonus));
+    for (const statName of this.getStatKeys()) {
+      const value = this.getStat(player.baseStats, statName).value;
+      values.set(statName, this.getModifier(value));
+      const saveStat = this.getStat(player.savingThrows, statName);
+      values.set(`${statName}*`, this.getStatProficiency(saveStat, bonus));
+    }
     values.set("PROFICIENCY", bonus);
+
     return values;
   }
   protected getStatProficiency(stat: Stat, proficiency: number): number {
