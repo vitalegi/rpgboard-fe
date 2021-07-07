@@ -5,10 +5,10 @@
         <base-stats-overview :baseStats="player.baseStats" />
       </v-col>
       <v-col cols="2">
-        <saving-throws-overview :player="player" />
+        <saving-throws-overview :player="player" @update="updateSavingThrow" />
       </v-col>
       <v-col cols="4">
-        <skills-overview :player="player" />
+        <skills-overview :player="player" @updateSkill="updateSkill" />
       </v-col>
       <v-col cols="4">
         <abilities-overview :player="player" @moveAbility="moveAbility" />
@@ -79,6 +79,19 @@ export default Vue.extend({
       const ability = this.player.abilities.splice(fromIndex, 1)[0];
       this.player.abilities.splice(toIndex, 0, ability);
       console.log(this.player.abilities.map((a) => a.name).join(", "));
+    },
+    updateSkill(id: string, proficiency: boolean): void {
+      logger.info(`Update skill ${id} proficiency to ${proficiency}`);
+      this.player.skills
+        .filter((skill) => skill.id === id)
+        .forEach((skill) => (skill.proficiency = proficiency));
+    },
+    updateSavingThrow(stat: string, proficiency: boolean): void {
+      logger.info(`Update saving throw ${stat} proficiency to ${proficiency}`);
+      statsRetrieverService.getStat(
+        this.player.savingThrows,
+        stat
+      ).proficiency = proficiency;
     },
     abilityBastoneFerrato(): Ability {
       const ability = new Ability();

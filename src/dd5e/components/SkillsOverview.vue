@@ -8,9 +8,12 @@
       </thead>
       <tbody>
         <tr v-for="skill in skills" :key="skill.id">
-          <td class="tableLabel">
-            <v-icon v-if="hasProficiency(skill)">mdi-check-circle</v-icon>
-            <v-icon v-else>mdi-checkbox-blank-circle-outline</v-icon>
+          <td class="table-first-column">
+            <icon-button
+              :editable="true"
+              :selected="hasProficiency(skill)"
+              @change="(v) => updateProficiency(skill, v)"
+            />
             {{ skill.id }} (
             <b>{{ getUsedStat(skill) }}</b>
             )
@@ -32,12 +35,13 @@ import statsRetrieverService from "@/dd5e/services/StatsRetrieverService";
 import Player from "@/dd5e/models/Player";
 import { Skill } from "../models/Skills";
 import skillService from "../services/SkillService";
+import IconButton from "@/components/IconButton.vue";
 
-const logger = factory.getLogger("Components.SavingThrowsOverview");
+const logger = factory.getLogger("Components.SkillsOverview");
 
 export default Vue.extend({
   name: "SkillsOverview",
-  components: {},
+  components: { IconButton },
   props: {
     player: {
       type: Player,
@@ -62,12 +66,16 @@ export default Vue.extend({
     getStatsID(): string[] {
       return statsRetrieverService.getStatKeys();
     },
+    updateProficiency(skill: Skill, newValue: boolean): void {
+      logger.info(`Update ${skill.id} with ${newValue}`);
+      this.$emit("updateSkill", skill.id, newValue);
+    },
   },
 });
 </script>
 
 <style scoped lang="scss">
-.tableLabel {
+.table-first-column {
   text-align: left;
 }
 </style>

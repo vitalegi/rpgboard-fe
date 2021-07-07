@@ -3,14 +3,20 @@
     <template v-slot:default>
       <thead>
         <tr>
-          <th colspan="3">Saving Throws</th>
+          <th colspan="2">Saving Throws</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="stat in getStatsID()" :key="stat">
-          <td>{{ stat }}</td>
+          <td class="table-first-column">
+            <icon-button
+              :editable="true"
+              :selected="hasProficiency(stat)"
+              @change="(v) => updateProficiency(stat, v)"
+            />
+            {{ stat }}
+          </td>
           <td>{{ getSavingThrow(stat) }}</td>
-          <td>{{ hasProficiency(stat) }}</td>
         </tr>
       </tbody>
     </template>
@@ -23,12 +29,13 @@ import { factory } from "@/utils/ConfigLog4j";
 import statsRetrieverService from "@/dd5e/services/StatsRetrieverService";
 import Stats from "@/dd5e/models/Stats";
 import Player from "@/dd5e/models/Player";
+import IconButton from "@/components/IconButton.vue";
 
 const logger = factory.getLogger("Components.SavingThrowsOverview");
 
 export default Vue.extend({
   name: "SavingThrowsOverview",
-  components: {},
+  components: { IconButton },
   props: {
     player: {
       type: Player,
@@ -56,8 +63,16 @@ export default Vue.extend({
     getStatsID(): string[] {
       return statsRetrieverService.getStatKeys();
     },
+    updateProficiency(stat: string, proficiency: boolean): void {
+      logger.debug(`Update ${stat} with ${proficiency}`);
+      this.$emit("update", stat, proficiency);
+    },
   },
 });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.table-first-column {
+  text-align: left;
+}
+</style>
