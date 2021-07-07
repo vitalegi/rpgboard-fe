@@ -1,26 +1,18 @@
 <template>
   <v-container dense>
     <v-row>
-      <v-col cols="2">
+      <v-col :xs="6" :sm="4" :md="3" :lg="2" :xl="1">
         <base-stats-overview :baseStats="player.baseStats" />
       </v-col>
-      <v-col cols="2">
+      <v-col :xs="6" :sm="4" :md="3" :lg="2" :xl="1">
         <saving-throws-overview :player="player" @update="updateSavingThrow" />
       </v-col>
-      <v-col cols="4">
+      <v-col :xs="12" :sm="6" :md="4" :lg="4" :xl="3">
         <skills-overview :player="player" @updateSkill="updateSkill" />
       </v-col>
-      <v-col cols="4">
+      <v-col :xs="12" :sm="6" :md="4" :lg="4" :xl="3">
         <abilities-overview :player="player" @moveAbility="moveAbility" />
       </v-col>
-    </v-row>
-    <v-row>
-      <v-text-field
-        v-model="formula"
-        label="Formula"
-        @change="evaluateFormula(formula)"
-      ></v-text-field>
-      {{ formula }}: {{ output }}
     </v-row>
   </v-container>
 </template>
@@ -29,7 +21,7 @@
 import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
 import statsRetrieverService from "@/dd5e/services/StatsRetrieverService";
-import Stats, { Stat } from "@/dd5e/models/Stats";
+import { Stat } from "@/dd5e/models/Stats";
 import skillService from "@/dd5e/services/SkillService";
 import Player from "@/dd5e/models/Player";
 import BaseStatsOverview from "@/dd5e/components/BaseStatsOverview.vue";
@@ -51,21 +43,10 @@ export default Vue.extend({
   },
   props: {},
   data: () => ({
-    formula: "",
-    output: "",
     player: new Player(),
   }),
   computed: {},
   methods: {
-    evaluateFormula(formula: string): void {
-      statsRetrieverService
-        .evaluateFormula(formula, this.player)
-        .then((value) => {
-          logger.info(`Output of ${formula} is ${value}`);
-          this.output = `[${value}]`;
-        })
-        .catch((error) => (this.output = error));
-    },
     moveAbility(dragAbility: string, dropAbility: string): void {
       logger.info(`Move ${dragAbility} before ${dropAbility}`);
       console.log(this.player.abilities.map((a) => a.name).join(", "));

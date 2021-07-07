@@ -9,8 +9,10 @@
       <tbody>
         <tr v-for="stat in getStatsID()" :key="stat">
           <td>{{ stat }}</td>
-          <td>{{ getBaseStat(stat) }}</td>
-          <td>{{ getModifier(getBaseStat(stat)) }}</td>
+          <td>
+            {{ getBaseStat(stat) }} (
+            <b>{{ getModifier(getBaseStat(stat)) }}</b> )
+          </td>
         </tr>
       </tbody>
     </template>

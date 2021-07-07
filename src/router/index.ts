@@ -64,7 +64,8 @@ router.beforeEach((to, from, next) => {
   logger.info(
     `User is not logged in, abort navigation to ${to.name}, go to login`
   );
-  next({ name: "Login" });
+  next();
+  //next({ name: "Login" });
 });
 
 export default router;

@@ -19,28 +19,70 @@
         </v-row>
       </v-expansion-panel-header>
       <v-expansion-panel-content>
-        <ul>
-          <li>Range: {{ ability.range }}</li>
-          <li v-if="ability.components !== ''">
-            Components: {{ ability.components }}
-          </li>
-          <li v-if="ability.castingTime !== ''">
-            Casting Time: {{ ability.castingTime }}
-          </li>
-          <li v-if="ability.duration !== ''">
-            Duration: {{ ability.duration }}
-          </li>
-          <li v-if="ability.attackFormula !== ''">
-            HIT: {{ printableFormula(ability.attackFormula) }}
-          </li>
-          <li v-if="ability.damages.length > 0">
-            Damage: {{ printableDamages(ability.damages) }}
-          </li>
-        </ul>
-        <div
-          v-if="ability.description.trim() !== ''"
-          v-html="processMarkdown(ability.description)"
-        ></div>
+        <v-container>
+          <v-row dense>
+            <v-spacer></v-spacer>
+            <v-col cols="5" class="ability-actions">
+              <v-btn outlined icon small color="secondary">
+                <v-icon @click="selectAbility($event, ability)">
+                  mdi-share
+                </v-icon>
+              </v-btn>
+              <v-btn outlined icon small color="primary">
+                <v-icon> mdi-play </v-icon>
+              </v-btn>
+            </v-col>
+            <v-col
+              v-if="isNotNullOrEmpty(ability.range)"
+              class="ability-attribute"
+              cols="12"
+            >
+              <b>Range</b>: {{ ability.range }}
+            </v-col>
+            <v-col
+              v-if="isNotNullOrEmpty(ability.components)"
+              class="ability-attribute"
+              cols="12"
+            >
+              <b>Components</b>: {{ ability.components }}
+            </v-col>
+            <v-col
+              v-if="isNotNullOrEmpty(ability.castingTime)"
+              class="ability-attribute"
+              cols="12"
+            >
+              <b>Casting Time</b>: {{ ability.castingTime }}
+            </v-col>
+            <v-col
+              v-if="isNotNullOrEmpty(ability.duration)"
+              class="ability-attribute"
+              cols="12"
+            >
+              <b>Duration</b>: {{ ability.duration }}
+            </v-col>
+            <v-col
+              v-if="isNotNullOrEmpty(ability.attackFormula)"
+              class="ability-attribute"
+              cols="12"
+            >
+              <b>HIT</b>: {{ printableFormula(ability.attackFormula) }}
+            </v-col>
+            <v-col
+              v-if="ability.damages !== null && ability.damages.length > 0"
+              class="ability-attribute"
+              cols="12"
+            >
+              <b>Damage</b>: {{ printableDamages(ability.damages) }}
+            </v-col>
+            <v-col cols="12">
+              <div
+                v-if="ability.description.trim() !== ''"
+                v-html="processMarkdown(ability.description)"
+                class="ability-description"
+              ></div>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-expansion-panel-content>
     </span>
   </v-expansion-panel>
@@ -91,8 +133,28 @@ export default Vue.extend({
         )
         .join(" / ");
     },
+    isNotNullOrEmpty(value: string): boolean {
+      return typeof value === "string" && value.trim().length > 0;
+    },
+    selectAbility(event: any, ability: Ability): void {
+      logger.info(`Select ${ability.name}`);
+      event.preventDefault();
+    },
   },
 });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.ability-description {
+  text-align: justify;
+}
+.ability-attribute {
+  text-align: left;
+}
+.ability-actions {
+  text-align: right;
+}
+.v-btn--icon {
+  margin-left: 5px;
+}
+</style>
