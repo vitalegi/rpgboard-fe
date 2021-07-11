@@ -11,13 +11,13 @@ interface Parser {
 
 class NumberParser implements Parser {
   public isParsable(value: string): boolean {
-    return NumberUtil.isNumber(value);
+    return NumberUtil.isNumber(value.trim());
   }
   public parse(value: string): number {
-    return NumberUtil.parse(value);
+    return NumberUtil.parse(value.trim());
   }
   public printable(value: string): number {
-    return this.parse(value);
+    return this.parse(value.trim());
   }
 }
 class PlaceholderParser implements Parser {
@@ -71,7 +71,10 @@ class DiceParser implements Parser {
   public printable(value: string): number | string {
     const dices = this.getDiceCount(value);
     const type = this.getDiceType(value);
-    return `${dices}d${type}`;
+    if (dices > 1) {
+      return `${dices}d${type}`;
+    }
+    return `d${type}`;
   }
   protected getDiceCount(value: string): number {
     const diceIndex = this.getDiceIndex(value);
@@ -162,7 +165,7 @@ class EvalFormulaService {
       .map((v) => v as string);
 
     if (value !== 0) {
-      return ["" + value, ...dice].join("+");
+      return [...dice, "" + value].join("+");
     }
     return dice.join("+");
   }

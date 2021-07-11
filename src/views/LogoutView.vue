@@ -1,5 +1,5 @@
 <template>
-  <v-card class="logout" max-width="600">
+  <v-card class="logout logout-card" min-width="600">
     <v-card-text v-if="completed"> Logout completato. </v-card-text>
     <v-card-text v-else> Logout in corso. </v-card-text>
   </v-card>
@@ -28,4 +28,8 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.logout-card {
+  margin: 0 auto;
+}
+</style>
