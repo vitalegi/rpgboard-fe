@@ -23,6 +23,12 @@ const routes: Array<RouteConfig> = [
       import(/* webpackChunkName: "about" */ "../views/About.vue"),
   },
   {
+    path: "/gdpr",
+    name: "GDPR",
+    component: () =>
+      import(/* webpackChunkName: "gdpr" */ "../views/GDPRView.vue"),
+  },
+  {
     path: "/game/:gameId",
     name: "Game",
     component: () =>
@@ -36,6 +42,12 @@ const routes: Array<RouteConfig> = [
     name: "Login",
     component: () =>
       import(/* webpackChunkName: "login" */ "../views/LoginView.vue"),
+  },
+  {
+    path: "/logout",
+    name: "Logout",
+    component: () =>
+      import(/* webpackChunkName: "logout" */ "../views/LogoutView.vue"),
   },
   {
     path: "/select-game",

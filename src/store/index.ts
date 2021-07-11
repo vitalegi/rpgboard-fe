@@ -3,7 +3,6 @@ import Vuex from "vuex";
 
 import Game from "@/models/Game";
 import ArrayUtil from "@/utils/ArrayUtil";
-
 import { factory } from "@/utils/ConfigLog4j";
 import backendService from "@/services/BackendService";
 const logger = factory.getLogger("Store");
@@ -42,5 +41,29 @@ export default new Vuex.Store({
       });
     },
   },
-  modules: {},
+  modules: {
+    auth: {
+      namespaced: true,
+      state: {
+        authenticated: false,
+        userId: "",
+      },
+      mutations: {
+        login(state: any, userId: string) {
+          state.userId = userId;
+          state.authenticated = true;
+        },
+        logout(state: any) {
+          state.userId = "";
+          state.authenticated = false;
+        },
+      },
+      getters: {
+        userId: (state: any) => state.userId,
+        authenticated: (state: any) => state.authenticated,
+      },
+      actions: {},
+      modules: {},
+    },
+  },
 });

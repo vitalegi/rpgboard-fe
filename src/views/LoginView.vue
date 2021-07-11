@@ -1,17 +1,58 @@
 <template>
-  <div class="login">
-    <guest-login />
-  </div>
+  <v-card class="login login-card" max-width="600">
+    <v-card-text>
+      <v-container>
+        <v-row>
+          <v-col> authenticated? {{ isAuthenticated() }} </v-col>
+          <v-col v-if="isAuthenticated()">
+            {{ getUserId() }}
+          </v-col>
+        </v-row>
+        <v-divider></v-divider>
+        <v-row justify="center">
+          <v-col> <EmailPasswordLogin /> </v-col>
+        </v-row>
+        <v-divider></v-divider>
+        <v-row>
+          <v-col cols="12">
+            <facebook-login />
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import GuestLogin from "@/components/GuestLogin.vue";
+import FacebookLogin from "@/login/components/FacebookLogin.vue";
+import EmailPasswordLogin from "@/login/components/EmailPasswordLogin.vue";
+import authService from "@/login/services/AuthService";
 
 export default Vue.extend({
   name: "LoginView",
   components: {
-    GuestLogin,
+    FacebookLogin,
+    EmailPasswordLogin,
+  },
+  data: () => ({ tab: "signup" }),
+  methods: {
+    getUserId(): string {
+      return this.$store.getters["auth/userId"];
+    },
+    isAuthenticated(): boolean {
+      return this.$store.getters["auth/authenticated"];
+    },
   },
 });
 </script>
+
+<style scoped lang="scss">
+.login-card {
+  margin: 0 auto;
+}
+.v-divider {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+</style>
