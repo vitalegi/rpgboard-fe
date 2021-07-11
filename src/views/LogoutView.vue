@@ -6,18 +6,20 @@
 </template>
 
 <script lang="ts">
-import authService from "@/login/services/AuthService";
+import AuthService from "@/login/services/AuthService";
 import Vue from "vue";
+import { Container, Service } from "typedi";
 
 export default Vue.extend({
   name: "LogoutView",
   components: {},
   data: () => ({
     completed: false,
+    authService: Container.get<AuthService>(AuthService),
   }),
   methods: {
     async logout(): Promise<void> {
-      await authService.logout();
+      await this.authService.logout();
       this.completed = true;
     },
   },

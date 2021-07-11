@@ -5,19 +5,19 @@
         <v-col cols="12" sm="6">
           <v-text-field
             v-model="name"
-            label="Game Title"
+            label="Title"
             outlined
             clearable
-            :rules="titleRules"
+            :rules="required"
           ></v-text-field>
         </v-col>
         <v-col cols="12" sm="4">
           <v-select
             v-model="gameType"
             :items="gameTypes"
-            label="Game Type"
+            label="Type"
             outlined
-            :rules="titleRules"
+            :rules="required"
           ></v-select>
         </v-col>
         <v-col cols="12" sm="2">
@@ -34,10 +34,9 @@
 import Vue from "vue";
 import gameTypeService from "@/services/GameTypeService";
 import backendService from "@/services/BackendService";
-import Game from "@/models/Game";
 import RouterUtil from "@/utils/RouterUtil";
 import { factory } from "@/utils/ConfigLog4j";
-const logger = factory.getLogger("Components.SelectGame");
+const logger = factory.getLogger("Game.Components.SelectGame");
 
 export default Vue.extend({
   name: "SelectGame",
@@ -46,7 +45,7 @@ export default Vue.extend({
     name: "",
     gameType: "",
     valid: false,
-    titleRules: [(v: string) => !!v || "Title is required"],
+    required: [(v: string) => !!v || "Required field"],
   }),
   computed: {
     gameTypes() {

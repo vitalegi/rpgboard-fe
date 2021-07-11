@@ -28,7 +28,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-import authService from "../services/AuthService";
+import AuthService from "@/login/services/AuthService";
+import { Container, Service } from "typedi";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Login.Components.EmailPasswordLogin");
 
@@ -41,12 +42,13 @@ export default Vue.extend({
     password: "",
     showPassword: false,
     error: "",
+    authService: Container.get<AuthService>(AuthService),
   }),
   methods: {
     async register(): Promise<void> {
       try {
         this.error = "";
-        const user = await authService.signup(this.email, this.password);
+        const user = await this.authService.signup(this.email, this.password);
         this.accessSuccessful(user);
       } catch (error) {
         this.accessFailure(error);
@@ -55,7 +57,7 @@ export default Vue.extend({
     async login(): Promise<void> {
       try {
         this.error = "";
-        const user = await authService.login(this.email, this.password);
+        const user = await this.authService.login(this.email, this.password);
         this.accessSuccessful(user);
         //console.log("retrieve token");
         //const id = await authService.getIdToken();
@@ -66,7 +68,7 @@ export default Vue.extend({
     },
     accessSuccessful(result: any): void {
       console.log("done", result);
-      this.$store.commit("auth/login", authService.getUserId());
+      this.$store.commit("auth/login", this.authService.getUserId());
     },
     accessFailure(error: any): void {
       console.error(error);
@@ -94,11 +96,6 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-//body {
-//  padding: 2em;
-//}
-
-/* Shared */
 .loginBtn {
   box-sizing: border-box;
   position: relative;

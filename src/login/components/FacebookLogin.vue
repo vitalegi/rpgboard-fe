@@ -10,19 +10,20 @@
 <script lang="ts">
 import Vue from "vue";
 import firebase from "firebase/app";
-import authService from "../services/AuthService";
+import AuthService from "@/login/services/AuthService";
 import { factory } from "@/utils/ConfigLog4j";
+import Container from "typedi";
 const logger = factory.getLogger("Login.Components.FacebookLogin");
 
 export default Vue.extend({
   name: "FacebookLogin",
   components: {},
   props: {},
-  data: () => ({}),
+  data: () => ({ authService: Container.get<AuthService>(AuthService) }),
   methods: {
     async facebookLogin(): Promise<void> {
       try {
-        const user = authService.loginFacebook();
+        const user = this.authService.loginFacebook();
         console.log("done", user);
       } catch (error) {
         console.error(error);

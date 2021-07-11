@@ -1,8 +1,9 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
-import authService from "@/services/AuthService";
+import AuthService from "@/login/services/AuthService";
 import { factory } from "@/utils/ConfigLog4j";
+import Container from "typedi";
 const logger = factory.getLogger("Router");
 
 Vue.use(VueRouter);
@@ -53,7 +54,7 @@ const routes: Array<RouteConfig> = [
     path: "/select-game",
     name: "SelectGame",
     component: () =>
-      import(/* webpackChunkName: "login" */ "../views/SelectGameView.vue"),
+      import(/* webpackChunkName: "login" */ "../game/view/SelectGameView.vue"),
   },
 ];
 
@@ -69,6 +70,7 @@ router.beforeEach((to, from, next) => {
     next();
     return;
   }
+  const authService = Container.get<AuthService>(AuthService);
   if (authService.isAuthenticated()) {
     next();
     return;

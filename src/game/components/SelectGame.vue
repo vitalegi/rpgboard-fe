@@ -11,10 +11,9 @@
 <script lang="ts">
 import Vue from "vue";
 import backendService from "@/services/BackendService";
-import Game from "@/models/Game";
 import RouterUtil from "@/utils/RouterUtil";
 import { factory } from "@/utils/ConfigLog4j";
-const logger = factory.getLogger("Components.SelectGame");
+const logger = factory.getLogger("Game.Components.SelectGame");
 
 export default Vue.extend({
   name: "SelectGame",

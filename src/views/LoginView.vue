@@ -27,7 +27,6 @@
 import Vue from "vue";
 import FacebookLogin from "@/login/components/FacebookLogin.vue";
 import EmailPasswordLogin from "@/login/components/EmailPasswordLogin.vue";
-import authService from "@/login/services/AuthService";
 
 export default Vue.extend({
   name: "LoginView",

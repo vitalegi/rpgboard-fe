@@ -1,8 +1,10 @@
+import { Inject, Service } from "typedi";
 import firebase from "firebase/app";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Login.Services.AuthService");
 
-class AuthService {
+@Service()
+export default class AuthService {
   public async signup(
     email: string,
     password: string
@@ -46,6 +48,3 @@ class AuthService {
     return firebase.auth().signOut();
   }
 }
-
-const authService = new AuthService();
-export default authService;
