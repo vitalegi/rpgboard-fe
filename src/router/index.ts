@@ -27,12 +27,6 @@ const routes: Array<RouteConfig> = [
       import(/* webpackChunkName: "logout" */ "../login/views/LogoutView.vue"),
   },
   {
-    path: "/select-game",
-    name: "SelectGame",
-    component: () =>
-      import(/* webpackChunkName: "login" */ "../game/view/SelectGameView.vue"),
-  },
-  {
     path: "/game/:gameId",
     name: "Game",
     component: () =>
@@ -75,8 +69,7 @@ router.beforeEach((to, from, next) => {
   logger.info(
     `User is not logged in, abort navigation to ${to.name}, go to login`
   );
-  next();
-  //next({ name: "Login" });
+  next({ name: "Login" });
 });
 
 export default router;

@@ -1,8 +1,13 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col cols="12" sm="2" v-for="game in games" :key="game.id"
-        ><v-btn @click="joinGame(game.id)">{{ game.name }}</v-btn>
+    <v-row v-if="!loading">
+      <v-col cols="6" sm="4" v-for="game in _games()" :key="game.id">
+        <SelectableGamePreview :game="game" @select="joinGame" />
+      </v-col>
+    </v-row>
+    <v-row v-else>
+      <v-col cols="6" sm="4" v-for="id in placeholders(6)" :key="id">
+        <v-skeleton-loader type="card"></v-skeleton-loader>
       </v-col>
     </v-row>
   </v-container>
@@ -13,20 +18,21 @@ import Vue from "vue";
 import { Container } from "typedi";
 import BackendService from "@/services/BackendService";
 import RouterUtil from "@/utils/RouterUtil";
+import ArrayUtil from "@/utils/ArrayUtil";
+import Game from "@/models/Game";
+import SelectableGamePreview from "./SelectableGamePreview.vue";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Components.SelectGame");
 
 export default Vue.extend({
   name: "SelectGame",
-
+  components: { SelectableGamePreview },
   data: () => ({
     backendService: Container.get<BackendService>(BackendService),
+    games: [],
+    loading: false,
   }),
-  computed: {
-    games() {
-      return this.$store.getters.games;
-    },
-  },
+  computed: {},
   methods: {
     joinGame(gameId: string): void {
       this.backendService.joinGame(gameId).then(() => {
@@ -34,9 +40,23 @@ export default Vue.extend({
         RouterUtil.toGame(gameId);
       });
     },
+    _games(): Array<Game> {
+      return this.games as Array<Game>;
+    },
+    placeholders(n: number): number[] {
+      const arr = new Array<number>();
+      for (let i = 0; i < n; i++) {
+        arr.push(i);
+      }
+      return arr;
+    },
   },
-  created() {
-    this.$store.dispatch("updateGames");
+  async created() {
+    this.loading = true;
+    const games = await this.backendService.getGames();
+    ArrayUtil.removeAll(this.games);
+    this._games().push(...games);
+    this.loading = false;
   },
 });
 </script>

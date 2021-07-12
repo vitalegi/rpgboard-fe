@@ -33,7 +33,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Container } from "typedi";
-import gameTypeService from "@/services/GameTypeService";
+import GameTypeService from "@/game/services/GameTypeService";
 import BackendService from "@/services/BackendService";
 import RouterUtil from "@/utils/RouterUtil";
 import { factory } from "@/utils/ConfigLog4j";
@@ -48,16 +48,17 @@ export default Vue.extend({
     valid: false,
     required: [(v: string) => !!v || "Required field"],
     backendService: Container.get<BackendService>(BackendService),
+    gameTypeService: Container.get<GameTypeService>(GameTypeService),
   }),
   computed: {
     gameTypes() {
-      return gameTypeService.getLabels();
+      return this.gameTypeService.getLabels();
     },
   },
   methods: {
     createGame() {
       logger.info(`Create game ${this.name} ${this.gameType}`);
-      const gameType = gameTypeService.mapLabelToType(this.gameType);
+      const gameType = this.gameTypeService.mapLabelToType(this.gameType);
       this.backendService.createGame(this.name, gameType).then((game) => {
         logger.info(`Created game ${game.id}, joining.`);
         RouterUtil.toGame(game.id);

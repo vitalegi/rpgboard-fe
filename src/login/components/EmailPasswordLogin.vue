@@ -18,8 +18,16 @@
           <div style="color: red">{{ error }}</div>
         </v-col>
         <v-col cols="12">
-          <v-btn @click="login()" text style="margin-right: 10px">Login</v-btn>
-          <v-btn @click="register()" color="primary">Sign-in</v-btn>
+          <v-btn
+            @click="login(email, password)"
+            text
+            style="margin-right: 10px"
+          >
+            Login
+          </v-btn>
+          <v-btn @click="register(email, password)" color="primary">
+            Sign-in
+          </v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -45,30 +53,21 @@ export default Vue.extend({
     authService: Container.get<AuthService>(AuthService),
   }),
   methods: {
-    async register(): Promise<void> {
+    async register(email: string, password: string): Promise<void> {
       try {
         this.error = "";
-        const user = await this.authService.signup(this.email, this.password);
-        this.accessSuccessful(user);
+        await this.authService.signup(email, password);
       } catch (error) {
         this.accessFailure(error);
       }
     },
-    async login(): Promise<void> {
+    async login(email: string, password: string): Promise<void> {
       try {
         this.error = "";
-        const user = await this.authService.login(this.email, this.password);
-        this.accessSuccessful(user);
-        //console.log("retrieve token");
-        //const id = await authService.getIdToken();
-        //console.log("ID: ", id);
+        await this.authService.login(email, password);
       } catch (error) {
         this.accessFailure(error);
       }
-    },
-    accessSuccessful(result: any): void {
-      console.log("done", result);
-      this.$store.commit("auth/login", this.authService.getUserId());
     },
     accessFailure(error: any): void {
       console.error(error);

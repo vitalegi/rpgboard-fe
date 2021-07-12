@@ -46,61 +46,19 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-speed-dial
-      v-model="fab"
-      direction="left"
-      bottom
-      right
-      fixed
-      transition="slide-x-reverse-transition"
-    >
-      <template v-slot:activator>
-        <v-btn v-model="fab" color="blue darken-2" dark fab fixed right bottom>
-          <v-icon v-if="fab"> mdi-close </v-icon>
-          <v-icon v-else> mdi-account-circle </v-icon>
-        </v-btn>
-      </template>
-      <v-btn fab dark small color="green">
-        <v-icon>mdi-pencil</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="indigo">
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <v-icon>mdi-delete</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <v-icon>mdi-delete</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <v-icon>mdi-delete</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <v-icon>mdi-delete</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <v-icon>mdi-delete</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <v-icon>mdi-delete</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <v-icon>mdi-delete</v-icon>
-      </v-btn>
-    </v-speed-dial>
     <DD5eCharacterSheet />
   </v-card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import { Container } from "typedi";
 import DD5eCharacterSheet from "@/dd5e/components/DD5eCharacterSheet.vue";
 import FileUpload from "@/components/FileUpload.vue";
 import Board from "@/components/Board.vue";
 import AssetsSummary from "@/components/AssetsSummary.vue";
 import BoardManager from "@/components/BoardManager.vue";
 import GamePlayersSummary from "@/components/GamePlayersSummary.vue";
-import { Container } from "typedi";
 import BackendService from "@/services/BackendService";
 import GamePlayer from "@/models/GamePlayer";
 import ArrayUtil from "@/utils/ArrayUtil";
@@ -127,7 +85,6 @@ export default Vue.extend({
     boardContent: new Array<Layer>(),
     assets: new Array<FileContent>(),
     tab: "k2",
-    fab: false,
     viewHeight: 0,
     internalViewHeight: 0,
     backendService: Container.get<BackendService>(BackendService),
@@ -269,12 +226,4 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped lang="scss">
-#game .v-speed-dial__list {
-  position: absolute;
-}
-
-#game .v-btn--floating {
-  position: relative;
-}
-</style>
+<style scoped lang="scss"></style>

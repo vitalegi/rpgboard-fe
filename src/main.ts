@@ -14,6 +14,7 @@ import firebase from "firebase";
 // firebase used modules
 import "firebase/analytics";
 import "firebase/auth";
+import { cookieUtil } from "./utils/CookieUtil";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDemNC_2rgPw7wgk5fEtBIaCTxvXNkYo3g",
@@ -28,10 +29,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
+store.commit("auth/login", cookieUtil.getCookie("USERID"));
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
+    cookieUtil.setCookie("USERID", user.uid);
     store.commit("auth/login", user.uid);
   } else {
+    cookieUtil.removeCookie("USERID");
     store.commit("auth/logout");
   }
 });

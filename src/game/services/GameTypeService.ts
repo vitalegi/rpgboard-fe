@@ -1,5 +1,6 @@
 import { GameType } from "@/models/Types";
 import { factory } from "@/utils/ConfigLog4j";
+import { Service } from "typedi";
 const logger = factory.getLogger("Service.GameTypeService");
 
 type GameTypeLabel = { type: GameType; label: string };
@@ -7,7 +8,8 @@ const gameTypeLabels = new Array<GameTypeLabel>();
 gameTypeLabels.push({ type: "DD5e", label: "D&D 5e" });
 gameTypeLabels.push({ type: "Fiasko", label: "Fiasko" });
 
-class GameTypeService {
+@Service()
+export default class GameTypeService {
   public getLabels(): Array<string> {
     return gameTypeLabels.map((e) => e.label);
   }
@@ -19,5 +21,3 @@ class GameTypeService {
     return type;
   }
 }
-const gameTypeService = new GameTypeService();
-export default gameTypeService;

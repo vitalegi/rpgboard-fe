@@ -19,6 +19,9 @@ class CookieUtil {
         .find((item) => item.trim().startsWith(`${key}=`)) !== null
     );
   }
+  public removeCookie(key: string): void {
+    document.cookie = `${key}=;path=/;expires=${new Date().toUTCString()};secure;samesite=strict`;
+  }
   public getCookies(): Array<string> {
     return document.cookie.split(";");
   }

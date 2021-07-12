@@ -30,7 +30,7 @@ export default class BackendService {
         }
         logger.info("getGames - complete");
         resolve(games);
-      }, 500);
+      }, 2000);
     });
   }
 

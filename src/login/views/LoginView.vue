@@ -2,13 +2,6 @@
   <v-card class="login login-card" max-width="600">
     <v-card-text>
       <v-container>
-        <v-row>
-          <v-col> authenticated? {{ isAuthenticated() }} </v-col>
-          <v-col v-if="isAuthenticated()">
-            {{ getUserId() }}
-          </v-col>
-        </v-row>
-        <v-divider></v-divider>
         <v-row justify="center">
           <v-col> <EmailPasswordLogin /> </v-col>
         </v-row>
