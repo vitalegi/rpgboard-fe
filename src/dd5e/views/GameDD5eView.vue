@@ -88,11 +88,13 @@
         <v-icon>mdi-delete</v-icon>
       </v-btn>
     </v-speed-dial>
+    <DD5eCharacterSheet />
   </v-card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import DD5eCharacterSheet from "@/dd5e/components/DD5eCharacterSheet.vue";
 import FileUpload from "@/components/FileUpload.vue";
 import Board from "@/components/Board.vue";
 import AssetsSummary from "@/components/AssetsSummary.vue";
@@ -117,6 +119,7 @@ export default Vue.extend({
     BoardManager,
     AssetsSummary,
     FileUpload,
+    DD5eCharacterSheet,
   },
   props: { gameId: String },
   data: () => ({

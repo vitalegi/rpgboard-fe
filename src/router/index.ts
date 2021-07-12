@@ -1,6 +1,5 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Home from "../views/Home.vue";
 import AuthService from "@/login/services/AuthService";
 import { factory } from "@/utils/ConfigLog4j";
 import Container from "typedi";
@@ -11,15 +10,40 @@ Vue.use(VueRouter);
 const routes: Array<RouteConfig> = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: "SelectGame",
+    component: () =>
+      import(/* webpackChunkName: "login" */ "../game/view/SelectGameView.vue"),
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () =>
+      import(/* webpackChunkName: "login" */ "../login/views/LoginView.vue"),
+  },
+  {
+    path: "/logout",
+    name: "Logout",
+    component: () =>
+      import(/* webpackChunkName: "logout" */ "../login/views/LogoutView.vue"),
+  },
+  {
+    path: "/select-game",
+    name: "SelectGame",
+    component: () =>
+      import(/* webpackChunkName: "login" */ "../game/view/SelectGameView.vue"),
+  },
+  {
+    path: "/game/:gameId",
+    name: "Game",
+    component: () =>
+      import(/* webpackChunkName: "game" */ "../dd5e/views/GameDD5eView.vue"),
+    props: (route) => {
+      return { gameId: route.params.gameId };
+    },
   },
   {
     path: "/about",
     name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue"),
   },
@@ -28,33 +52,6 @@ const routes: Array<RouteConfig> = [
     name: "GDPR",
     component: () =>
       import(/* webpackChunkName: "gdpr" */ "../views/GDPRView.vue"),
-  },
-  {
-    path: "/game/:gameId",
-    name: "Game",
-    component: () =>
-      import(/* webpackChunkName: "game" */ "../views/GameDD5eView.vue"),
-    props: (route) => {
-      return { gameId: route.params.gameId };
-    },
-  },
-  {
-    path: "/login",
-    name: "Login",
-    component: () =>
-      import(/* webpackChunkName: "login" */ "../views/LoginView.vue"),
-  },
-  {
-    path: "/logout",
-    name: "Logout",
-    component: () =>
-      import(/* webpackChunkName: "logout" */ "../views/LogoutView.vue"),
-  },
-  {
-    path: "/select-game",
-    name: "SelectGame",
-    component: () =>
-      import(/* webpackChunkName: "login" */ "../game/view/SelectGameView.vue"),
   },
 ];
 
