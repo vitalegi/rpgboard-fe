@@ -29,7 +29,7 @@
 <script lang="ts">
 import Vue from "vue";
 import AuthService from "@/login/services/AuthService";
-import { Container, Service } from "typedi";
+import { Container } from "typedi";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Login.Components.EmailPasswordLogin");
 

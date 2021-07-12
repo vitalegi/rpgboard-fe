@@ -8,7 +8,7 @@
 <script lang="ts">
 import AuthService from "@/login/services/AuthService";
 import Vue from "vue";
-import { Container, Service } from "typedi";
+import { Container } from "typedi";
 
 export default Vue.extend({
   name: "LogoutView",

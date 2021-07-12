@@ -4,7 +4,8 @@ import Vuex from "vuex";
 import Game from "@/models/Game";
 import ArrayUtil from "@/utils/ArrayUtil";
 import { factory } from "@/utils/ConfigLog4j";
-import backendService from "@/services/BackendService";
+import { Container } from "typedi";
+import BackendService from "@/services/BackendService";
 const logger = factory.getLogger("Store");
 
 Vue.use(Vuex);
@@ -35,6 +36,7 @@ export default new Vuex.Store({
   actions: {
     updateGames: (context) => {
       logger.debug("action - updateGames");
+      const backendService = Container.get<BackendService>(BackendService);
       backendService.getGames().then((games) => {
         context.commit("updateGames", games);
         logger.info("action - updateGames - END");

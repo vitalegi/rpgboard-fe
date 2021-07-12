@@ -20,9 +20,10 @@
 <script lang="ts">
 import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
-import statsRetrieverService from "@/dd5e/services/StatsRetrieverService";
+import { Container } from "typedi";
+import StatsRetrieverService from "@/dd5e/services/StatsRetrieverService";
 import { Stat } from "@/dd5e/models/Stats";
-import skillService from "@/dd5e/services/SkillService";
+import SkillService from "@/dd5e/services/SkillService";
 import Player from "@/dd5e/models/Player";
 import BaseStatsOverview from "@/dd5e/components/BaseStatsOverview.vue";
 import SavingThrowsOverview from "@/dd5e/components/SavingThrowsOverview.vue";
@@ -44,6 +45,10 @@ export default Vue.extend({
   props: {},
   data: () => ({
     player: new Player(),
+    statsRetrieverService: Container.get<StatsRetrieverService>(
+      StatsRetrieverService
+    ),
+    skillService: Container.get<SkillService>(SkillService),
   }),
   computed: {},
   methods: {
@@ -69,7 +74,7 @@ export default Vue.extend({
     },
     updateSavingThrow(stat: string, proficiency: boolean): void {
       logger.info(`Update saving throw ${stat} proficiency to ${proficiency}`);
-      statsRetrieverService.getStat(
+      this.statsRetrieverService.getStat(
         this.player.savingThrows,
         stat
       ).proficiency = proficiency;
@@ -148,9 +153,15 @@ The spell creates more than one beam when you reach higher levels: __two beams__
     this.player.savingThrows.strength.proficiency = true;
     this.player.savingThrows.charisma.proficiency = true;
 
-    this.player.skills.push(...skillService.createSkills());
-    skillService.getSkill(SkillKeys.ACROBATICS, this.player).proficiency = true;
-    skillService.getSkill(SkillKeys.HISTORY, this.player).proficiency = true;
+    this.player.skills.push(...this.skillService.createSkills());
+    this.skillService.getSkill(
+      SkillKeys.ACROBATICS,
+      this.player
+    ).proficiency = true;
+    this.skillService.getSkill(
+      SkillKeys.HISTORY,
+      this.player
+    ).proficiency = true;
 
     this.player.abilities.push(this.abilityBastoneFerrato());
     this.player.abilities.push(this.abilityPoisonSpray());

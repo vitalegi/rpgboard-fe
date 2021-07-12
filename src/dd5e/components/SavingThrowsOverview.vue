@@ -26,8 +26,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
-import statsRetrieverService from "@/dd5e/services/StatsRetrieverService";
-import Stats from "@/dd5e/models/Stats";
+import { Container } from "typedi";
+import StatsRetrieverService from "@/dd5e/services/StatsRetrieverService";
 import Player from "@/dd5e/models/Player";
 import IconButton from "@/components/IconButton.vue";
 
@@ -41,27 +41,31 @@ export default Vue.extend({
       type: Player,
     },
   },
-  data: () => ({}),
+  data: () => ({
+    statsRetrieverService: Container.get<StatsRetrieverService>(
+      StatsRetrieverService
+    ),
+  }),
   methods: {
     getSavingThrow(stat: string): number {
-      const savingThrow = statsRetrieverService.getStat(
+      const savingThrow = this.statsRetrieverService.getStat(
         this.player.savingThrows,
         stat
       );
-      return statsRetrieverService.evaluateStatModifier(
+      return this.statsRetrieverService.evaluateStatModifier(
         savingThrow,
         this.player
       );
     },
     hasProficiency(stat: string): boolean {
-      const savingThrow = statsRetrieverService.getStat(
+      const savingThrow = this.statsRetrieverService.getStat(
         this.player.savingThrows,
         stat
       );
       return savingThrow.proficiency;
     },
     getStatsID(): string[] {
-      return statsRetrieverService.getStatKeys();
+      return this.statsRetrieverService.getStatKeys();
     },
     updateProficiency(stat: string, proficiency: boolean): void {
       logger.debug(`Update ${stat} with ${proficiency}`);

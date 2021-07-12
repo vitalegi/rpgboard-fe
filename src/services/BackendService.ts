@@ -2,10 +2,12 @@ import Game from "@/models/Game";
 import GamePlayer from "@/models/GamePlayer";
 import { GameStatus, GameType } from "@/models/Types";
 import { factory } from "@/utils/ConfigLog4j";
+import { Service } from "typedi";
 import { WebService } from "@/utils/WebService";
 const logger = factory.getLogger("Service.GameService");
 
-class BackendService {
+@Service()
+export default class BackendService {
   public getGames(): Promise<Array<Game>> {
     logger.info("getGames");
     const ws = new WebService()
@@ -87,5 +89,3 @@ class BackendService {
     return game;
   }
 }
-const backendService = new BackendService();
-export default backendService;

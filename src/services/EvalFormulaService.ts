@@ -1,6 +1,7 @@
 import { factory } from "@/utils/ConfigLog4j";
 import DiceRolls from "@/utils/DiceRolls";
 import NumberUtil from "@/utils/NumberUtil";
+import { Service } from "typedi";
 const logger = factory.getLogger("Services.EvalFormulaService");
 
 interface Parser {
@@ -101,7 +102,8 @@ class DiceParser implements Parser {
   }
 }
 
-class EvalFormulaService {
+@Service()
+export default class EvalFormulaService {
   public evaluateWithRolls(
     formula: string,
     placeholders: Map<string, number>
@@ -190,6 +192,3 @@ class EvalFormulaService {
     return validParsers[0];
   }
 }
-
-const evalFormulaService = new EvalFormulaService();
-export default evalFormulaService;

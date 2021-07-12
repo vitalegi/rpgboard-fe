@@ -22,7 +22,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
-import statsRetrieverService from "@/dd5e/services/StatsRetrieverService";
+import { Container } from "typedi";
+import StatsRetrieverService from "@/dd5e/services/StatsRetrieverService";
 import Stats from "../models/Stats";
 
 const logger = factory.getLogger("Components.BaseStatsOverview");
@@ -35,16 +36,20 @@ export default Vue.extend({
       type: Stats,
     },
   },
-  data: () => ({}),
+  data: () => ({
+    statsRetrieverService: Container.get<StatsRetrieverService>(
+      StatsRetrieverService
+    ),
+  }),
   methods: {
     getModifier(value: number): number {
-      return statsRetrieverService.getModifier(value);
+      return this.statsRetrieverService.getModifier(value);
     },
     getBaseStat(stat: string): number {
-      return statsRetrieverService.getStat(this.baseStats, stat).value;
+      return this.statsRetrieverService.getStat(this.baseStats, stat).value;
     },
     getStatsID(): string[] {
-      return statsRetrieverService.getStatKeys();
+      return this.statsRetrieverService.getStatKeys();
     },
   },
 });

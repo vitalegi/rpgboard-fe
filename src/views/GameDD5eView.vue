@@ -98,7 +98,8 @@ import Board from "@/components/Board.vue";
 import AssetsSummary from "@/components/AssetsSummary.vue";
 import BoardManager from "@/components/BoardManager.vue";
 import GamePlayersSummary from "@/components/GamePlayersSummary.vue";
-import backendService from "@/services/BackendService";
+import { Container } from "typedi";
+import BackendService from "@/services/BackendService";
 import GamePlayer from "@/models/GamePlayer";
 import ArrayUtil from "@/utils/ArrayUtil";
 import random from "@/utils/RandomUtil";
@@ -126,6 +127,7 @@ export default Vue.extend({
     fab: false,
     viewHeight: 0,
     internalViewHeight: 0,
+    backendService: Container.get<BackendService>(BackendService),
   }),
   methods: {
     updatePlayers(players: Array<GamePlayer>) {
@@ -152,7 +154,7 @@ export default Vue.extend({
   created() {
     logger.info(`Start game`);
     window.addEventListener("resize", this.handleResize);
-    backendService
+    this.backendService
       .getGamePlayers(this.gameId)
       .then((players) => this.updatePlayers(players));
 

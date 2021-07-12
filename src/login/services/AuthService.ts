@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import { Service } from "typedi";
 import firebase from "firebase/app";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Login.Services.AuthService");

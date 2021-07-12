@@ -1,8 +1,10 @@
 import { Skill } from "@/dd5e/models/Skills";
 import Player from "@/dd5e/models/Player";
 import SkillKeys from "../constants/SkillKeys";
+import { Service } from "typedi";
 
-class SkillService {
+@Service()
+export default class SkillService {
   public getSkill(id: string, player: Player): Skill {
     const skill = player.skills.filter((skill) => skill.id === id);
     if (skill.length > 0) {
@@ -19,6 +21,3 @@ class SkillService {
     return SkillKeys.stat(id);
   }
 }
-
-const skillService = new SkillService();
-export default skillService;

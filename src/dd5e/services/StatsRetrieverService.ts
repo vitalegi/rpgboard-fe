@@ -1,16 +1,23 @@
 import Stats, { Stat } from "@/dd5e/models/Stats";
 import Player from "@/dd5e/models/Player";
 import { factory } from "@/utils/ConfigLog4j";
-import evalFormulaService from "../../services/EvalFormulaService";
+import { Inject, Service } from "typedi";
+import EvalFormulaService from "../../services/EvalFormulaService";
 const logger = factory.getLogger("Services.DD5e.StatsRetrieverService");
 
-class StatsRetrieverService {
+@Service()
+export default class StatsRetrieverService {
+  private evalFormulaService: EvalFormulaService;
   private static STR = "STR";
   private static DEX = "DEX";
   private static COS = "COS";
   private static INT = "INT";
   private static WIS = "WIS";
   private static CHA = "CHA";
+
+  public constructor(@Inject() evalFormulaService: EvalFormulaService) {
+    this.evalFormulaService = evalFormulaService;
+  }
 
   public getStatKeys(): string[] {
     return [
@@ -25,7 +32,7 @@ class StatsRetrieverService {
 
   public evaluateStat(stat: Stat, player: Player): number {
     if (stat.useFormula) {
-      return evalFormulaService.evaluateWithoutRolls(
+      return this.evalFormulaService.evaluateWithoutRolls(
         stat.formula,
         this.initPlaceholders(player)
       );
@@ -38,13 +45,13 @@ class StatsRetrieverService {
     return value + proficiency;
   }
   public evaluateFormula(formula: string, player: Player): Promise<number> {
-    return evalFormulaService.evaluateWithRolls(
+    return this.evalFormulaService.evaluateWithRolls(
       formula,
       this.initPlaceholders(player)
     );
   }
   public printableFormula(formula: string, player: Player): string {
-    return evalFormulaService.printableFormula(
+    return this.evalFormulaService.printableFormula(
       formula,
       this.initPlaceholders(player)
     );
@@ -92,6 +99,3 @@ class StatsRetrieverService {
     throw new Error(`Ability ${ability} is not acceptable`);
   }
 }
-
-const statsRetrieverService = new StatsRetrieverService();
-export default statsRetrieverService;

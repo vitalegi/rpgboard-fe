@@ -94,7 +94,8 @@ import { factory } from "@/utils/ConfigLog4j";
 import Ability, { Damage } from "../models/Ability";
 import Player from "../models/Player";
 import marked from "marked";
-import statsRetrieverService from "../services/StatsRetrieverService";
+import { Container } from "typedi";
+import StatsRetrieverService from "../services/StatsRetrieverService";
 
 const logger = factory.getLogger("Components.AbilityOverview");
 
@@ -105,7 +106,11 @@ export default Vue.extend({
     player: { type: Player },
     ability: { type: Ability },
   },
-  data: () => ({}),
+  data: () => ({
+    statsRetrieverService: Container.get<StatsRetrieverService>(
+      StatsRetrieverService
+    ),
+  }),
   computed: {},
   methods: {
     startDrag(event: any) {
@@ -124,7 +129,7 @@ export default Vue.extend({
       return marked(text);
     },
     printableFormula(formula: string): string {
-      return statsRetrieverService.printableFormula(formula, this.player);
+      return this.statsRetrieverService.printableFormula(formula, this.player);
     },
     printableDamages(damages: Damage[]): string {
       return damages

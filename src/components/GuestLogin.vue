@@ -21,6 +21,7 @@
 <script lang="ts">
 import Vue from "vue";
 import User from "@/models/User";
+import { Container } from "typedi";
 import authService from "@/services/AuthService";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Components.GuestLogin");

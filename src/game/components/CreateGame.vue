@@ -32,8 +32,9 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { Container } from "typedi";
 import gameTypeService from "@/services/GameTypeService";
-import backendService from "@/services/BackendService";
+import BackendService from "@/services/BackendService";
 import RouterUtil from "@/utils/RouterUtil";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Components.SelectGame");
@@ -46,6 +47,7 @@ export default Vue.extend({
     gameType: "",
     valid: false,
     required: [(v: string) => !!v || "Required field"],
+    backendService: Container.get<BackendService>(BackendService),
   }),
   computed: {
     gameTypes() {
@@ -56,7 +58,7 @@ export default Vue.extend({
     createGame() {
       logger.info(`Create game ${this.name} ${this.gameType}`);
       const gameType = gameTypeService.mapLabelToType(this.gameType);
-      backendService.createGame(this.name, gameType).then((game) => {
+      this.backendService.createGame(this.name, gameType).then((game) => {
         logger.info(`Created game ${game.id}, joining.`);
         RouterUtil.toGame(game.id);
       });

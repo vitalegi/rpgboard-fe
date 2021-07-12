@@ -31,10 +31,11 @@
 <script lang="ts">
 import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
-import statsRetrieverService from "@/dd5e/services/StatsRetrieverService";
+import { Container } from "typedi";
+import StatsRetrieverService from "@/dd5e/services/StatsRetrieverService";
 import Player from "@/dd5e/models/Player";
 import { Skill } from "../models/Skills";
-import skillService from "../services/SkillService";
+import SkillService from "../services/SkillService";
 import IconButton from "@/components/IconButton.vue";
 
 const logger = factory.getLogger("Components.SkillsOverview");
@@ -47,7 +48,12 @@ export default Vue.extend({
       type: Player,
     },
   },
-  data: () => ({}),
+  data: () => ({
+    statsRetrieverService: Container.get<StatsRetrieverService>(
+      StatsRetrieverService
+    ),
+    skillService: Container.get<SkillService>(SkillService),
+  }),
   computed: {
     skills(): Array<Skill> {
       return this.player.skills;
@@ -55,16 +61,19 @@ export default Vue.extend({
   },
   methods: {
     getUsedStat(skill: Skill): string {
-      return skillService.getUsedStat(skill.id);
+      return this.skillService.getUsedStat(skill.id);
     },
     getSkill(skill: Skill): number {
-      return statsRetrieverService.evaluateStatModifier(skill, this.player);
+      return this.statsRetrieverService.evaluateStatModifier(
+        skill,
+        this.player
+      );
     },
     hasProficiency(skill: Skill): boolean {
       return skill.proficiency;
     },
     getStatsID(): string[] {
-      return statsRetrieverService.getStatKeys();
+      return this.statsRetrieverService.getStatKeys();
     },
     updateProficiency(skill: Skill, newValue: boolean): void {
       logger.info(`Update ${skill.id} with ${newValue}`);

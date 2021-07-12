@@ -10,7 +10,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-import backendService from "@/services/BackendService";
+import { Container } from "typedi";
+import BackendService from "@/services/BackendService";
 import RouterUtil from "@/utils/RouterUtil";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Components.SelectGame");
@@ -18,7 +19,9 @@ const logger = factory.getLogger("Game.Components.SelectGame");
 export default Vue.extend({
   name: "SelectGame",
 
-  data: () => ({}),
+  data: () => ({
+    backendService: Container.get<BackendService>(BackendService),
+  }),
   computed: {
     games() {
       return this.$store.getters.games;
@@ -26,7 +29,7 @@ export default Vue.extend({
   },
   methods: {
     joinGame(gameId: string): void {
-      backendService.joinGame(gameId).then(() => {
+      this.backendService.joinGame(gameId).then(() => {
         logger.info(`Joined game ${gameId}`);
         RouterUtil.toGame(gameId);
       });
