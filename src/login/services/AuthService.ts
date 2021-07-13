@@ -48,10 +48,14 @@ export default class AuthService {
     return await user.getIdToken(/* forceRefresh */ true);
   }
   public isAuthenticated(): boolean {
-    return (
-      firebase.auth().currentUser !== null ||
-      cookieUtil.getCookie("USERID") !== ""
+    const firebaseAuth = firebase.auth().currentUser !== null;
+    const cookieAuth = cookieUtil.getCookie("USERID") !== undefined;
+    logger.debug(
+      `Is authenticated? ${
+        firebase.auth().currentUser
+      }: ${firebaseAuth}, ${cookieUtil.getCookie("USERID")}: ${cookieAuth}`
     );
+    return firebaseAuth || cookieAuth;
   }
   public getUserId(): string {
     const user = firebase.auth().currentUser;

@@ -2,6 +2,13 @@
   <v-form>
     <v-container>
       <v-row>
+        <v-col>
+          <v-btn @click="login('test@localhost.it', 'password')">
+            Dummy login
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
         <v-col cols="12">
           <v-text-field v-model="email" label="E-Mail" required></v-text-field>
         </v-col>
