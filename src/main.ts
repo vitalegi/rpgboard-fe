@@ -1,12 +1,12 @@
 // DI
 import "reflect-metadata";
 
+import { cookieUtil } from "./utils/CookieUtil";
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
-import VueKonva from "vue-konva";
 
 // firebase sdk
 import firebase from "firebase/app";
@@ -14,7 +14,6 @@ import firebase from "firebase/app";
 // firebase used modules
 import "firebase/analytics";
 import "firebase/auth";
-import { cookieUtil } from "./utils/CookieUtil";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDemNC_2rgPw7wgk5fEtBIaCTxvXNkYo3g",
@@ -37,12 +36,18 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 });
 
+import VueKonva from "vue-konva";
 Vue.use(VueKonva);
+
+import VueApollo from "vue-apollo";
+import apolloProvider from "@/graphql/ApolloProvider";
+Vue.use(VueApollo);
 
 Vue.config.productionTip = false;
 
 new Vue({
   router,
+  apolloProvider,
   store,
   vuetify,
   render: (h) => h(App),
