@@ -91,11 +91,11 @@
 <script lang="ts">
 import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
-import Ability, { Damage } from "../models/Ability";
-import Player from "../models/Player";
+import Ability, { Damage } from "@/dd5e/models/Ability";
+import Player from "@/dd5e/models/Player";
 import marked from "marked";
 import { Container } from "typedi";
-import StatsRetrieverService from "../services/StatsRetrieverService";
+import StatsRetrieverService from "@/dd5e/services/StatsRetrieverService";
 
 const logger = factory.getLogger("Components.AbilityOverview");
 

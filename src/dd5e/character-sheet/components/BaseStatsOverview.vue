@@ -24,7 +24,7 @@ import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
 import { Container } from "typedi";
 import StatsRetrieverService from "@/dd5e/services/StatsRetrieverService";
-import Stats from "../models/Stats";
+import Stats from "../../models/Stats";
 
 const logger = factory.getLogger("Components.BaseStatsOverview");
 

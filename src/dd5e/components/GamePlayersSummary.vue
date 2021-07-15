@@ -12,7 +12,7 @@
 <script lang="ts">
 import Vue from "vue";
 import GamePlayerSummary from "@/dd5e/components/GamePlayerSummary.vue";
-import DD5eCharacterSheet from "@/dd5e/components/DD5eCharacterSheet.vue";
+import DD5eCharacterSheet from "@/dd5e/character-sheet/components/DD5eCharacterSheet.vue";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Components.GamePlayer");
 

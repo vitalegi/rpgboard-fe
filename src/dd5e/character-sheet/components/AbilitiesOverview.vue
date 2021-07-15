@@ -19,7 +19,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
-import AbilityOverview from "@/dd5e/components/AbilityOverview.vue";
+import AbilityOverview from "@/dd5e/character-sheet/components/AbilityOverview.vue";
 import Player from "@/dd5e/models/Player";
 
 const logger = factory.getLogger("Components.AbilitiesOverview");

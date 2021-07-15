@@ -34,8 +34,8 @@ import { factory } from "@/utils/ConfigLog4j";
 import { Container } from "typedi";
 import StatsRetrieverService from "@/dd5e/services/StatsRetrieverService";
 import Player from "@/dd5e/models/Player";
-import { Skill } from "../models/Skills";
-import SkillService from "../services/SkillService";
+import { Skill } from "../../models/Skills";
+import SkillService from "../../services/SkillService";
 import IconButton from "@/components/IconButton.vue";
 
 const logger = factory.getLogger("Components.SkillsOverview");

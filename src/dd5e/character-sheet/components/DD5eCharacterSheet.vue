@@ -39,12 +39,12 @@ import StatsRetrieverService from "@/dd5e/services/StatsRetrieverService";
 import { Stat } from "@/dd5e/models/Stats";
 import SkillService from "@/dd5e/services/SkillService";
 import Player from "@/dd5e/models/Player";
-import BaseStatsOverview from "@/dd5e/components/BaseStatsOverview.vue";
-import SavingThrowsOverview from "@/dd5e/components/SavingThrowsOverview.vue";
-import SkillsOverview from "@/dd5e/components/SkillsOverview.vue";
-import AbilitiesOverview from "@/dd5e/components/AbilitiesOverview.vue";
-import SkillKeys from "../constants/SkillKeys";
-import Ability, { Damage, Spell } from "../models/Ability";
+import BaseStatsOverview from "@/dd5e/character-sheet/components/BaseStatsOverview.vue";
+import SavingThrowsOverview from "@/dd5e/character-sheet/components/SavingThrowsOverview.vue";
+import SkillsOverview from "@/dd5e/character-sheet/components/SkillsOverview.vue";
+import AbilitiesOverview from "@/dd5e/character-sheet/components/AbilitiesOverview.vue";
+import SkillKeys from "@/dd5e/constants/SkillKeys";
+import Ability, { Damage, Spell } from "@/dd5e/models/Ability";
 
 const logger = factory.getLogger("Components.DD5eCharacterSheet");
 

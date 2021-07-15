@@ -21,7 +21,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { Container } from "typedi";
-import DD5eCharacterSheet from "@/dd5e/components/DD5eCharacterSheet.vue";
+import DD5eCharacterSheet from "@/dd5e/character-sheet/components/DD5eCharacterSheet.vue";
 import GameMenus from "@/dd5e/components/GameMenus.vue";
 import Board from "@/components/Board.vue";
 import GamePlayer from "@/models/GamePlayer";
