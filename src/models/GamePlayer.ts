@@ -1,4 +1,4 @@
-import { Role } from "./Types";
+import Role from "./GameRole";
 
 export default class GamePlayer {
   private _playerId = "";

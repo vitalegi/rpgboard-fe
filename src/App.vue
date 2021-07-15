@@ -43,10 +43,10 @@ export default Vue.extend({
 
   a {
     font-weight: bold;
-    color: #2c3e50;
 
     &.router-link-exact-active {
-      color: #42b983;
+      color: white;
+      text-decoration-line: none;
     }
   }
 }

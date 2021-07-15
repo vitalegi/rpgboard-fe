@@ -1,6 +1,6 @@
 <template>
   <v-container dense>
-    <v-row>
+    <v-row v-if="mode === 'full-page'">
       <v-col :xs="6" :sm="4" :md="3" :lg="2" :xl="1">
         <base-stats-overview :baseStats="player.baseStats" />
       </v-col>
@@ -11,6 +11,20 @@
         <skills-overview :player="player" @updateSkill="updateSkill" />
       </v-col>
       <v-col :xs="12" :sm="6" :md="4" :lg="4" :xl="3">
+        <abilities-overview :player="player" @moveAbility="moveAbility" />
+      </v-col>
+    </v-row>
+    <v-row v-if="mode === 'vertical'">
+      <v-col cols="6">
+        <base-stats-overview :baseStats="player.baseStats" />
+      </v-col>
+      <v-col cols="6">
+        <saving-throws-overview :player="player" @update="updateSavingThrow" />
+      </v-col>
+      <v-col cols="12">
+        <skills-overview :player="player" @updateSkill="updateSkill" />
+      </v-col>
+      <v-col cols="12">
         <abilities-overview :player="player" @moveAbility="moveAbility" />
       </v-col>
     </v-row>
@@ -42,7 +56,7 @@ export default Vue.extend({
     SkillsOverview,
     AbilitiesOverview,
   },
-  props: {},
+  props: { mode: { type: String } },
   data: () => ({
     player: new Player(),
     statsRetrieverService: Container.get<StatsRetrieverService>(

@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row dense>
       <v-col v-for="player in players" :key="player.playerId" cols="12">
-        <game-player-summary v-bind:player="player" />
+        <game-player-summary :player="player" />
       </v-col>
     </v-row>
   </v-container>
@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import GamePlayerSummary from "@/components/GamePlayerSummary.vue";
+import GamePlayerSummary from "@/dd5e/components/GamePlayerSummary.vue";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Components.GamePlayer");
 

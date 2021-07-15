@@ -1,6 +1,8 @@
 import Game from "@/models/Game";
 import GamePlayer from "@/models/GamePlayer";
-import { GameStatus, GameType } from "@/models/Types";
+import { GameType } from "@/models/Types";
+import GameStatus from "@/models/GameStatus";
+import GameRole from "@/models/GameRole";
 import { factory } from "@/utils/ConfigLog4j";
 import { Service } from "typedi";
 import { WebService } from "@/utils/WebService";
@@ -25,7 +27,12 @@ export default class BackendService {
         const games = [];
         for (let i = 0; i < 10; i++) {
           games.push(
-            this._createGame(`${i}`, `Game ${i}`, `Master ${i}`, "ONGOING")
+            this._createGame(
+              `${i}`,
+              `Game ${i}`,
+              `Master ${i}`,
+              GameStatus.OPEN
+            )
           );
         }
         logger.info("getGames - complete");
@@ -49,7 +56,7 @@ export default class BackendService {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         logger.info("createGame - complete");
-        resolve(this._createGame("123", name, "567", "ONGOING"));
+        resolve(this._createGame("123", name, "567", GameStatus.OPEN));
       }, 500);
     });
   }
@@ -64,9 +71,9 @@ export default class BackendService {
           gamePlayer.gameId = gameId;
           gamePlayer.name = `Nome Giocatore ${i}`;
           gamePlayer.playerId = `${i}`;
-          gamePlayer.roles = ["PLAYER"];
+          gamePlayer.roles = [GameRole.PLAYER];
           if (i == 5) {
-            gamePlayer.roles.push("MASTER");
+            gamePlayer.roles.push(GameRole.MASTER);
           }
           players.push(gamePlayer);
         }
