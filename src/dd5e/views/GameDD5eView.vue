@@ -14,7 +14,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <DD5eCharacterSheet mode="vertical" />
   </v-card>
 </template>
 
@@ -38,7 +37,6 @@ export default Vue.extend({
   components: {
     Board,
     GameMenus,
-    DD5eCharacterSheet,
   },
   props: { gameId: String },
   data: () => ({

@@ -3,7 +3,14 @@
     <v-row dense>
       <v-col v-for="player in players" :key="player.playerId" cols="12">
         <GamePlayerSummary v-bind:player="player" />
-        <DD5eCharacterSheet mode="vertical" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <DD5eCharacterSheet mode="vertical" characterId="1" />
+      </v-col>
+      <v-col>
+        <DD5eCharacterSheet mode="vertical" characterId="2" />
       </v-col>
     </v-row>
   </v-container>

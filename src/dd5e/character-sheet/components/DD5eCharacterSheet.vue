@@ -28,6 +28,11 @@
         <abilities-overview :player="player" @moveAbility="moveAbility" />
       </v-col>
     </v-row>
+    <v-row>
+      <v-col> ID: {{ characterId }} </v-col>
+      <v-col> {{ count }} </v-col>
+      <v-col> <v-btn @click="increment()">Increment</v-btn></v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -45,7 +50,8 @@ import SkillsOverview from "@/dd5e/character-sheet/components/SkillsOverview.vue
 import AbilitiesOverview from "@/dd5e/character-sheet/components/AbilitiesOverview.vue";
 import SkillKeys from "@/dd5e/constants/SkillKeys";
 import Ability, { Damage, Spell } from "@/dd5e/models/Ability";
-
+import store from "@/store";
+import dd5characterSheet from "../store/DD5eCharacterSheetStore";
 const logger = factory.getLogger("Components.DD5eCharacterSheet");
 
 export default Vue.extend({
@@ -56,7 +62,10 @@ export default Vue.extend({
     SkillsOverview,
     AbilitiesOverview,
   },
-  props: { mode: { type: String } },
+  props: {
+    mode: { type: String },
+    characterId: { type: String, required: true },
+  },
   data: () => ({
     player: new Player(),
     statsRetrieverService: Container.get<StatsRetrieverService>(
@@ -64,8 +73,19 @@ export default Vue.extend({
     ),
     skillService: Container.get<SkillService>(SkillService),
   }),
-  computed: {},
+  computed: {
+    module(): string {
+      return `dd5characterSheet${this.characterId}`;
+    },
+    count(): number {
+      return this.$store.getters[`${this.module}/count`];
+    },
+  },
   methods: {
+    increment(): void {
+      logger.info(`Increment for ${this.characterId} on ${this.module}`);
+      this.$store.commit(`${this.module}/increment`);
+    },
     moveAbility(dragAbility: string, dropAbility: string): void {
       logger.info(`Move ${dragAbility} before ${dropAbility}`);
       console.log(this.player.abilities.map((a) => a.name).join(", "));
@@ -152,7 +172,7 @@ The spell creates more than one beam when you reach higher levels: __two beams__
       return ability;
     },
   },
-  mounted() {
+  mounted(): void {
     this.player.name = "Sample";
     this.player.alignment = "BB";
     this.player.playerName = "Sample123";
@@ -181,6 +201,13 @@ The spell creates more than one beam when you reach higher levels: __two beams__
     this.player.abilities.push(this.abilityPoisonSpray());
     this.player.abilities.push(this.abilityBastoneFerratoVersatile());
     this.player.abilities.push(this.abilityEldrichBlast());
+  },
+  created() {
+    logger.info(`Register module ${this.module}`);
+    store.registerModule(`${this.module}`, dd5characterSheet);
+  },
+  beforeDestroy() {
+    store.unregisterModule(`${this.module}`);
   },
 });
 </script>
