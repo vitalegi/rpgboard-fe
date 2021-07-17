@@ -67,10 +67,24 @@ export default Vue.extend({
     },
     handleResize() {
       const gameView = (this.$refs.gameView as any).$el;
-      const rect = gameView.getBoundingClientRect();
-      const remainingHeight = window.innerHeight - rect.top;
-      this.viewHeight = remainingHeight;
-      this.internalViewHeight = this.viewHeight - 25;
+      const gameRect = gameView.getBoundingClientRect();
+      const bodyRect = document.body.getBoundingClientRect();
+      const distanceFromBody = gameRect.top - bodyRect.top;
+      const viewHeight = window.innerHeight - distanceFromBody;
+      const internalViewHeight = this.viewHeight - 25;
+      logger.info(
+        `Resize view window_height=${Math.round(
+          window.innerHeight
+        )}, body_top=${Math.round(bodyRect.top)}, view_top=${Math.round(
+          gameRect.top
+        )}, distance=${Math.round(
+          distanceFromBody
+        )} => view_height=${Math.round(
+          viewHeight
+        )}, view_content_height=${Math.round(internalViewHeight)}`
+      );
+      this.viewHeight = viewHeight;
+      this.internalViewHeight = internalViewHeight;
     },
   },
   created() {
