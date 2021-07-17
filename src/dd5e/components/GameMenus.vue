@@ -1,11 +1,11 @@
 <template>
-  <v-card :max-height="internalViewHeight - 100">
+  <v-card :max-height="maxHeight">
     <v-tabs v-model="tab" background-color="transparent" grow>
       <v-tab key="board-manager">Board</v-tab>
       <v-tab key="assets-manager">Assets</v-tab>
       <v-tab key="players">Players</v-tab>
     </v-tabs>
-    <v-card flat class="overflow-y-auto" :max-height="internalViewHeight - 100">
+    <v-card flat class="overflow-y-auto" :max-height="maxHeight">
       <v-card-text>
         <v-tabs-items v-model="tab">
           <v-tab-item key="board-manager">
@@ -38,11 +38,9 @@ export default Vue.extend({
     BoardManager,
     AssetsManager,
   },
-  props: { gameId: String },
+  props: { gameId: String, maxHeight: Number },
   data: () => ({
     tab: "board-manager",
-    viewHeight: 0,
-    internalViewHeight: 0,
   }),
   methods: {},
 });

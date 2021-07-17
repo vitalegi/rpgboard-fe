@@ -1,38 +1,35 @@
 <template>
-  <v-container dense>
-    <v-row v-if="mode === 'full-page'">
-      <v-col :xs="6" :sm="4" :md="3" :lg="2" :xl="1">
-        <base-stats-overview :baseStats="player.baseStats" />
-      </v-col>
-      <v-col :xs="6" :sm="4" :md="3" :lg="2" :xl="1">
-        <saving-throws-overview :player="player" @update="updateSavingThrow" />
-      </v-col>
-      <v-col :xs="12" :sm="6" :md="4" :lg="4" :xl="3">
-        <skills-overview :player="player" @updateSkill="updateSkill" />
-      </v-col>
-      <v-col :xs="12" :sm="6" :md="4" :lg="4" :xl="3">
-        <abilities-overview :player="player" @moveAbility="moveAbility" />
-      </v-col>
-    </v-row>
-    <v-row v-if="mode === 'vertical'">
-      <v-col cols="6">
-        <base-stats-overview :baseStats="player.baseStats" />
-      </v-col>
-      <v-col cols="6">
-        <saving-throws-overview :player="player" @update="updateSavingThrow" />
-      </v-col>
-      <v-col cols="12">
-        <skills-overview :player="player" @updateSkill="updateSkill" />
-      </v-col>
-      <v-col cols="12">
-        <abilities-overview :player="player" @moveAbility="moveAbility" />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col> ID: {{ characterId }} </v-col>
-      <v-col> {{ count }} </v-col>
-      <v-col> <v-btn @click="increment()">Increment</v-btn></v-col>
-    </v-row>
+  <v-container>
+    <v-list-group no-action v-for="group in groups" :key="group.id">
+      <template v-slot:activator>
+        <v-list-item-content>
+          <v-list-item-title v-text="group.id"></v-list-item-title>
+        </v-list-item-content>
+      </template>
+      <v-container dense>
+        <v-row v-if="group.id === 'BASE'">
+          <v-col :cols="6">
+            <base-stats-overview :baseStats="player.baseStats" />
+          </v-col>
+          <v-col :cols="6">
+            <saving-throws-overview
+              :player="player"
+              @update="updateSavingThrow"
+            />
+          </v-col>
+        </v-row>
+        <v-row v-if="group.id === 'SKILLS'">
+          <v-col :cols="12">
+            <skills-overview :player="player" @updateSkill="updateSkill" />
+          </v-col>
+        </v-row>
+        <v-row v-if="group.id === 'ABILITIES'">
+          <v-col :cols="12">
+            <abilities-overview :player="player" @moveAbility="moveAbility" />
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-list-group>
   </v-container>
 </template>
 
@@ -63,7 +60,6 @@ export default Vue.extend({
     AbilitiesOverview,
   },
   props: {
-    mode: { type: String },
     characterId: { type: String, required: true },
   },
   data: () => ({
@@ -79,6 +75,9 @@ export default Vue.extend({
     },
     count(): number {
       return this.$store.getters[`${this.module}/count`];
+    },
+    groups() {
+      return [{ id: "BASE" }, { id: "SKILLS" }, { id: "ABILITIES" }];
     },
   },
   methods: {

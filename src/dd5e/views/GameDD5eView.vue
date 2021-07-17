@@ -10,7 +10,10 @@
           ></board>
         </v-col>
         <v-col cols="12" md="4" lg="3">
-          <GameMenus :gameId="gameId"></GameMenus>
+          <GameMenus
+            :gameId="gameId"
+            :maxHeight="internalViewHeight - 50"
+          ></GameMenus>
         </v-col>
       </v-row>
     </v-container>
@@ -20,15 +23,15 @@
 <script lang="ts">
 import Vue from "vue";
 import { Container } from "typedi";
-import DD5eCharacterSheet from "@/dd5e/character-sheet/components/DD5eCharacterSheet.vue";
 import GameMenus from "@/dd5e/components/GameMenus.vue";
 import Board from "@/components/Board.vue";
 import GamePlayer from "@/models/GamePlayer";
-import ArrayUtil from "@/utils/ArrayUtil";
 import { Layer } from "@/models/BoardContent";
 import BackendService from "@/services/BackendService";
 import BoardContentService from "@/dd5e/services/BoardContentService";
 import FileContent from "@/models/FileContent";
+import store from "@/store";
+import dd5e, { DD5eStoreService } from "../store/DD5eStore";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Views.GameDD5eView");
 
@@ -40,7 +43,6 @@ export default Vue.extend({
   },
   props: { gameId: String },
   data: () => ({
-    gamePlayers: new Array<GamePlayer>(),
     boardContent: new Array<Layer>(),
     assets: new Array<FileContent>(),
     tab: "k2",
@@ -50,12 +52,12 @@ export default Vue.extend({
     boardContentService: Container.get<BoardContentService>(
       BoardContentService
     ),
+    dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
   }),
   methods: {
     updatePlayers(players: Array<GamePlayer>) {
       logger.info(`Update players, count: ${players.length}`);
-      ArrayUtil.removeAll(this.gamePlayers);
-      players.forEach((player) => this.gamePlayers.push(player));
+      this.$store.commit(`${this.moduleName()}/replacePlayers`, players);
     },
     move(event: any) {
       logger.info(
@@ -71,7 +73,7 @@ export default Vue.extend({
       const bodyRect = document.body.getBoundingClientRect();
       const distanceFromBody = gameRect.top - bodyRect.top;
       const viewHeight = window.innerHeight - distanceFromBody;
-      const internalViewHeight = this.viewHeight - 25;
+      const internalViewHeight = viewHeight - 25;
       logger.info(
         `Resize view window_height=${Math.round(
           window.innerHeight
@@ -86,9 +88,15 @@ export default Vue.extend({
       this.viewHeight = viewHeight;
       this.internalViewHeight = internalViewHeight;
     },
+    moduleName(): string {
+      return this.dd5eService.moduleName(this.gameId);
+    },
   },
   created() {
-    logger.info(`Start game`);
+    logger.info(`Register module ${this.moduleName()}`);
+    store.registerModule(`${this.moduleName()}`, dd5e);
+
+    logger.info(`Start game ${this.gameId}`);
     window.addEventListener("resize", this.handleResize);
     this.backendService
       .getGamePlayers(this.gameId)
@@ -96,6 +104,9 @@ export default Vue.extend({
     this.boardContent = this.boardContentService.createBoardContent();
   },
   beforeDestroy() {
+    logger.info(`Unregister module ${this.moduleName()}`);
+    store.unregisterModule(`${this.moduleName()}`);
+
     logger.info("Leaving game");
     window.removeEventListener("resize", this.handleResize);
   },

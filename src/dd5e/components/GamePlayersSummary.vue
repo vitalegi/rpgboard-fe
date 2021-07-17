@@ -1,38 +1,55 @@
 <template>
-  <v-container fluid>
-    <v-row dense>
-      <v-col v-for="player in players" :key="player.playerId" cols="12">
-        <GamePlayerSummary v-bind:player="player" />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <DD5eCharacterSheet mode="vertical" characterId="1" />
-      </v-col>
-      <v-col>
-        <DD5eCharacterSheet mode="vertical" characterId="2" />
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-card>
+    <v-list-group
+      v-for="player in players"
+      :key="player.playerId"
+      prepend-icon="mdi-account-circle"
+      no-action
+    >
+      <template v-slot:activator>
+        <v-list-item-content>
+          <v-list-item-title v-text="player.name"></v-list-item-title>
+          <v-list-item-subtitle
+            v-text="playerRoles(player)"
+          ></v-list-item-subtitle>
+        </v-list-item-content>
+      </template>
+      <DD5eCharacterSheet :characterId="player.playerId" />
+    </v-list-group>
+  </v-card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import GamePlayerSummary from "@/dd5e/components/GamePlayerSummary.vue";
 import DD5eCharacterSheet from "@/dd5e/character-sheet/components/DD5eCharacterSheet.vue";
+import GamePlayer from "@/models/GamePlayer";
+import { DD5eStoreService } from "../store/DD5eStore";
 import { factory } from "@/utils/ConfigLog4j";
+import Container from "typedi";
 const logger = factory.getLogger("Components.GamePlayer");
 
 export default Vue.extend({
   name: "GamePlayersSummary",
   components: {
     DD5eCharacterSheet,
-    GamePlayerSummary,
   },
-  props: {
-    players: Array,
+  props: { gameId: String },
+  data: () => ({
+    dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
+  }),
+  computed: {
+    players(): Array<GamePlayer> {
+      return this.$store.getters[`${this.moduleName()}/players`];
+    },
   },
-  computed: {},
+  methods: {
+    playerRoles(player: GamePlayer): string {
+      return player.roles.join(", ");
+    },
+    moduleName(): string {
+      return this.dd5eService.moduleName(this.gameId);
+    },
+  },
 });
 </script>
 
