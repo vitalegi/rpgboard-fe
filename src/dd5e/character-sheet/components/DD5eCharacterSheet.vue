@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <v-list-group no-action v-for="group in groups" :key="group.id">
       <template v-slot:activator>
         <v-list-item-content>
@@ -26,7 +26,7 @@
         @moveAbility="moveAbility"
       />
     </v-list-group>
-  </v-container>
+  </div>
 </template>
 
 <script lang="ts">

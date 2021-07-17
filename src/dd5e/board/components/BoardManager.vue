@@ -28,18 +28,25 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Shape, Layer } from "@/models/BoardContent";
+import { DD5eStoreService } from "@/dd5e/store/DD5eStore";
+import Container from "typedi";
+import { Layer } from "@/models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Components.BoardManager");
 
 export default Vue.extend({
   name: "BoardManager",
   components: {},
-  props: { layers: Array },
-  data: () => ({}),
+  data: () => ({
+    dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
+  }),
   methods: {
     getLayers(): Array<Layer> {
-      return this.layers as Array<Layer>;
+      return this.$store.getters[`${this.moduleName()}/layers`];
+    },
+    moduleName(): string {
+      const gameId = this.$store.getters["game/getGameId"];
+      return this.dd5eService.moduleName(gameId);
     },
   },
   computed: {},

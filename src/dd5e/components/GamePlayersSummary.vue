@@ -28,8 +28,8 @@ import Vue from "vue";
 import DD5eCharacterSheet from "@/dd5e/character-sheet/components/DD5eCharacterSheet.vue";
 import GamePlayer from "@/models/GamePlayer";
 import { DD5eStoreService } from "../store/DD5eStore";
-import { factory } from "@/utils/ConfigLog4j";
 import Container from "typedi";
+import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("DD5e.Components.GamePlayerSummary");
 
 export default Vue.extend({
@@ -37,7 +37,7 @@ export default Vue.extend({
   components: {
     DD5eCharacterSheet,
   },
-  props: { gameId: String },
+  props: {},
   data: () => ({
     dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
   }),
@@ -51,7 +51,8 @@ export default Vue.extend({
       return player.roles.join(", ");
     },
     moduleName(): string {
-      return this.dd5eService.moduleName(this.gameId);
+      const gameId = this.$store.getters["game/getGameId"];
+      return this.dd5eService.moduleName(gameId);
     },
   },
 });

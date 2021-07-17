@@ -1,19 +1,17 @@
 <template>
-  <v-container>
-    <v-expansion-panels multiple>
-      <ability-overview
-        v-for="ability in player.abilities"
-        :key="ability.name"
-        :ability="ability"
-        :player="player"
-        @startDrag="startDrag"
-        @drop="drop"
-        @dragEnd="dragEnd"
-        @dragEnter="dragEnter"
-      >
-      </ability-overview>
-    </v-expansion-panels>
-  </v-container>
+  <v-expansion-panels multiple>
+    <ability-overview
+      v-for="ability in player.abilities"
+      :key="ability.name"
+      :ability="ability"
+      :player="player"
+      @startDrag="startDrag"
+      @drop="drop"
+      @dragEnd="dragEnd"
+      @dragEnter="dragEnter"
+    >
+    </ability-overview>
+  </v-expansion-panels>
 </template>
 
 <script lang="ts">

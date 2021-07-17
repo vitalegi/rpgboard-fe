@@ -10,10 +10,7 @@
           ></board>
         </v-col>
         <v-col cols="12" md="4" lg="3">
-          <GameMenus
-            :gameId="gameId"
-            :maxHeight="internalViewHeight - 50"
-          ></GameMenus>
+          <GameMenus :maxHeight="internalViewHeight - 50"></GameMenus>
         </v-col>
       </v-row>
     </v-container>
@@ -43,9 +40,7 @@ export default Vue.extend({
   },
   props: { gameId: String },
   data: () => ({
-    boardContent: new Array<Layer>(),
     assets: new Array<FileContent>(),
-    tab: "k2",
     viewHeight: 0,
     internalViewHeight: 0,
     backendService: Container.get<BackendService>(BackendService),
@@ -54,6 +49,11 @@ export default Vue.extend({
     ),
     dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
   }),
+  computed: {
+    boardContent(): Array<Layer> {
+      return this.$store.getters[`${this.moduleName()}/layers`];
+    },
+  },
   methods: {
     updatePlayers(players: Array<GamePlayer>) {
       logger.info(`Update players, count: ${players.length}`);
@@ -93,15 +93,15 @@ export default Vue.extend({
     },
   },
   created() {
+    // setup stores
+    logger.info(`Register gameId ${this.gameId}`);
+    this.$store.commit("game/selectGame", this.gameId);
     logger.info(`Register module ${this.moduleName()}`);
     store.registerModule(`${this.moduleName()}`, dd5e);
 
+    // setup page resizer
     logger.info(`Start game ${this.gameId}`);
     window.addEventListener("resize", this.handleResize);
-    this.backendService
-      .getGamePlayers(this.gameId)
-      .then((players) => this.updatePlayers(players));
-    this.boardContent = this.boardContentService.createBoardContent();
   },
   beforeDestroy() {
     logger.info(`Unregister module ${this.moduleName()}`);
@@ -113,6 +113,15 @@ export default Vue.extend({
   mounted() {
     logger.info("Mounted, resize");
     this.handleResize();
+
+    // setup players
+    this.backendService
+      .getGamePlayers(this.gameId)
+      .then((players) => this.updatePlayers(players));
+
+    // setup board content
+    const boardContent = this.boardContentService.createBoardContent();
+    this.$store.commit(`${this.moduleName()}/addLayers`, boardContent);
   },
 });
 </script>

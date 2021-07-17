@@ -9,13 +9,13 @@
       <v-card-text>
         <v-tabs-items v-model="tab">
           <v-tab-item key="board-manager">
-            <BoardManager :gameId="gameId" />
+            <BoardManager />
           </v-tab-item>
           <v-tab-item key="assets-manager">
             <AssetsManager :gameId="gameId" />
           </v-tab-item>
           <v-tab-item key="players">
-            <GamePlayersSummary :gameId="gameId" />
+            <GamePlayersSummary />
           </v-tab-item>
         </v-tabs-items>
       </v-card-text>
@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import BoardManager from "@/components/BoardManager.vue";
+import BoardManager from "@/dd5e/board/components/BoardManager.vue";
 import AssetsManager from "@/dd5e/components/AssetsManager.vue";
 import GamePlayersSummary from "@/dd5e/components/GamePlayersSummary.vue";
 import { factory } from "@/utils/ConfigLog4j";
@@ -38,11 +38,15 @@ export default Vue.extend({
     BoardManager,
     AssetsManager,
   },
-  props: { gameId: String, maxHeight: Number },
+  props: { maxHeight: Number },
   data: () => ({
     tab: "board-manager",
+    gameId: "",
   }),
   methods: {},
+  created() {
+    this.gameId = this.$store.getters["game/getGameId"];
+  },
 });
 </script>
 
