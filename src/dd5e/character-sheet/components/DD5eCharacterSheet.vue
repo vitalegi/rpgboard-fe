@@ -3,32 +3,28 @@
     <v-list-group no-action v-for="group in groups" :key="group.id">
       <template v-slot:activator>
         <v-list-item-content>
-          <v-list-item-title v-text="group.id"></v-list-item-title>
+          <v-list-item-title v-text="group.label"></v-list-item-title>
         </v-list-item-content>
       </template>
-      <v-container dense>
-        <v-row v-if="group.id === 'BASE'">
-          <v-col :cols="6">
-            <base-stats-overview :baseStats="player.baseStats" />
-          </v-col>
-          <v-col :cols="6">
-            <saving-throws-overview
-              :player="player"
-              @update="updateSavingThrow"
-            />
-          </v-col>
-        </v-row>
-        <v-row v-if="group.id === 'SKILLS'">
-          <v-col :cols="12">
-            <skills-overview :player="player" @updateSkill="updateSkill" />
-          </v-col>
-        </v-row>
-        <v-row v-if="group.id === 'ABILITIES'">
-          <v-col :cols="12">
-            <abilities-overview :player="player" @moveAbility="moveAbility" />
-          </v-col>
-        </v-row>
-      </v-container>
+      <base-stats-overview
+        v-if="group.id === 'BASE'"
+        :baseStats="player.baseStats"
+      />
+      <saving-throws-overview
+        v-if="group.id === 'SAVE'"
+        :player="player"
+        @update="updateSavingThrow"
+      />
+      <skills-overview
+        v-if="group.id === 'SKILLS'"
+        :player="player"
+        @updateSkill="updateSkill"
+      />
+      <abilities-overview
+        v-if="group.id === 'ABILITIES'"
+        :player="player"
+        @moveAbility="moveAbility"
+      />
     </v-list-group>
   </v-container>
 </template>
@@ -77,7 +73,12 @@ export default Vue.extend({
       return this.$store.getters[`${this.module}/count`];
     },
     groups() {
-      return [{ id: "BASE" }, { id: "SKILLS" }, { id: "ABILITIES" }];
+      return [
+        { id: "BASE", label: "Base Stats" },
+        { id: "SAVE", label: "Saving Throws" },
+        { id: "SKILLS", label: "Skills" },
+        { id: "ABILITIES", label: "Abilities" },
+      ];
     },
   },
   methods: {

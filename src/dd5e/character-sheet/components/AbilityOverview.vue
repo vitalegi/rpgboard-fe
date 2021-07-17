@@ -93,7 +93,7 @@ import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
 import Ability, { Damage } from "@/dd5e/models/Ability";
 import Player from "@/dd5e/models/Player";
-import marked from "marked";
+import MarkDownService from "@/services/MarkDownService";
 import { Container } from "typedi";
 import StatsRetrieverService from "@/dd5e/services/StatsRetrieverService";
 
@@ -110,6 +110,7 @@ export default Vue.extend({
     statsRetrieverService: Container.get<StatsRetrieverService>(
       StatsRetrieverService
     ),
+    markDownService: Container.get<MarkDownService>(MarkDownService),
   }),
   computed: {},
   methods: {
@@ -126,7 +127,7 @@ export default Vue.extend({
       this.$emit("dragEnter", this.ability.name);
     },
     processMarkdown(text: string): string {
-      return marked(text);
+      return this.markDownService.parse(text);
     },
     printableFormula(formula: string): string {
       return this.statsRetrieverService.printableFormula(formula, this.player);

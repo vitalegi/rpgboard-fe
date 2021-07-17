@@ -3,7 +3,11 @@
     <v-list-group
       v-for="player in players"
       :key="player.playerId"
-      prepend-icon="mdi-account-circle"
+      :prepend-icon="
+        ['0', '1', '2', '3'].findIndex((i) => player.playerId === i) != -1
+          ? 'mdi-account-circle'
+          : 'mdi-robot-excited-outline'
+      "
       no-action
     >
       <template v-slot:activator>
@@ -26,7 +30,7 @@ import GamePlayer from "@/models/GamePlayer";
 import { DD5eStoreService } from "../store/DD5eStore";
 import { factory } from "@/utils/ConfigLog4j";
 import Container from "typedi";
-const logger = factory.getLogger("Components.GamePlayer");
+const logger = factory.getLogger("DD5e.Components.GamePlayerSummary");
 
 export default Vue.extend({
   name: "GamePlayersSummary",
