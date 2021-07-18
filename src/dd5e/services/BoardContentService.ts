@@ -19,11 +19,42 @@ export default class BoardContentService {
         width: 800,
         height: 396,
         stroke: "black",
+        fill: "white",
         strokeWidth: 4,
+        visible: true,
       })
     );
 
-    for (let i = 0; i < 20; i++) {
+    const gridStep = 33;
+    for (let x = gridStep; x < 800; x += gridStep) {
+      layer.shapes.push(
+        new Shape({
+          componentName: "v-line",
+          id: `grid_vertical_${x}`,
+          points: [x, 0, x, 400],
+          stroke: "black",
+          strokeWidth: 1,
+          lineCap: "round",
+          lineJoin: "round",
+          visible: true,
+        })
+      );
+    }
+    for (let y = gridStep; y < 400; y += gridStep) {
+      layer.shapes.push(
+        new Shape({
+          componentName: "v-line",
+          id: `grid_vertical_${y}`,
+          points: [0, y, 800, y],
+          stroke: "black",
+          strokeWidth: 1,
+          lineCap: "round",
+          lineJoin: "round",
+          visible: true,
+        })
+      );
+    }
+    for (let i = 0; i < 50; i++) {
       layer.shapes.push(
         new Shape({
           componentName: "v-circle",
@@ -34,6 +65,21 @@ export default class BoardContentService {
           fill: "red",
           stroke: "black",
           strokeWidth: 4,
+          visible: true,
+        })
+      );
+
+      layer.shapes.push(
+        new Shape({
+          componentName: "image-shape",
+          id: `random_image_${i}`,
+          x: random(500) + 100,
+          y: random(300) + 100,
+          width: 20,
+          height: 20,
+          image: "https://vuejs.org/images/logo.png",
+          draggable: true,
+          visible: true,
         })
       );
     }
@@ -42,10 +88,11 @@ export default class BoardContentService {
         componentName: "image-shape",
         x: 200,
         y: 22,
-        width: 30,
-        height: 30,
+        width: 60,
+        height: 60,
         image: "https://vuejs.org/images/logo.png",
         draggable: true,
+        visible: true,
       })
     );
     layer.shapes.push(
@@ -58,6 +105,7 @@ export default class BoardContentService {
         fill: "pink",
         stroke: "black",
         strokeWidth: 4,
+        visible: true,
       })
     );
     layer.shapes.push(
@@ -71,6 +119,7 @@ export default class BoardContentService {
         stroke: "black",
         strokeWidth: 4,
         draggable: true,
+        visible: true,
         dragBoundFunc(position: Vector2d): Vector2d {
           let x = position.x;
           let y = position.y;
@@ -102,6 +151,7 @@ export default class BoardContentService {
         stroke: "black",
         strokeWidth: 4,
         draggable: true,
+        visible: true,
       })
     );
     return boardContent;
