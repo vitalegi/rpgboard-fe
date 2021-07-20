@@ -3,11 +3,6 @@ import { ShapeConfig } from "konva/types/Shape";
 
 type ExtendedShapeConfig = ShapeConfig | { componentName: string };
 
-const a: ExtendedShapeConfig = {
-  componentName: "",
-  id: "",
-};
-
 export class Shape<E extends ExtendedShapeConfig> {
   config?: E;
 
@@ -23,4 +18,8 @@ export class Layer {
   public constructor(config?: LayerConfig) {
     this.config = config;
   }
+}
+
+export class Group<E extends ExtendedShapeConfig> extends Shape<E> {
+  children = new Array<Shape<any>>();
 }

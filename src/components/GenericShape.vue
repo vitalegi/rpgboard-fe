@@ -5,7 +5,18 @@
     @dragstart="dragstart"
     @dragmove="dragmove"
     @dragend="dragend"
-  />
+  >
+    <generic-shape
+      v-for="(child, index) in children"
+      :key="index"
+      :component="child.config.componentName"
+      :children="child.children"
+      :config="child.config"
+      :dragstart="child.dragStart"
+      :dragmove="child.dragMove"
+      :dragend="child.dragEnd"
+    />
+  </component>
 </template>
 
 <script lang="ts">
@@ -21,9 +32,18 @@ export default Vue.extend({
     dragstart: Function,
     dragmove: Function,
     dragend: Function,
+    children: Array,
   },
   data: () => ({}),
   methods: {},
+  computed: {},
+  mounted(): void {
+    console.log(
+      `MOUNTED ${this.component}, ${JSON.stringify(
+        this.config
+      )}, ${JSON.stringify(this.children)}`
+    );
+  },
 });
 </script>
 

@@ -5,29 +5,16 @@
       :key="layerIndex"
       :config="layer.config"
     >
-      <v-group
-        :config="{
-          visible: true,
-          x: 0,
-          y: 0,
-          opacity: 1,
-          rotation: 0,
-          draggable: true,
-        }"
+      <generic-shape
+        v-for="(shape, shapeIndex) in layer.shapes"
+        :key="shapeIndex"
+        :component="shape.config.componentName"
+        :children="shape.children"
+        :config="shape.config"
         :dragstart="dragStart"
         :dragmove="dragMove"
         :dragend="dragEnd"
-      >
-        <generic-shape
-          v-for="(shape, shapeIndex) in layer.shapes"
-          :key="shapeIndex"
-          :component="shape.config.componentName"
-          :config="shape.config"
-          :dragstart="dragStart"
-          :dragmove="dragMove"
-          :dragend="dragEnd"
-        />
-      </v-group>
+      />
     </v-layer>
   </v-stage>
 </template>

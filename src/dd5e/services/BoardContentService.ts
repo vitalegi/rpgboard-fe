@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import { Shape, Layer } from "@/models/BoardContent";
+import { Shape, Layer, Group } from "@/models/BoardContent";
 import random from "@/utils/RandomUtil";
 import { Vector2d } from "konva/types/types";
 
@@ -10,7 +10,16 @@ export default class BoardContentService {
     const layer = new Layer({ visible: true, draggable: true });
     boardContent.push(layer);
 
-    layer.shapes.push(
+    const baseGroup = new Group({
+      componentName: "v-group",
+      name: "background-group",
+      x: 0,
+      y: 0,
+      visible: true,
+    });
+    layer.shapes.push(baseGroup);
+
+    baseGroup.children.push(
       new Shape({
         componentName: "v-rect",
         name: "background",
@@ -25,9 +34,19 @@ export default class BoardContentService {
       })
     );
 
-    const gridStep = 33;
+    const gridGroup = new Group({
+      componentName: "v-group",
+      name: "grid-group",
+      x: 0,
+      y: 0,
+      visible: true,
+    });
+
+    baseGroup.children.push(gridGroup);
+
+    const gridStep = 50;
     for (let x = gridStep; x < 800; x += gridStep) {
-      layer.shapes.push(
+      gridGroup.children.push(
         new Shape({
           componentName: "v-line",
           id: `grid_vertical_${x}`,
@@ -41,7 +60,7 @@ export default class BoardContentService {
       );
     }
     for (let y = gridStep; y < 400; y += gridStep) {
-      layer.shapes.push(
+      baseGroup.children.push(
         new Shape({
           componentName: "v-line",
           id: `grid_vertical_${y}`,
@@ -54,8 +73,9 @@ export default class BoardContentService {
         })
       );
     }
+
     for (let i = 0; i < 50; i++) {
-      layer.shapes.push(
+      baseGroup.children.push(
         new Shape({
           componentName: "v-circle",
           id: `ran_${i}`,
@@ -69,7 +89,7 @@ export default class BoardContentService {
         })
       );
 
-      layer.shapes.push(
+      baseGroup.children.push(
         new Shape({
           componentName: "image-shape",
           id: `random_image_${i}`,
@@ -83,7 +103,7 @@ export default class BoardContentService {
         })
       );
     }
-    layer.shapes.push(
+    baseGroup.children.push(
       new Shape({
         componentName: "image-shape",
         x: 200,
@@ -95,7 +115,7 @@ export default class BoardContentService {
         visible: true,
       })
     );
-    layer.shapes.push(
+    baseGroup.children.push(
       new Shape({
         componentName: "v-circle",
         id: "c1",
@@ -108,7 +128,7 @@ export default class BoardContentService {
         visible: true,
       })
     );
-    layer.shapes.push(
+    baseGroup.children.push(
       new Shape({
         componentName: "v-circle",
         id: "c2",
@@ -140,7 +160,7 @@ export default class BoardContentService {
         },
       })
     );
-    layer.shapes.push(
+    baseGroup.children.push(
       new Shape({
         componentName: "v-circle",
         id: "c3",
