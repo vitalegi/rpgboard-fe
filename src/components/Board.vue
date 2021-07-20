@@ -11,9 +11,9 @@
         :component="shape.config.componentName"
         :children="shape.children"
         :config="shape.config"
-        :dragstart="dragStart"
-        :dragmove="dragMove"
-        :dragend="dragEnd"
+        :dragstart="dragstart"
+        :dragmove="dragmove"
+        :dragend="dragend"
       />
     </v-layer>
   </v-stage>
@@ -23,14 +23,6 @@
 import Vue from "vue";
 import TimeUtil from "@/utils/TimeUtil";
 import GenericShape from "@/components/GenericShape.vue";
-import { Layer, Shape } from "@/models/BoardContent";
-import { Node } from "konva/types/Node";
-import { Vector2d } from "konva/types/types";
-import { LayerConfig } from "konva/types/Layer";
-import { Canvas } from "konva/types/Canvas";
-import { Stage, StageConfig } from "konva/types/Stage";
-import { ShapeConfig } from "konva/types/Shape";
-import { CircleConfig } from "konva/types/shapes/Circle";
 
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Components.Board");
@@ -47,10 +39,10 @@ export default Vue.extend({
     lastDragDropNotification: TimeUtil.now(),
   }),
   methods: {
-    dragStart(event: any) {
+    dragstart(event: any) {
       return;
     },
-    dragMove(event: any) {
+    dragmove(event: any) {
       if (
         TimeUtil.diffMillis(TimeUtil.now(), this.lastDragDropNotification) > 100
       ) {
@@ -58,7 +50,7 @@ export default Vue.extend({
         this.$emit("moveShape", event);
       }
     },
-    dragEnd(event: any) {
+    dragend(event: any) {
       this.lastDragDropNotification = TimeUtil.now();
       this.$emit("moveShape", event);
     },

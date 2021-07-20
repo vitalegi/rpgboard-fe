@@ -12,9 +12,9 @@
       :component="child.config.componentName"
       :children="child.children"
       :config="child.config"
-      :dragstart="child.dragStart"
-      :dragmove="child.dragMove"
-      :dragend="child.dragEnd"
+      :dragstart="dragstart"
+      :dragmove="dragmove"
+      :dragend="dragend"
     />
   </component>
 </template>
@@ -37,13 +37,6 @@ export default Vue.extend({
   data: () => ({}),
   methods: {},
   computed: {},
-  mounted(): void {
-    console.log(
-      `MOUNTED ${this.component}, ${JSON.stringify(
-        this.config
-      )}, ${JSON.stringify(this.children)}`
-    );
-  },
 });
 </script>
 

@@ -7,21 +7,23 @@ import { Vector2d } from "konva/types/types";
 export default class BoardContentService {
   public createBoardContent(): Array<Layer> {
     const boardContent = new Array<Layer>();
-    const layer = new Layer({ visible: true, draggable: true });
+    const layer = new Layer({ id: "layer-1", visible: true, draggable: true });
     boardContent.push(layer);
 
-    const baseGroup = new Group({
+    const backgroundGroup = new Group({
       componentName: "v-group",
+      id: "background-group",
       name: "background-group",
       x: 0,
       y: 0,
       visible: true,
     });
-    layer.shapes.push(baseGroup);
+    layer.shapes.push(backgroundGroup);
 
-    baseGroup.children.push(
+    backgroundGroup.children.push(
       new Shape({
         componentName: "v-rect",
+        id: "background",
         name: "background",
         x: 2,
         y: 2,
@@ -36,20 +38,21 @@ export default class BoardContentService {
 
     const gridGroup = new Group({
       componentName: "v-group",
+      id: "grid-group",
       name: "grid-group",
       x: 0,
       y: 0,
       visible: true,
     });
 
-    baseGroup.children.push(gridGroup);
+    backgroundGroup.children.push(gridGroup);
 
     const gridStep = 50;
     for (let x = gridStep; x < 800; x += gridStep) {
       gridGroup.children.push(
         new Shape({
           componentName: "v-line",
-          id: `grid_vertical_${x}`,
+          id: `grid-vertical-${x}`,
           points: [x, 0, x, 400],
           stroke: "black",
           strokeWidth: 1,
@@ -60,10 +63,10 @@ export default class BoardContentService {
       );
     }
     for (let y = gridStep; y < 400; y += gridStep) {
-      baseGroup.children.push(
+      backgroundGroup.children.push(
         new Shape({
           componentName: "v-line",
-          id: `grid_vertical_${y}`,
+          id: `grid-vertical-${y}`,
           points: [0, y, 800, y],
           stroke: "black",
           strokeWidth: 1,
@@ -75,10 +78,10 @@ export default class BoardContentService {
     }
 
     for (let i = 0; i < 50; i++) {
-      baseGroup.children.push(
+      backgroundGroup.children.push(
         new Shape({
           componentName: "v-circle",
-          id: `ran_${i}`,
+          id: `random-circle-${i}`,
           x: random(500) + 100,
           y: random(300) + 100,
           radius: random(50) + 10,
@@ -89,10 +92,10 @@ export default class BoardContentService {
         })
       );
 
-      baseGroup.children.push(
+      backgroundGroup.children.push(
         new Shape({
           componentName: "image-shape",
-          id: `random_image_${i}`,
+          id: `random-image-${i}`,
           x: random(500) + 100,
           y: random(300) + 100,
           width: 20,
@@ -103,9 +106,10 @@ export default class BoardContentService {
         })
       );
     }
-    baseGroup.children.push(
+    backgroundGroup.children.push(
       new Shape({
         componentName: "image-shape",
+        id: "big-image",
         x: 200,
         y: 22,
         width: 60,
@@ -115,10 +119,10 @@ export default class BoardContentService {
         visible: true,
       })
     );
-    baseGroup.children.push(
+    backgroundGroup.children.push(
       new Shape({
         componentName: "v-circle",
-        id: "c1",
+        id: "pink-circle",
         x: 450,
         y: 250,
         radius: 70,
@@ -128,42 +132,10 @@ export default class BoardContentService {
         visible: true,
       })
     );
-    baseGroup.children.push(
+    backgroundGroup.children.push(
       new Shape({
         componentName: "v-circle",
-        id: "c2",
-        x: 70,
-        y: 50,
-        radius: 70,
-        fill: "orange",
-        stroke: "black",
-        strokeWidth: 4,
-        draggable: true,
-        visible: true,
-        dragBoundFunc(position: Vector2d): Vector2d {
-          let x = position.x;
-          let y = position.y;
-          if (x < 0) {
-            x = 0;
-          }
-          if (x > 500) {
-            x = 500;
-          }
-          if (y < 70) {
-            y = 70;
-          }
-          if (y > 100) {
-            y = 100;
-          }
-
-          return { x: x, y: y };
-        },
-      })
-    );
-    baseGroup.children.push(
-      new Shape({
-        componentName: "v-circle",
-        id: "c3",
+        id: "yellow-circle",
         x: 90,
         y: 60,
         radius: 50,
