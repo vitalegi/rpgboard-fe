@@ -1,7 +1,8 @@
-import { Layer } from "@/models/BoardContent";
+import CustomShape, { BoardContainer } from "@/models/BoardContent";
 import GamePlayer from "@/models/GamePlayer";
 import ArrayUtil from "@/utils/ArrayUtil";
 import { Service } from "typedi";
+import Vue from "vue";
 import { Module } from "vuex";
 
 const dd5e: Module<any, any> = {
@@ -9,7 +10,7 @@ const dd5e: Module<any, any> = {
   state: () => {
     return {
       players: new Array<GamePlayer>(),
-      layers: new Array<Layer>(),
+      board: new BoardContainer(),
     };
   },
   mutations: {
@@ -17,16 +18,13 @@ const dd5e: Module<any, any> = {
       ArrayUtil.removeAll(state.players);
       players.forEach((player) => state.players.push(player));
     },
-    addLayers(state: any, layer: Array<Layer>) {
-      state.layers.push(...layer);
-    },
-    addLayer(state: any, layer: Layer) {
-      state.layers.push(layer);
+    setBoard(state: any, content: BoardContainer) {
+      Vue.set(state, "board", content);
     },
   },
   getters: {
     players: (state: any) => state.players,
-    layers: (state: any) => state.layers,
+    board: (state: any) => state.board,
   },
   actions: {},
   modules: {},

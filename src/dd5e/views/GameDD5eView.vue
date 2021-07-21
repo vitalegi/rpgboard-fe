@@ -5,7 +5,7 @@
         <v-col cols="12" md="8" lg="9">
           <board
             :boardHeight="internalViewHeight"
-            :layers="boardContent"
+            :boardContent="boardContent"
             @moveShape="move"
           ></board>
         </v-col>
@@ -23,7 +23,7 @@ import { Container } from "typedi";
 import GameMenus from "@/dd5e/components/GameMenus.vue";
 import Board from "@/components/Board.vue";
 import GamePlayer from "@/models/GamePlayer";
-import { Layer } from "@/models/BoardContent";
+import { BoardContainer } from "@/models/BoardContent";
 import BackendService from "@/services/BackendService";
 import BoardContentService from "@/dd5e/services/BoardContentService";
 import FileContent from "@/models/FileContent";
@@ -50,8 +50,8 @@ export default Vue.extend({
     dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
   }),
   computed: {
-    boardContent(): Array<Layer> {
-      return this.$store.getters[`${this.moduleName()}/layers`];
+    boardContent(): BoardContainer {
+      return this.$store.getters[`${this.moduleName()}/board`];
     },
   },
   methods: {
@@ -121,7 +121,7 @@ export default Vue.extend({
 
     // setup board content
     const boardContent = this.boardContentService.createBoardContent();
-    this.$store.commit(`${this.moduleName()}/addLayers`, boardContent);
+    this.$store.commit(`${this.moduleName()}/setBoard`, boardContent);
   },
 });
 </script>

@@ -1,25 +1,28 @@
-import { LayerConfig } from "konva/types/Layer";
-import { ShapeConfig } from "konva/types/Shape";
+export default class CustomShape {
+  componentName = "";
+  config: any = {};
+  children = new Array<CustomShape>();
 
-type ExtendedShapeConfig = ShapeConfig | { componentName: string };
-
-export class Shape<E extends ExtendedShapeConfig> {
-  config?: E;
-
-  public constructor(config?: E) {
+  public constructor(config: any) {
     this.config = config;
   }
 }
 
-export class Layer {
-  config?: LayerConfig;
-  shapes = new Array<Shape<ExtendedShapeConfig>>();
+export class Grid {
+  visible;
+  gridStep;
+  offsetX;
+  offsetY;
 
-  public constructor(config?: LayerConfig) {
-    this.config = config;
+  public constructor(visible = false, gridStep = 50, offsetX = 0, offsetY = 0) {
+    this.visible = visible;
+    this.gridStep = gridStep;
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
   }
 }
 
-export class Group<E extends ExtendedShapeConfig> extends Shape<E> {
-  children = new Array<Shape<any>>();
+export class BoardContainer {
+  layers = Array<CustomShape>();
+  grid = new Grid();
 }

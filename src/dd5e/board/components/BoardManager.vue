@@ -10,7 +10,7 @@
     </v-treeview>
     <v-list>
       <v-list-group
-        v-for="(layer, layerIndex) in getLayers()"
+        v-for="(layer, layerIndex) in getBoard().layers"
         :key="layerIndex"
         :value="true"
         prepend-icon="mdi-account-circle"
@@ -53,9 +53,8 @@ import Vue from "vue";
 import VisibilityButton from "./VisibilityButton.vue";
 import { DD5eStoreService } from "@/dd5e/store/DD5eStore";
 import Container from "typedi";
-import { Layer, Group } from "@/models/BoardContent";
+import CustomShape, { BoardContainer } from "@/models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
-import { ShapeConfig } from "konva/types/Shape";
 const logger = factory.getLogger("Components.BoardManager");
 
 export default Vue.extend({
@@ -66,8 +65,8 @@ export default Vue.extend({
   }),
   computed: {},
   methods: {
-    getLayers(): Array<Layer> {
-      return this.$store.getters[`${this.moduleName()}/layers`];
+    getBoard(): BoardContainer {
+      return this.$store.getters[`${this.moduleName()}/board`];
     },
     moduleName(): string {
       const gameId = this.$store.getters["game/getGameId"];
@@ -79,21 +78,21 @@ export default Vue.extend({
       //layer.config.visible = !layer.config.visible;
     },
     items(): Array<any> {
-      return this.getLayers().map((layer) => {
+      return this.getBoard().layers.map((layer) => {
         return {
           id: layer.config?.id,
           name: layer.config?.id,
           visible: layer.config?.visible,
-          children: layer.shapes.map((shape) => this.mapShape(shape)),
+          children: layer.children.map((shape) => this.mapShape(shape)),
         };
       });
     },
-    mapShape(shape: any): Array<any> {
+    mapShape(shape: CustomShape): Array<any> {
       const element: any = {};
-      element.id = (shape.config as ShapeConfig).id;
-      element.name = (shape.config as ShapeConfig).id;
+      element.id = shape.config.id;
+      element.name = shape.config.id;
       element.visible = shape.config.visible;
-      const children = (shape as Group<any>).children;
+      const children = shape.children;
       if (children !== undefined && children.length > 0) {
         element.children = children.map((child) => this.mapShape(child));
       }

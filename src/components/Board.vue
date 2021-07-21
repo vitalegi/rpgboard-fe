@@ -1,12 +1,12 @@
 <template>
   <v-stage :width="boardWidth" :height="boardHeight" ref="boardCanvas">
     <v-layer
-      v-for="(layer, layerIndex) in layers"
+      v-for="(layer, layerIndex) in boardContent.layers"
       :key="layerIndex"
       :config="layer.config"
     >
       <generic-shape
-        v-for="(shape, shapeIndex) in layer.shapes"
+        v-for="(shape, shapeIndex) in layer.children"
         :key="shapeIndex"
         :component="shape.config.componentName"
         :children="shape.children"
@@ -25,6 +25,7 @@ import TimeUtil from "@/utils/TimeUtil";
 import GenericShape from "@/components/GenericShape.vue";
 
 import { factory } from "@/utils/ConfigLog4j";
+import { BoardContainer } from "@/models/BoardContent";
 const logger = factory.getLogger("Components.Board");
 
 export default Vue.extend({
@@ -32,7 +33,7 @@ export default Vue.extend({
   components: { GenericShape },
   props: {
     boardHeight: Number,
-    layers: Array,
+    boardContent: BoardContainer,
   },
   data: () => ({
     boardWidth: 0,

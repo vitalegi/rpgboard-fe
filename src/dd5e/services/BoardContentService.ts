@@ -1,16 +1,21 @@
 import { Service } from "typedi";
-import { Shape, Layer, Group } from "@/models/BoardContent";
+import CustomShape, { BoardContainer, Grid } from "@/models/BoardContent";
 import random from "@/utils/RandomUtil";
-import { Vector2d } from "konva/types/types";
 
 @Service()
 export default class BoardContentService {
-  public createBoardContent(): Array<Layer> {
-    const boardContent = new Array<Layer>();
-    const layer = new Layer({ id: "layer-1", visible: true, draggable: true });
-    boardContent.push(layer);
+  public createBoardContent(): BoardContainer {
+    const container = new BoardContainer();
+    container.grid = new Grid(true, 70, 0, 0);
 
-    const backgroundGroup = new Group({
+    const layer = new CustomShape({
+      id: "layer-1",
+      visible: true,
+      draggable: true,
+    });
+    container.layers.push(layer);
+
+    const mainGroup = new CustomShape({
       componentName: "v-group",
       id: "background-group",
       name: "background-group",
@@ -18,10 +23,10 @@ export default class BoardContentService {
       y: 0,
       visible: true,
     });
-    layer.shapes.push(backgroundGroup);
+    layer.children.push(mainGroup);
 
-    backgroundGroup.children.push(
-      new Shape({
+    mainGroup.children.push(
+      new CustomShape({
         componentName: "v-rect",
         id: "background",
         name: "background",
@@ -35,51 +40,11 @@ export default class BoardContentService {
         visible: true,
       })
     );
-
-    const gridGroup = new Group({
-      componentName: "v-group",
-      id: "grid-group",
-      name: "grid-group",
-      x: 0,
-      y: 0,
-      visible: true,
-    });
-
-    backgroundGroup.children.push(gridGroup);
-
-    const gridStep = 50;
-    for (let x = gridStep; x < 800; x += gridStep) {
-      gridGroup.children.push(
-        new Shape({
-          componentName: "v-line",
-          id: `grid-vertical-${x}`,
-          points: [x, 0, x, 400],
-          stroke: "black",
-          strokeWidth: 1,
-          lineCap: "round",
-          lineJoin: "round",
-          visible: true,
-        })
-      );
-    }
-    for (let y = gridStep; y < 400; y += gridStep) {
-      backgroundGroup.children.push(
-        new Shape({
-          componentName: "v-line",
-          id: `grid-vertical-${y}`,
-          points: [0, y, 800, y],
-          stroke: "black",
-          strokeWidth: 1,
-          lineCap: "round",
-          lineJoin: "round",
-          visible: true,
-        })
-      );
-    }
+    mainGroup.children.push(this.createGrid(container.grid, 800, 400));
 
     for (let i = 0; i < 50; i++) {
-      backgroundGroup.children.push(
-        new Shape({
+      mainGroup.children.push(
+        new CustomShape({
           componentName: "v-circle",
           id: `random-circle-${i}`,
           x: random(500) + 100,
@@ -92,8 +57,8 @@ export default class BoardContentService {
         })
       );
 
-      backgroundGroup.children.push(
-        new Shape({
+      mainGroup.children.push(
+        new CustomShape({
           componentName: "image-shape",
           id: `random-image-${i}`,
           x: random(500) + 100,
@@ -106,8 +71,8 @@ export default class BoardContentService {
         })
       );
     }
-    backgroundGroup.children.push(
-      new Shape({
+    mainGroup.children.push(
+      new CustomShape({
         componentName: "image-shape",
         id: "big-image",
         x: 200,
@@ -119,8 +84,8 @@ export default class BoardContentService {
         visible: true,
       })
     );
-    backgroundGroup.children.push(
-      new Shape({
+    mainGroup.children.push(
+      new CustomShape({
         componentName: "v-circle",
         id: "pink-circle",
         x: 450,
@@ -132,8 +97,8 @@ export default class BoardContentService {
         visible: true,
       })
     );
-    backgroundGroup.children.push(
-      new Shape({
+    mainGroup.children.push(
+      new CustomShape({
         componentName: "v-circle",
         id: "yellow-circle",
         x: 90,
@@ -146,6 +111,48 @@ export default class BoardContentService {
         visible: true,
       })
     );
-    return boardContent;
+    return container;
+  }
+
+  public createGrid(grid: Grid, width: number, height: number): CustomShape {
+    const gridGroup = new CustomShape({
+      componentName: "v-group",
+      id: "grid-group",
+      name: "grid-group",
+      x: 0,
+      y: 0,
+      visible: grid.visible,
+    });
+
+    const gridStep = grid.gridStep;
+    for (let x = gridStep; x < width; x += gridStep) {
+      gridGroup.children.push(
+        new CustomShape({
+          componentName: "v-line",
+          id: `grid-vertical-${x}`,
+          points: [x, 0, x, height],
+          stroke: "black",
+          strokeWidth: 1,
+          lineCap: "round",
+          lineJoin: "round",
+          visible: true,
+        })
+      );
+    }
+    for (let y = gridStep; y < height; y += gridStep) {
+      gridGroup.children.push(
+        new CustomShape({
+          componentName: "v-line",
+          id: `grid-horizontal-${y}`,
+          points: [0, y, width, y],
+          stroke: "black",
+          strokeWidth: 1,
+          lineCap: "round",
+          lineJoin: "round",
+          visible: true,
+        })
+      );
+    }
+    return gridGroup;
   }
 }
