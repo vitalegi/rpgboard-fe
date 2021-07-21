@@ -13,6 +13,7 @@
               :editable="true"
               :selected="hasProficiency(stat)"
               @change="(v) => updateProficiency(stat, v)"
+              type="check"
             />
             {{ stat }}
           </td>

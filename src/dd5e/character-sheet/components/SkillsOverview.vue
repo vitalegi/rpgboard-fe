@@ -13,6 +13,7 @@
               :editable="true"
               :selected="hasProficiency(skill)"
               @change="(v) => updateProficiency(skill, v)"
+              type="check"
             />
             {{ skill.id }} (
             <b>{{ getUsedStat(skill) }}</b>

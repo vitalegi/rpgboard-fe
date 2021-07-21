@@ -2,14 +2,14 @@
   <v-card id="game" ref="gameView" :min-height="viewHeight">
     <v-container fluid>
       <v-row class="child-flex">
-        <v-col cols="12" md="8" lg="9">
+        <v-col cols="12" md="6" lg="8">
           <board
             :boardHeight="internalViewHeight"
             :boardContent="boardContent"
             @moveShape="move"
           ></board>
         </v-col>
-        <v-col cols="12" md="4" lg="3">
+        <v-col cols="12" md="6" lg="4">
           <GameMenus :maxHeight="internalViewHeight - 50"></GameMenus>
         </v-col>
       </v-row>
