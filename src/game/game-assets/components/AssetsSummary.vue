@@ -1,6 +1,6 @@
 <template>
   <v-list v-if="assets.length > 0">
-    <v-list-item v-for="(asset, assetIndex) in getAssets()" :key="assetIndex">
+    <v-list-item v-for="asset in assets" :key="asset.id">
       <v-list-item-content>
         {{ asset.name }}
       </v-list-item-content>
@@ -14,21 +14,20 @@
 <script lang="ts">
 import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
-import FileContent from "@/models/FileContent";
-const logger = factory.getLogger("Components.AssetsSummary");
+import Asset from "../models/Asset";
+const logger = factory.getLogger("Game.GameAssets.Components.AssetsSummary");
 
 export default Vue.extend({
   name: "AssetsSummary",
   components: {},
-  props: {
-    assets: Array,
-  },
+  props: {},
   data: () => ({}),
-  methods: {
-    getAssets(): Array<FileContent> {
-      return this.assets as Array<FileContent>;
+  computed: {
+    assets(): Array<Asset> {
+      return this.$store.getters["assets/assets"];
     },
   },
+  methods: {},
 });
 </script>
 

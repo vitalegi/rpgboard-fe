@@ -26,7 +26,6 @@ import GamePlayer from "@/models/GamePlayer";
 import { BoardContainer } from "@/models/BoardContent";
 import BackendService from "@/services/BackendService";
 import BoardContentService from "@/dd5e/services/BoardContentService";
-import FileContent from "@/models/FileContent";
 import store from "@/store";
 import dd5e, { DD5eStoreService } from "../store/DD5eStore";
 import { factory } from "@/utils/ConfigLog4j";
@@ -40,7 +39,6 @@ export default Vue.extend({
   },
   props: { gameId: String },
   data: () => ({
-    assets: new Array<FileContent>(),
     viewHeight: 0,
     internalViewHeight: 0,
     backendService: Container.get<BackendService>(BackendService),
@@ -63,9 +61,6 @@ export default Vue.extend({
       logger.info(
         `X=${event.evt.clientX} Y=${event.evt.clientY} ID=${event.target.attrs.id}`
       );
-    },
-    addAsset(file: FileContent): void {
-      this.assets.push(file);
     },
     handleResize() {
       const gameView = (this.$refs.gameView as any).$el;

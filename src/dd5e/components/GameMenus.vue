@@ -12,7 +12,7 @@
             <BoardManager />
           </v-tab-item>
           <v-tab-item key="assets-manager">
-            <AssetsManager :gameId="gameId" />
+            <AssetsManager />
           </v-tab-item>
           <v-tab-item key="players">
             <GamePlayersSummary />
@@ -26,7 +26,7 @@
 <script lang="ts">
 import Vue from "vue";
 import BoardManager from "@/dd5e/board/components/BoardManager.vue";
-import AssetsManager from "@/dd5e/components/AssetsManager.vue";
+import AssetsManager from "@/game/game-assets/components/AssetsManager.vue";
 import GamePlayersSummary from "@/dd5e/components/GamePlayersSummary.vue";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("DD5e.Components.GameMenus");

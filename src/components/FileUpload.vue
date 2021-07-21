@@ -1,22 +1,19 @@
 <template>
-  <div
-    :class="over ? 'file-over' : 'no-file-over'"
-    @dragover="dragover"
-    @dragleave="dragleave"
-    @drop="drop"
-  >
-    <v-file-input
-      v-model="filelist"
-      label="File input"
-      @change="fileChanged"
-    ></v-file-input>
-    <div>Drop a file here</div>
-  </div>
+  <v-card @dragover="dragover" @dragleave="dragleave" @drop="drop">
+    <v-card-text>
+      <v-file-input
+        v-model="filelist"
+        label="File input"
+        @change="fileChanged"
+      ></v-file-input>
+      <div>Drop a file here</div>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import FileContent from "@/models/FileContent";
+import FileContent from "@/game/game-assets/models/FileContent";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Components.FileUpload");
 
@@ -31,6 +28,8 @@ export default Vue.extend({
     fileChanged() {
       if (this.filelist !== null) {
         this.processFile((this.filelist as unknown) as File);
+      } else {
+        this.$emit("upload", null);
       }
     },
     dragover(event: any) {
@@ -65,11 +64,4 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped lang="scss">
-.file-over {
-  background-color: #c8e6c9;
-}
-.no-file-over {
-  background-color: #e0e0e0;
-}
-</style>
+<style scoped lang="scss"></style>
