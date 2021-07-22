@@ -1,6 +1,8 @@
 import { Service } from "typedi";
 import CustomShape, { BoardContainer, Grid } from "@/models/BoardContent";
 import random from "@/utils/RandomUtil";
+import { factory } from "@/utils/ConfigLog4j";
+const logger = factory.getLogger("DD5e.Services.BoardContentService");
 
 @Service()
 export default class BoardContentService {
@@ -154,5 +156,96 @@ export default class BoardContentService {
       );
     }
     return gridGroup;
+  }
+
+  public updateVisibility(content: BoardContainer, id: string): void {
+    const target = this.getElementById(content.layers, id);
+    if (target === null) {
+      throw new Error(`Cannot find element ${id} in board.`);
+    }
+    target.config.visible = !target.config.visible;
+  }
+
+  public moveNode(
+    content: BoardContainer,
+    id: string,
+    indexVariation: number
+  ): void {
+    const target = this.getElementById(content.layers, id);
+    if (target === null) {
+      throw new Error(`Cannot find element ${id} in board.`);
+    }
+    const parent = this.getParentById(content.layers, id);
+    if (parent === null) {
+      throw new Error(`"Cannot find parent for ${id} in board`);
+    }
+    const oldIndex = parent?.children.findIndex((e) => e.config.id === id);
+    if (oldIndex === undefined) {
+      throw new Error(`Cannot find index for ${id} in ${parent.config.id}`);
+    }
+    const newIndex = oldIndex + indexVariation;
+    if (newIndex < 0 || newIndex >= parent.children.length) {
+      logger.info(`Trying to move ${id} to position ${newIndex}, skip`);
+      return;
+    }
+    const element = parent.children.splice(oldIndex, 1)[0];
+    parent.children.splice(newIndex, 0, element);
+  }
+
+  protected getElementById(
+    elements: Array<CustomShape>,
+    id: string
+  ): CustomShape | null {
+    for (let i = 0; i < elements.length; i++) {
+      const out = this._getElementById(elements[i], id);
+      if (out !== null) {
+        return out;
+      }
+    }
+    return null;
+  }
+
+  protected _getElementById(
+    element: CustomShape,
+    id: string
+  ): CustomShape | null {
+    if (element.config.id === id) {
+      return element;
+    }
+    for (let i = 0; i < element.children.length; i++) {
+      const out = this._getElementById(element.children[i], id);
+      if (out !== null) {
+        return out;
+      }
+    }
+    return null;
+  }
+
+  protected getParentById(
+    elements: Array<CustomShape>,
+    id: string
+  ): CustomShape | null {
+    for (let i = 0; i < elements.length; i++) {
+      const out = this._getParentById(elements[i], id);
+      if (out !== null) {
+        return out;
+      }
+    }
+    return null;
+  }
+  protected _getParentById(
+    element: CustomShape,
+    id: string
+  ): CustomShape | null {
+    for (let i = 0; i < element.children.length; i++) {
+      if (element.children[i].config.id === id) {
+        return element;
+      }
+      const out = this._getParentById(element.children[i], id);
+      if (out !== null) {
+        return out;
+      }
+    }
+    return null;
   }
 }

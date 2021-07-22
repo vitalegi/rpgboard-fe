@@ -7,10 +7,10 @@
         :editable="true"
         @change="changeVisibility(item.id)"
       />
-      <v-btn icon small>
+      <v-btn icon small @click="move(item.id, +1)">
         <v-icon>mdi-chevron-down</v-icon>
       </v-btn>
-      <v-btn icon small>
+      <v-btn icon small @click="move(item.id, -1)">
         <v-icon>mdi-chevron-up</v-icon>
       </v-btn>
       <v-btn icon small>
@@ -35,6 +35,13 @@ import CustomShape, { BoardContainer } from "@/models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Components.BoardManager");
 
+type TreeEntry = {
+  id: string;
+  name: string;
+  visible: boolean;
+  children: Array<TreeEntry>;
+};
+
 export default Vue.extend({
   name: "BoardManager",
   components: { IconButton },
@@ -51,25 +58,26 @@ export default Vue.extend({
       return this.dd5eService.moduleName(gameId);
     },
     changeVisibility(id: string): void {
-      logger.info(`TODO change visibility of ${id} item`);
-      // TODO don't update object, submit a change to the cache
-      //layer.config.visible = !layer.config.visible;
+      logger.info(`TODO change visibility of ${id} item on backend`);
+      this.$store.commit(`${this.moduleName()}/updateBoardVisibility`, id);
     },
-    items(): Array<any> {
-      return this.getBoard().layers.map((layer) => {
-        return {
-          id: layer.config?.id,
-          name: layer.config?.id,
-          visible: layer.config?.visible,
-          children: layer.children.map((shape) => this.mapShape(shape)),
-        };
+    move(id: string, variation: number): void {
+      logger.info(`TODO move ${id} of ${variation} item on backend`);
+      this.$store.commit(`${this.moduleName()}/moveNode`, {
+        id: id,
+        variation: variation,
       });
     },
-    mapShape(shape: CustomShape): Array<any> {
-      const element: any = {};
-      element.id = shape.config.id;
-      element.name = shape.config.id;
-      element.visible = shape.config.visible;
+    items(): Array<TreeEntry> {
+      return this.getBoard().layers.map(this.mapShape);
+    },
+    mapShape(shape: CustomShape): TreeEntry {
+      const element: TreeEntry = {
+        id: shape.config.id,
+        name: shape.config.id,
+        visible: shape.config.visible,
+        children: new Array<TreeEntry>(),
+      };
       const children = shape.children;
       if (children !== undefined && children.length > 0) {
         element.children = children.map((child) => this.mapShape(child));

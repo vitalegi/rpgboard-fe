@@ -1,7 +1,8 @@
 import CustomShape, { BoardContainer } from "@/models/BoardContent";
 import GamePlayer from "@/models/GamePlayer";
 import ArrayUtil from "@/utils/ArrayUtil";
-import { Service } from "typedi";
+import BoardContentService from "../services/BoardContentService";
+import Container, { Service } from "typedi";
 import Vue from "vue";
 import { Module } from "vuex";
 
@@ -20,6 +21,14 @@ const dd5e: Module<any, any> = {
     },
     setBoard(state: any, content: BoardContainer) {
       Vue.set(state, "board", content);
+    },
+    updateBoardVisibility(state: any, id: string) {
+      const service = Container.get<BoardContentService>(BoardContentService);
+      service.updateVisibility(state.board, id);
+    },
+    moveNode(state: any, entry: { id: string; variation: number }) {
+      const service = Container.get<BoardContentService>(BoardContentService);
+      service.moveNode(state.board, entry.id, entry.variation);
     },
   },
   getters: {
