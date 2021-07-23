@@ -192,6 +192,22 @@ export default class BoardContentService {
     parent.children.splice(newIndex, 0, element);
   }
 
+  public deleteNode(content: BoardContainer, id: string): void {
+    const target = this.getElementById(content.layers, id);
+    if (target === null) {
+      throw new Error(`Cannot find element ${id} in board.`);
+    }
+    const parent = this.getParentById(content.layers, id);
+    if (parent === null) {
+      throw new Error(`"Cannot find parent for ${id} in board`);
+    }
+    const index = parent?.children.findIndex((e) => e.config.id === id);
+    if (index === undefined) {
+      throw new Error(`Cannot find index for ${id} in ${parent.config.id}`);
+    }
+    parent.children.splice(index, 1)[0];
+  }
+
   protected getElementById(
     elements: Array<CustomShape>,
     id: string

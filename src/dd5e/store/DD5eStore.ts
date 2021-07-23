@@ -30,6 +30,10 @@ const dd5e: Module<any, any> = {
       const service = Container.get<BoardContentService>(BoardContentService);
       service.moveNode(state.board, entry.id, entry.variation);
     },
+    deleteNode(state: any, id: string) {
+      const service = Container.get<BoardContentService>(BoardContentService);
+      service.deleteNode(state.board, id);
+    },
   },
   getters: {
     players: (state: any) => state.players,

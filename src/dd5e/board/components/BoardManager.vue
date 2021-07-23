@@ -19,7 +19,7 @@
       <v-btn icon small>
         <v-icon>mdi-cog-outline</v-icon>
       </v-btn>
-      <v-btn icon small>
+      <v-btn icon small @click="deleteNode(item.id)">
         <v-icon>mdi-delete</v-icon>
       </v-btn>
     </template>
@@ -67,6 +67,10 @@ export default Vue.extend({
         id: id,
         variation: variation,
       });
+    },
+    deleteNode(id: string): void {
+      logger.info(`TODO delete ${id} item on backend`);
+      this.$store.commit(`${this.moduleName()}/deleteNode`, id);
     },
     items(): Array<TreeEntry> {
       return this.getBoard().layers.map(this.mapShape);
