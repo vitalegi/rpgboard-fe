@@ -1,4 +1,4 @@
-import Asset from "../models/Asset";
+import Asset, { AssetPayload } from "../models/Asset";
 import { Module } from "vuex";
 
 const assets: Module<any, any> = {
@@ -6,6 +6,7 @@ const assets: Module<any, any> = {
   state: () => {
     return {
       assets: new Array<Asset>(),
+      payloads: new Array<AssetPayload>(),
     };
   },
   mutations: {
@@ -17,9 +18,18 @@ const assets: Module<any, any> = {
       const index = assets.findIndex((asset) => asset.id === id);
       assets.splice(index, 1);
     },
+    addPayload(state: any, payload: AssetPayload) {
+      state.payloads.push(payload);
+    },
   },
   getters: {
     assets: (state: any) => state.assets,
+    payloadById(state: any) {
+      return (id: string) => {
+        const payloads = state.payloads as Array<AssetPayload>;
+        return payloads.find((p) => p.id === id);
+      };
+    },
   },
   actions: {},
   modules: {},

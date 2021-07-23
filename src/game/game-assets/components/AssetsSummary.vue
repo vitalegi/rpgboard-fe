@@ -1,6 +1,11 @@
 <template>
   <v-list v-if="assets.length > 0">
     <v-list-item v-for="asset in assets" :key="asset.id">
+      <v-list-item-action v-if="selectable">
+        <v-btn elevation="2" icon @click="select(asset.id)">
+          <v-icon>mdi-plus-box</v-icon>
+        </v-btn>
+      </v-list-item-action>
       <v-list-item-content>
         {{ asset.name }}
       </v-list-item-content>
@@ -20,14 +25,20 @@ const logger = factory.getLogger("Game.GameAssets.Components.AssetsSummary");
 export default Vue.extend({
   name: "AssetsSummary",
   components: {},
-  props: {},
+  props: {
+    selectable: { type: Boolean, default: false },
+  },
   data: () => ({}),
   computed: {
     assets(): Array<Asset> {
       return this.$store.getters["assets/assets"];
     },
   },
-  methods: {},
+  methods: {
+    select(id: string): void {
+      this.$emit("select", id);
+    },
+  },
 });
 </script>
 

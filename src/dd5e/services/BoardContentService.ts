@@ -2,6 +2,7 @@ import { Service } from "typedi";
 import CustomShape, { BoardContainer, Grid } from "@/models/BoardContent";
 import random from "@/utils/RandomUtil";
 import { factory } from "@/utils/ConfigLog4j";
+import Asset from "@/game/game-assets/models/Asset";
 const logger = factory.getLogger("DD5e.Services.BoardContentService");
 
 @Service()
@@ -44,7 +45,7 @@ export default class BoardContentService {
     );
     mainGroup.children.push(this.createGrid(container.grid, 800, 400));
 
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 1; i++) {
       mainGroup.children.push(
         new CustomShape({
           componentName: "v-circle",
@@ -206,6 +207,48 @@ export default class BoardContentService {
       throw new Error(`Cannot find index for ${id} in ${parent.config.id}`);
     }
     parent.children.splice(index, 1)[0];
+  }
+
+  public addNode(
+    content: BoardContainer,
+    siblingId: string,
+    asset: CustomShape
+  ): void {
+    const sibling = this.getElementById(content.layers, siblingId);
+    if (sibling === null) {
+      throw new Error(`Cannot find element ${sibling} in board.`);
+    }
+    const parent = this.getParentById(content.layers, siblingId);
+    if (parent === null) {
+      throw new Error(`"Cannot find parent for ${siblingId} in board`);
+    }
+    const index = parent?.children.findIndex((e) => e.config.id === siblingId);
+    if (index === undefined) {
+      throw new Error(
+        `Cannot find index for ${siblingId} in ${parent.config.id}`
+      );
+    }
+    parent.children.splice(index, 0, asset);
+  }
+
+  public async createImage(asset: Asset, image: string): Promise<CustomShape> {
+    const shape = new CustomShape({
+      componentName: "image-shape",
+      id: `image-${asset.id}-${random(1000000)}`,
+      x: 0,
+      y: 0,
+      image: image,
+      draggable: false,
+      visible: true,
+    });
+    if (asset.width > 0) {
+      shape.config.width = asset.width;
+    }
+    if (asset.height > 0) {
+      shape.config.height = asset.height;
+    }
+
+    return shape;
   }
 
   protected getElementById(

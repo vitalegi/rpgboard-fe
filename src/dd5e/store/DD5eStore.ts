@@ -34,6 +34,10 @@ const dd5e: Module<any, any> = {
       const service = Container.get<BoardContentService>(BoardContentService);
       service.deleteNode(state.board, id);
     },
+    addNode(state: any, entry: { siblingId: string; node: CustomShape }) {
+      const service = Container.get<BoardContentService>(BoardContentService);
+      service.addNode(state.board, entry.siblingId, entry.node);
+    },
   },
   getters: {
     players: (state: any) => state.players,

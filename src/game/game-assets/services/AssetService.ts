@@ -21,6 +21,24 @@ export default class AssetService {
     assetPayload.id = asset.id;
     assetPayload.content = content;
     store.commit("assets/addAsset", asset);
+    store.commit("assets/addPayload", assetPayload);
     return Promise.resolve(asset.id);
+  }
+
+  public getAsset(assetId: string): Asset {
+    const assets: Array<Asset> = store.getters["assets/assets"];
+    const asset = assets.find((a) => a.id === assetId);
+    if (asset) {
+      return asset;
+    }
+    throw new Error(`Asset ${assetId} not found`);
+  }
+
+  public async getPayload(assetId: string): Promise<AssetPayload> {
+    const payload: AssetPayload = store.getters["assets/payloadById"](assetId);
+    if (payload) {
+      return payload;
+    }
+    throw new Error(`Payload ${assetId} not found`);
   }
 }
