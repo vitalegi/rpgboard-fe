@@ -26,6 +26,10 @@ const dd5e: Module<any, any> = {
       const service = Container.get<BoardContentService>(BoardContentService);
       service.updateVisibility(state.board, id);
     },
+    updateBoardDraggable(state: any, id: string) {
+      const service = Container.get<BoardContentService>(BoardContentService);
+      service.updateDraggable(state.board, id);
+    },
     moveNode(state: any, entry: { id: string; variation: number }) {
       const service = Container.get<BoardContentService>(BoardContentService);
       service.moveNode(state.board, entry.id, entry.variation);

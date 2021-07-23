@@ -1,8 +1,13 @@
 import { Service } from "typedi";
-import CustomShape, { BoardContainer, Grid } from "@/models/BoardContent";
+import CustomShape, {
+  BoardContainer,
+  Grid,
+  ShapeType,
+} from "@/models/BoardContent";
 import random from "@/utils/RandomUtil";
 import { factory } from "@/utils/ConfigLog4j";
 import Asset from "@/game/game-assets/models/Asset";
+import { relativeTimeThreshold } from "moment";
 const logger = factory.getLogger("DD5e.Services.BoardContentService");
 
 @Service()
@@ -12,6 +17,7 @@ export default class BoardContentService {
     container.grid = new Grid(true, 70, 0, 0);
 
     const layer = new CustomShape({
+      componentName: ShapeType.LAYOUT,
       id: "layer-1",
       visible: true,
       draggable: true,
@@ -19,7 +25,7 @@ export default class BoardContentService {
     container.layers.push(layer);
 
     const mainGroup = new CustomShape({
-      componentName: "v-group",
+      componentName: ShapeType.GROUP,
       id: "background-group",
       name: "background-group",
       x: 0,
@@ -30,7 +36,7 @@ export default class BoardContentService {
 
     mainGroup.children.push(
       new CustomShape({
-        componentName: "v-rect",
+        componentName: ShapeType.RECTANGLE,
         id: "background",
         name: "background",
         x: 2,
@@ -48,7 +54,7 @@ export default class BoardContentService {
     for (let i = 0; i < 1; i++) {
       mainGroup.children.push(
         new CustomShape({
-          componentName: "v-circle",
+          componentName: ShapeType.CIRCLE,
           id: `random-circle-${i}`,
           x: random(500) + 100,
           y: random(300) + 100,
@@ -62,7 +68,7 @@ export default class BoardContentService {
 
       mainGroup.children.push(
         new CustomShape({
-          componentName: "image-shape",
+          componentName: ShapeType.IMAGE,
           id: `random-image-${i}`,
           x: random(500) + 100,
           y: random(300) + 100,
@@ -76,7 +82,7 @@ export default class BoardContentService {
     }
     mainGroup.children.push(
       new CustomShape({
-        componentName: "image-shape",
+        componentName: ShapeType.IMAGE,
         id: "big-image",
         x: 200,
         y: 22,
@@ -89,7 +95,7 @@ export default class BoardContentService {
     );
     mainGroup.children.push(
       new CustomShape({
-        componentName: "v-circle",
+        componentName: ShapeType.CIRCLE,
         id: "pink-circle",
         x: 450,
         y: 250,
@@ -102,7 +108,7 @@ export default class BoardContentService {
     );
     mainGroup.children.push(
       new CustomShape({
-        componentName: "v-circle",
+        componentName: ShapeType.CIRCLE,
         id: "yellow-circle",
         x: 90,
         y: 60,
@@ -119,7 +125,7 @@ export default class BoardContentService {
 
   public createGrid(grid: Grid, width: number, height: number): CustomShape {
     const gridGroup = new CustomShape({
-      componentName: "v-group",
+      componentName: ShapeType.GROUP,
       id: "grid-group",
       name: "grid-group",
       x: 0,
@@ -131,7 +137,7 @@ export default class BoardContentService {
     for (let x = gridStep; x < width; x += gridStep) {
       gridGroup.children.push(
         new CustomShape({
-          componentName: "v-line",
+          componentName: ShapeType.LINE,
           id: `grid-vertical-${x}`,
           points: [x, 0, x, height],
           stroke: "black",
@@ -145,7 +151,7 @@ export default class BoardContentService {
     for (let y = gridStep; y < height; y += gridStep) {
       gridGroup.children.push(
         new CustomShape({
-          componentName: "v-line",
+          componentName: ShapeType.LINE,
           id: `grid-horizontal-${y}`,
           points: [0, y, width, y],
           stroke: "black",
@@ -165,6 +171,14 @@ export default class BoardContentService {
       throw new Error(`Cannot find element ${id} in board.`);
     }
     target.config.visible = !target.config.visible;
+  }
+
+  public updateDraggable(content: BoardContainer, id: string): void {
+    const target = this.getElementById(content.layers, id);
+    if (target === null) {
+      throw new Error(`Cannot find element ${id} in board.`);
+    }
+    target.config.draggable = !target.config.draggable;
   }
 
   public moveNode(
@@ -211,29 +225,49 @@ export default class BoardContentService {
 
   public addNode(
     content: BoardContainer,
-    siblingId: string,
+    referenceId: string,
     asset: CustomShape
   ): void {
-    const sibling = this.getElementById(content.layers, siblingId);
-    if (sibling === null) {
-      throw new Error(`Cannot find element ${sibling} in board.`);
+    const reference = this.getElementById(content.layers, referenceId);
+    if (reference === null) {
+      throw new Error(`Cannot find element ${referenceId} in board.`);
     }
-    const parent = this.getParentById(content.layers, siblingId);
-    if (parent === null) {
-      throw new Error(`"Cannot find parent for ${siblingId} in board`);
-    }
-    const index = parent?.children.findIndex((e) => e.config.id === siblingId);
-    if (index === undefined) {
-      throw new Error(
-        `Cannot find index for ${siblingId} in ${parent.config.id}`
+    if (ShapeType.isFolder(reference)) {
+      logger.info(`Inserting in a folder`);
+      reference.children.push(asset);
+    } else {
+      logger.info(`Inserting near an asset`);
+      const parent = this.getParentById(content.layers, referenceId);
+      if (parent === null) {
+        throw new Error(`"Cannot find parent for ${referenceId} in board`);
+      }
+      const index = parent?.children.findIndex(
+        (e) => e.config.id === referenceId
       );
+      if (index === undefined) {
+        throw new Error(
+          `Cannot find index for ${referenceId} in ${parent.config.id}`
+        );
+      }
+      parent.children.splice(index + 1, 0, asset);
     }
-    parent.children.splice(index, 0, asset);
+  }
+
+  public createGroup(name: string): CustomShape {
+    return new CustomShape({
+      componentName: ShapeType.GROUP,
+      id: `group-${random(1000000)}`,
+      name: name,
+      x: 0,
+      y: 0,
+      visible: true,
+      draggable: true,
+    });
   }
 
   public async createImage(asset: Asset, image: string): Promise<CustomShape> {
     const shape = new CustomShape({
-      componentName: "image-shape",
+      componentName: ShapeType.IMAGE,
       id: `image-${asset.id}-${random(1000000)}`,
       x: 0,
       y: 0,

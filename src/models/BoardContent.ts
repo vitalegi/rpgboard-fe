@@ -1,5 +1,18 @@
+export class ShapeType {
+  public static IMAGE = "image-shape";
+  public static GROUP = "v-group";
+  public static LAYOUT = "v-layout";
+  public static RECTANGLE = "v-rect";
+  public static CIRCLE = "v-circle";
+  public static LINE = "v-line";
+
+  public static isFolder(shape: CustomShape): boolean {
+    const folders = [ShapeType.GROUP, ShapeType.LAYOUT];
+    return folders.findIndex((f) => f === shape.config.componentName) !== -1;
+  }
+}
+
 export default class CustomShape {
-  componentName = "";
   config: any = {};
   children = new Array<CustomShape>();
 

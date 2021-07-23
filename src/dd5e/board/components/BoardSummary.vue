@@ -8,7 +8,7 @@
     <template v-slot:append="{ item }" v-if="showActions">
       <IconButton
         type="eye"
-        :selected="item.visible"
+        :selected="item.config.visible"
         :editable="true"
         @change="changeVisibility(item.id)"
       />
@@ -19,14 +19,17 @@
         <v-icon>mdi-chevron-up</v-icon>
       </v-btn>
       <v-btn icon small>
-        <v-icon>mdi-cog</v-icon>
-      </v-btn>
-      <v-btn icon small>
         <v-icon>mdi-cog-outline</v-icon>
       </v-btn>
       <v-btn icon small @click="deleteNode(item.id)">
         <v-icon>mdi-delete</v-icon>
       </v-btn>
+      <BoardManagerItemOptions
+        :config="item.config"
+        :disabled="false"
+        @changeVisibility="changeVisibility(item.id)"
+        @changeDraggable="changeDraggable(item.id)"
+      />
     </template>
   </v-treeview>
 </template>
@@ -34,6 +37,7 @@
 <script lang="ts">
 import Vue from "vue";
 import IconButton from "../../../components/IconButton.vue";
+import BoardManagerItemOptions from "./BoardManagerItemOptions.vue";
 import { DD5eStoreService } from "@/dd5e/store/DD5eStore";
 import Container from "typedi";
 import CustomShape, { BoardContainer } from "@/models/BoardContent";
@@ -43,13 +47,13 @@ const logger = factory.getLogger("Components.BoardSummary");
 type TreeEntry = {
   id: string;
   name: string;
-  visible: boolean;
+  config: any;
   children: Array<TreeEntry>;
 };
 
 export default Vue.extend({
   name: "BoardSummary",
-  components: { IconButton },
+  components: { IconButton, BoardManagerItemOptions },
   props: {
     selectable: { type: Boolean, default: false },
     showActions: { type: Boolean, default: false },
@@ -70,6 +74,10 @@ export default Vue.extend({
       logger.info(`TODO change visibility of ${id} item on backend`);
       this.$store.commit(`${this.moduleName()}/updateBoardVisibility`, id);
     },
+    changeDraggable(id: string): void {
+      logger.info(`TODO change draggable of ${id} item on backend`);
+      this.$store.commit(`${this.moduleName()}/updateBoardDraggable`, id);
+    },
     move(id: string, variation: number): void {
       logger.info(`TODO move ${id} of ${variation} item on backend`);
       this.$store.commit(`${this.moduleName()}/moveNode`, {
@@ -88,7 +96,7 @@ export default Vue.extend({
       const element: TreeEntry = {
         id: shape.config.id,
         name: shape.config.id,
-        visible: shape.config.visible,
+        config: shape.config,
         children: new Array<TreeEntry>(),
       };
       const children = shape.children;

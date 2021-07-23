@@ -37,7 +37,7 @@ const SELECT_ASSET = "SELECT_ASSET";
 const SELECT_TARGET = "SELECT_TARGET";
 
 export default Vue.extend({
-  name: "BoardManagerAdd",
+  name: "BoardManagerAddImage",
   components: { AssetsSummary, BoardSummary },
   data: () => ({
     dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
