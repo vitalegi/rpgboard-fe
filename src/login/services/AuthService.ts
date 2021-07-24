@@ -1,8 +1,8 @@
 import { Inject, Service } from "typedi";
 import firebase from "firebase/app";
-import { factory } from "@/utils/ConfigLog4j";
 import store from "@/store";
 import { cookieUtil } from "@/utils/CookieUtil";
+import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Login.Services.AuthService");
 
 @Service()
@@ -28,7 +28,6 @@ export default class AuthService {
     const user = await firebase
       .auth()
       .signInWithEmailAndPassword(email, password);
-
     this.successfulLogin(user);
 
     return user;
@@ -37,8 +36,10 @@ export default class AuthService {
     const provider = new firebase.auth.FacebookAuthProvider();
     return firebase.auth().signInWithRedirect(provider);
   }
-  protected successfulLogin(credential: firebase.auth.UserCredential): void {
-    store.commit("auth/login", this.getUserId());
+  protected successfulLogin(
+    userCredential: firebase.auth.UserCredential
+  ): void {
+    store.commit("auth/login", userCredential.user);
   }
   public async getIdToken(): Promise<string> {
     const user = firebase.auth().currentUser;
@@ -46,23 +47,6 @@ export default class AuthService {
       throw new Error("User not authenticated");
     }
     return await user.getIdToken(/* forceRefresh */ true);
-  }
-  public isAuthenticated(): boolean {
-    const firebaseAuth = firebase.auth().currentUser !== null;
-    const cookieAuth = cookieUtil.getCookie("USERID") !== undefined;
-    logger.debug(
-      `Is authenticated? ${
-        firebase.auth().currentUser
-      }: ${firebaseAuth}, ${cookieUtil.getCookie("USERID")}: ${cookieAuth}`
-    );
-    return firebaseAuth || cookieAuth;
-  }
-  public getUserId(): string {
-    const user = firebase.auth().currentUser;
-    if (user === null) {
-      throw new Error("User not authenticated");
-    }
-    return user.uid;
   }
   public async logout(): Promise<void> {
     await firebase.auth().signOut();

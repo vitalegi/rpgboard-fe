@@ -1,24 +1,25 @@
 import { Module } from "vuex";
+import firebase from "firebase/app";
+import { factory } from "@/utils/ConfigLog4j";
+const logger = factory.getLogger("Login.Store.AuthStore");
 
 const auth: Module<any, any> = {
   namespaced: true,
   state: {
-    authenticated: false,
-    userId: "",
+    user: {},
   },
   mutations: {
-    login(state: any, userId: string) {
-      state.userId = userId;
-      state.authenticated = true;
+    login(state: any, user: firebase.auth.UserCredential) {
+      state.user = user;
     },
     logout(state: any) {
-      state.userId = "";
-      state.authenticated = false;
+      state.user = null;
     },
   },
   getters: {
-    userId: (state: any) => state.userId,
-    authenticated: (state: any) => state.authenticated,
+    userId: (state: any) => state.user.uid,
+    authenticated: (state: any): boolean => state.user?.uid,
+    verified: (state: any) => state.user.emailVerified,
   },
   actions: {},
   modules: {},

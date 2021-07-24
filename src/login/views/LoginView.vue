@@ -32,9 +32,6 @@ export default Vue.extend({
     getUserId(): string {
       return this.$store.getters["auth/userId"];
     },
-    isAuthenticated(): boolean {
-      return this.$store.getters["auth/authenticated"];
-    },
   },
 });
 </script>

@@ -9,7 +9,7 @@ import vuetify from "./plugins/vuetify";
 import VueKonva from "vue-konva";
 
 // firebase sdk
-import firebase from "firebase";
+import firebase from "firebase/app";
 
 // firebase used modules
 import "firebase/analytics";
@@ -29,13 +29,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
-store.commit("auth/login", cookieUtil.getCookie("USERID"));
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
-    cookieUtil.setCookie("USERID", user.uid);
-    store.commit("auth/login", user.uid);
+    store.commit("auth/login", user);
   } else {
-    cookieUtil.removeCookie("USERID");
     store.commit("auth/logout");
   }
 });
