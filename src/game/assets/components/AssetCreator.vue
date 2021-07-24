@@ -17,9 +17,9 @@ import Vue from "vue";
 import { Container } from "typedi";
 import FileContent from "../models/FileContent";
 import AssetService from "../services/AssetService";
-import FileUpload from "@/components/FileUpload.vue";
+import FileUpload from "./FileUpload.vue";
 import { factory } from "@/utils/ConfigLog4j";
-const logger = factory.getLogger("Game.GameAssets.Components.AssetCreator");
+const logger = factory.getLogger("Game.Assets.Components.AssetCreator");
 
 export default Vue.extend({
   name: "AssetsSummary",

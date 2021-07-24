@@ -18,9 +18,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { factory } from "@/utils/ConfigLog4j";
 import Asset from "../models/Asset";
-const logger = factory.getLogger("Game.GameAssets.Components.AssetsSummary");
+import { factory } from "@/utils/ConfigLog4j";
+const logger = factory.getLogger("Game.Assets.Components.AssetsSummary");
 
 export default Vue.extend({
   name: "AssetsSummary",

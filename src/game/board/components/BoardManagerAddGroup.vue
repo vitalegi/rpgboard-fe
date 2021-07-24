@@ -37,7 +37,7 @@ import Vue from "vue";
 import Container from "typedi";
 import BoardSummary from "./BoardSummary.vue";
 import BoardContentService from "../services/BoardContentService";
-import AssetService from "@/game/game-assets/services/AssetService";
+import AssetService from "@/game/assets/services/AssetService";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Board.Components.BoardManagerAddGroup");
 

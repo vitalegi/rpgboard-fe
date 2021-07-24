@@ -5,7 +5,7 @@ import CustomShape, {
   ShapeType,
 } from "../models/BoardContent";
 import random from "@/utils/RandomUtil";
-import Asset from "@/game/game-assets/models/Asset";
+import Asset from "@/game/assets/models/Asset";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Board.Services.BoardContentService");
 

@@ -13,9 +13,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import FileContent from "@/game/game-assets/models/FileContent";
+import FileContent from "../models/FileContent";
 import { factory } from "@/utils/ConfigLog4j";
-const logger = factory.getLogger("Components.FileUpload");
+const logger = factory.getLogger("Game.Assets.Components.FileUpload");
 
 export default Vue.extend({
   name: "FileUpload",

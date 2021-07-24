@@ -11,7 +11,7 @@ import AssetCreator from "./AssetCreator.vue";
 import AssetsSummary from "./AssetsSummary.vue";
 import FileContent from "../models/FileContent";
 import { factory } from "@/utils/ConfigLog4j";
-const logger = factory.getLogger("Game.GameAssets.Components.AssetsManager");
+const logger = factory.getLogger("Game.Assets.Components.AssetsManager");
 
 export default Vue.extend({
   name: "AssetsManager",

@@ -1,8 +1,8 @@
 import { Service } from "typedi";
 import store from "@/store";
-import { factory } from "@/utils/ConfigLog4j";
 import Asset, { AssetPayload } from "../models/Asset";
-const logger = factory.getLogger("Game.GameAssets.Services.AssetService");
+import { factory } from "@/utils/ConfigLog4j";
+const logger = factory.getLogger("Game.Assets.Services.AssetService");
 
 @Service()
 export default class AssetService {
