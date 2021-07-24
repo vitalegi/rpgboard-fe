@@ -12,7 +12,7 @@ import Vue from "vue";
 import BoardManagerAddImage from "./BoardManagerAddImage.vue";
 import BoardManagerAddGroup from "./BoardManagerAddGroup.vue";
 import { factory } from "@/utils/ConfigLog4j";
-const logger = factory.getLogger("Components.BoardManagerBar");
+const logger = factory.getLogger("Game.Board.Components.BoardManagerBar");
 
 export default Vue.extend({
   name: "BoardManagerBar",

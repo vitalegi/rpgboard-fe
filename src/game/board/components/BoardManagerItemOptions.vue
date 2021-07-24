@@ -40,10 +40,10 @@
 <script lang="ts">
 import Vue from "vue";
 import ListItemSwitch from "@/components/ListItemSwitch.vue";
-import { DD5eStoreService } from "@/dd5e/store/DD5eStore";
-import Container from "typedi";
 import { factory } from "@/utils/ConfigLog4j";
-const logger = factory.getLogger("Components.BoardManagerItemOptions");
+const logger = factory.getLogger(
+  "Game.Board.Components.BoardManagerItemOptions"
+);
 
 export default Vue.extend({
   name: "BoardManagerItemOptions",
@@ -53,7 +53,6 @@ export default Vue.extend({
     disabled: { type: Boolean, default: false },
   },
   data: () => ({
-    dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
     fav: true,
     menu: false,
     message: false,

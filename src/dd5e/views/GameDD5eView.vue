@@ -21,11 +21,11 @@
 import Vue from "vue";
 import { Container } from "typedi";
 import GameMenus from "@/dd5e/components/GameMenus.vue";
-import Board from "@/components/Board.vue";
+import Board from "@/game/board/components/Board.vue";
 import GamePlayer from "@/models/GamePlayer";
-import { BoardContainer } from "@/models/BoardContent";
+import { BoardContainer } from "@/game/board/models/BoardContent";
 import BackendService from "@/services/BackendService";
-import BoardContentService from "@/dd5e/services/BoardContentService";
+import BoardContentService from "@/game/board/services/BoardContentService";
 import store from "@/store";
 import dd5e, { DD5eStoreService } from "../store/DD5eStore";
 import { factory } from "@/utils/ConfigLog4j";
@@ -49,7 +49,7 @@ export default Vue.extend({
   }),
   computed: {
     boardContent(): BoardContainer {
-      return this.$store.getters[`${this.moduleName()}/board`];
+      return this.$store.getters[`board/board`];
     },
   },
   methods: {
@@ -116,7 +116,7 @@ export default Vue.extend({
 
     // setup board content
     const boardContent = this.boardContentService.createBoardContent();
-    this.$store.commit(`${this.moduleName()}/setBoard`, boardContent);
+    this.$store.commit(`board/setBoard`, boardContent);
   },
 });
 </script>

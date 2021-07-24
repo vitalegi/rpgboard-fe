@@ -34,13 +34,12 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { DD5eStoreService } from "@/dd5e/store/DD5eStore";
 import Container from "typedi";
 import BoardSummary from "./BoardSummary.vue";
-import { factory } from "@/utils/ConfigLog4j";
-import BoardContentService from "@/dd5e/services/BoardContentService";
+import BoardContentService from "../services/BoardContentService";
 import AssetService from "@/game/game-assets/services/AssetService";
-const logger = factory.getLogger("Components.BoardManagerAdd");
+import { factory } from "@/utils/ConfigLog4j";
+const logger = factory.getLogger("Game.Board.Components.BoardManagerAddGroup");
 
 const SELECT_NAME = "SELECT_NAME";
 const SELECT_TARGET = "SELECT_TARGET";
@@ -49,7 +48,6 @@ export default Vue.extend({
   name: "BoardManagerAddGroup",
   components: { BoardSummary },
   data: () => ({
-    dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
     boardContentService: Container.get<BoardContentService>(
       BoardContentService
     ),
@@ -67,14 +65,10 @@ export default Vue.extend({
     },
   },
   methods: {
-    moduleName(): string {
-      const gameId = this.$store.getters["game/getGameId"];
-      return this.dd5eService.moduleName(gameId);
-    },
     async addGroup(id: string, name: string): Promise<void> {
       logger.info(`TODO add group ${name} after ${id} item on backend`);
       const group = await this.boardContentService.createGroup(name);
-      this.$store.commit(`${this.moduleName()}/addNode`, {
+      this.$store.commit(`board/addNode`, {
         siblingId: id,
         node: group,
       });

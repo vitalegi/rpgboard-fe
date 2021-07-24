@@ -27,11 +27,11 @@ import Vue from "vue";
 import { DD5eStoreService } from "@/dd5e/store/DD5eStore";
 import Container from "typedi";
 import BoardSummary from "./BoardSummary.vue";
+import BoardContentService from "../services/BoardContentService";
 import AssetsSummary from "@/game/game-assets/components/AssetsSummary.vue";
-import { factory } from "@/utils/ConfigLog4j";
-import BoardContentService from "@/dd5e/services/BoardContentService";
 import AssetService from "@/game/game-assets/services/AssetService";
-const logger = factory.getLogger("Components.BoardManagerAdd");
+import { factory } from "@/utils/ConfigLog4j";
+const logger = factory.getLogger("Game.Board.Components.BoardManagerAddImage");
 
 const SELECT_ASSET = "SELECT_ASSET";
 const SELECT_TARGET = "SELECT_TARGET";
@@ -58,10 +58,6 @@ export default Vue.extend({
     },
   },
   methods: {
-    moduleName(): string {
-      const gameId = this.$store.getters["game/getGameId"];
-      return this.dd5eService.moduleName(gameId);
-    },
     async addNode(id: string, assetId: string): Promise<void> {
       logger.info(`TODO add asset ${assetId} after ${id} item on backend`);
       const asset = this.assetService.getAsset(assetId);
@@ -70,7 +66,7 @@ export default Vue.extend({
         asset,
         payload.content
       );
-      this.$store.commit(`${this.moduleName()}/addNode`, {
+      this.$store.commit(`board/addNode`, {
         siblingId: id,
         node: content,
       });

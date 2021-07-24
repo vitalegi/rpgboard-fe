@@ -10,7 +10,7 @@ import Vue from "vue";
 import { factory } from "@/utils/ConfigLog4j";
 import BoardSummary from "./BoardSummary.vue";
 import BoardManagerBar from "./BoardManagerBar.vue";
-const logger = factory.getLogger("Components.BoardManager");
+const logger = factory.getLogger("Game.Board.Components.BoardManager");
 
 export default Vue.extend({
   name: "BoardManager",

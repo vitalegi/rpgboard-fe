@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import BoardManager from "@/dd5e/board/components/BoardManager.vue";
+import BoardManager from "@/game/board/components/BoardManager.vue";
 import AssetsManager from "@/game/game-assets/components/AssetsManager.vue";
 import GamePlayersSummary from "@/dd5e/components/GamePlayersSummary.vue";
 import { factory } from "@/utils/ConfigLog4j";

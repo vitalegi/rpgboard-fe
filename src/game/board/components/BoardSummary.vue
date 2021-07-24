@@ -36,13 +36,11 @@
 
 <script lang="ts">
 import Vue from "vue";
-import IconButton from "../../../components/IconButton.vue";
+import IconButton from "@/components/IconButton.vue";
 import BoardManagerItemOptions from "./BoardManagerItemOptions.vue";
-import { DD5eStoreService } from "@/dd5e/store/DD5eStore";
-import Container from "typedi";
-import CustomShape, { BoardContainer } from "@/models/BoardContent";
+import CustomShape, { BoardContainer } from "../models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
-const logger = factory.getLogger("Components.BoardSummary");
+const logger = factory.getLogger("Game.Board.Components.BoardSummary");
 
 type TreeEntry = {
   id: string;
@@ -58,36 +56,30 @@ export default Vue.extend({
     selectable: { type: Boolean, default: false },
     showActions: { type: Boolean, default: false },
   },
-  data: () => ({
-    dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
-  }),
+  data: () => ({}),
   computed: {},
   methods: {
     getBoard(): BoardContainer {
-      return this.$store.getters[`${this.moduleName()}/board`];
-    },
-    moduleName(): string {
-      const gameId = this.$store.getters["game/getGameId"];
-      return this.dd5eService.moduleName(gameId);
+      return this.$store.getters[`board/board`];
     },
     changeVisibility(id: string): void {
       logger.info(`TODO change visibility of ${id} item on backend`);
-      this.$store.commit(`${this.moduleName()}/updateBoardVisibility`, id);
+      this.$store.commit(`board/updateBoardVisibility`, id);
     },
     changeDraggable(id: string): void {
       logger.info(`TODO change draggable of ${id} item on backend`);
-      this.$store.commit(`${this.moduleName()}/updateBoardDraggable`, id);
+      this.$store.commit(`board/updateBoardDraggable`, id);
     },
     move(id: string, variation: number): void {
       logger.info(`TODO move ${id} of ${variation} item on backend`);
-      this.$store.commit(`${this.moduleName()}/moveNode`, {
+      this.$store.commit(`board/moveNode`, {
         id: id,
         variation: variation,
       });
     },
     deleteNode(id: string): void {
       logger.info(`TODO delete ${id} item on backend`);
-      this.$store.commit(`${this.moduleName()}/deleteNode`, id);
+      this.$store.commit(`board/deleteNode`, id);
     },
     items(): Array<TreeEntry> {
       return this.getBoard().layers.map(this.mapShape);

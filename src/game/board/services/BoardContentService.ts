@@ -3,12 +3,11 @@ import CustomShape, {
   BoardContainer,
   Grid,
   ShapeType,
-} from "@/models/BoardContent";
+} from "../models/BoardContent";
 import random from "@/utils/RandomUtil";
-import { factory } from "@/utils/ConfigLog4j";
 import Asset from "@/game/game-assets/models/Asset";
-import { relativeTimeThreshold } from "moment";
-const logger = factory.getLogger("DD5e.Services.BoardContentService");
+import { factory } from "@/utils/ConfigLog4j";
+const logger = factory.getLogger("Game.Board.Services.BoardContentService");
 
 @Service()
 export default class BoardContentService {

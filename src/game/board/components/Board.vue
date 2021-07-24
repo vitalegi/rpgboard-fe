@@ -25,8 +25,8 @@ import TimeUtil from "@/utils/TimeUtil";
 import GenericShape from "@/components/GenericShape.vue";
 
 import { factory } from "@/utils/ConfigLog4j";
-import { BoardContainer } from "@/models/BoardContent";
-const logger = factory.getLogger("Components.Board");
+import { BoardContainer } from "../models/BoardContent";
+const logger = factory.getLogger("Game.Board.Components.Board");
 
 export default Vue.extend({
   name: "Board",
