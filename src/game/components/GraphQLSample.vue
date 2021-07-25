@@ -16,6 +16,17 @@
       </v-col>
     </v-row>
     <v-row>
+      <v-col> subLinks </v-col>
+      <v-col>
+        <ul>
+          <li v-for="link in subLinks" :key="link.url">
+            {{ link.postedBy.name }} posted {{ link.url }}
+          </li>
+        </ul>
+      </v-col>
+    </v-row>
+
+    <v-row>
       <v-col>
         <v-text-field
           v-model="link"
@@ -63,6 +74,41 @@ export default Vue.extend({
       `,
       variables: { secure: true },
       update: (data) => data.allLinks,
+    },
+    subLinks: {
+      query: gql`
+        query($secure: Boolean) {
+          allLinks(secureOnly: $secure) {
+            url
+            postedBy {
+              name
+            }
+          }
+        }
+      `,
+      variables: { secure: true },
+      subscribeToMore: {
+        document: gql`
+          subscription links {
+            links {
+              url
+              postedBy {
+                name
+              }
+            }
+          }
+        `,
+        // Variables passed to the subscription. Since we're using a function,
+        // they are reactive
+        variables() {
+          return {};
+        },
+        // Mutate the previous result
+        updateQuery: (previousResult, { subscriptionData }) => {
+          // Here, return the new result from the previous with the new data
+          console.log("updateQuery", previousResult, subscriptionData);
+        },
+      },
     },
   },
   computed: {},
