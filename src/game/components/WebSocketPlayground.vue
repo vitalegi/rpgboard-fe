@@ -5,6 +5,12 @@
         <v-btn @click="init()">init</v-btn>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-text-field v-model="name"></v-text-field>
+        <v-btn @click="add()">Add</v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -15,30 +21,30 @@ import EventBus from "vertx3-eventbus-client";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Components.SelectGame");
 
+let eventBus: EventBus.EventBus;
+
 export default Vue.extend({
   name: "WebSocketPlayground",
 
-  data: () => ({}),
+  data: () => ({ name: "" }),
   computed: {},
   methods: {
     init() {
-      const eventBus = new EventBus("http://localhost:8888/eventbus");
+      eventBus = new EventBus("http://localhost:8888/eventbus");
       eventBus.enableReconnect(true);
 
       eventBus.onopen = () => {
         console.log("onopen");
         eventBus.registerHandler(
-          "websocket.names",
-          (err: any, message: any) => {
-            console.log("received ", message);
-            console.error("error", err);
+          "external.games",
+          (err: Error, message: any) => {
+            console.log("getAll ", message, err);
           }
         );
-
-        console.log("Sending msg");
-        eventBus.publish("websocket.add-name", { name: "AAAA", id: 111 });
-        console.log("msg sent");
       };
+    },
+    add() {
+      eventBus.publish("external.game.add", { name: this.name });
     },
   },
 });
