@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-
+import firebase from "firebase/app";
 import EventBus from "vertx3-eventbus-client";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Components.SelectGame");
@@ -29,12 +29,15 @@ export default Vue.extend({
   data: () => ({ name: "" }),
   computed: {},
   methods: {
-    init() {
-      eventBus = new EventBus("http://localhost:8888/eventbus");
+    async init() {
+      const token = await firebase.auth().currentUser?.getIdToken();
+      eventBus = new EventBus(
+        `${process.env.VUE_APP_WEBSOCKET_ENDPOINT}?jwt=${token}`
+      );
       eventBus.enableReconnect(true);
 
       eventBus.onopen = () => {
-        console.log("onopen");
+        console.log("Connection is opened");
         eventBus.registerHandler(
           "external.games",
           (err: Error, message: any) => {
