@@ -48,6 +48,7 @@ export default class BackendService {
     const response = await new BackendWebService().url("/game").post().call({
       name: name,
       open: true,
+      type: gameType,
     });
     return this.dataMapper.gameDeserialize(response.data);
   }

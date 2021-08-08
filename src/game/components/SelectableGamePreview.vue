@@ -4,7 +4,7 @@
       {{ game.name }}
     </v-card-title>
     <v-card-text style="text-align: left">
-      Game: {{ game.gameType }}<br />
+      Game: {{ game.type }}<br />
       Status: {{ game.status }}
     </v-card-text>
     <v-card-actions>

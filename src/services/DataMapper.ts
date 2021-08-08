@@ -15,7 +15,7 @@ export default class DataMapper {
     game.gameId = entry.id;
     game.name = entry.name;
     game.status = entry.open ? GameStatus.OPEN : GameStatus.CLOSE;
-    game.type = "DD5e";
+    game.type = entry.type;
     return game;
   }
 
