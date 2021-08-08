@@ -7,6 +7,7 @@ import { factory } from "@/utils/ConfigLog4j";
 import { Service } from "typedi";
 import { BackendWebService } from "@/utils/WebService";
 import DataMapper from "./DataMapper";
+import User from "@/models/User";
 const logger = factory.getLogger("Service.GameService");
 
 @Service()
@@ -22,6 +23,15 @@ export default class BackendService {
 
     const data = response.data as Array<any>;
     return data.map(this.dataMapper.gameDeserialize);
+  }
+
+  public async registerUser(name: string): Promise<User> {
+    const response = await new BackendWebService()
+      .url("/user/registration")
+      .post()
+      .call({ name: name });
+
+    return this.dataMapper.userDeserialize(response.data);
   }
 
   public joinGame(gameId: string): Promise<void> {

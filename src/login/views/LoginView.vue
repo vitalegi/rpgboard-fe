@@ -2,13 +2,25 @@
   <v-card class="login login-card" max-width="600">
     <v-card-text>
       <v-container>
-        <v-row justify="center">
-          <v-col> <EmailPasswordLogin /> </v-col>
-        </v-row>
-        <v-divider></v-divider>
         <v-row>
           <v-col cols="12">
-            <facebook-login />
+            <v-tabs v-model="tab" fixed-tabs>
+              <v-tabs-slider color="primary"></v-tabs-slider>
+              <v-tab key="signup"> Sign-up </v-tab>
+              <v-tab key="signin"> Sign-in </v-tab>
+            </v-tabs>
+          </v-col>
+        </v-row>
+        <v-row justify="center">
+          <v-col cols="12">
+            <v-tabs-items v-model="tab">
+              <v-tab-item key="signup">
+                <EmailPasswordRegistration />
+              </v-tab-item>
+              <v-tab-item key="signin">
+                <EmailPasswordLogin />
+              </v-tab-item>
+            </v-tabs-items>
           </v-col>
         </v-row>
       </v-container>
@@ -18,14 +30,14 @@
 
 <script lang="ts">
 import Vue from "vue";
-import FacebookLogin from "@/login/components/FacebookLogin.vue";
 import EmailPasswordLogin from "@/login/components/EmailPasswordLogin.vue";
+import EmailPasswordRegistration from "@/login/components/EmailPasswordRegistration.vue";
 
 export default Vue.extend({
   name: "LoginView",
   components: {
-    FacebookLogin,
     EmailPasswordLogin,
+    EmailPasswordRegistration,
   },
   data: () => ({ tab: "signup" }),
   methods: {

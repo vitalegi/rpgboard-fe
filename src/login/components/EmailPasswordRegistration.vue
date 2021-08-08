@@ -6,6 +6,9 @@
           <v-text-field v-model="email" label="E-Mail" required></v-text-field>
         </v-col>
         <v-col cols="12">
+          <v-text-field v-model="name" label="Username" required></v-text-field>
+        </v-col>
+        <v-col cols="12">
           <v-text-field
             v-model="password"
             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -18,11 +21,8 @@
           <div style="color: red">{{ error }}</div>
         </v-col>
         <v-col cols="12">
-          <v-btn @click="login(email, password)" color="primary">
-            Sign-in
-          </v-btn>
-          <v-btn @click="login('test@localhost.it', 'password')">
-            Dummy login
+          <v-btn @click="register(email, name, password)" color="primary">
+            Sign-up
           </v-btn>
         </v-col>
       </v-row>
@@ -36,25 +36,31 @@ import AuthService from "@/login/services/AuthService";
 import { Container } from "typedi";
 import { factory } from "@/utils/ConfigLog4j";
 import BackendService from "@/services/BackendService";
-const logger = factory.getLogger("Login.Components.EmailPasswordLogin");
+const logger = factory.getLogger("Login.Components.EmailPasswordRegistration");
 
 export default Vue.extend({
-  name: "EmailPasswordLogin",
+  name: "EmailPasswordRegistration",
   components: {},
   props: {},
   data: () => ({
     email: "",
     password: "",
+    name: "",
     showPassword: false,
     error: "",
     authService: Container.get<AuthService>(AuthService),
     backendService: Container.get<BackendService>(BackendService),
   }),
   methods: {
-    async login(email: string, password: string): Promise<void> {
+    async register(
+      email: string,
+      name: string,
+      password: string
+    ): Promise<void> {
       try {
         this.error = "";
-        await this.authService.login(email, password);
+        await this.authService.signup(email, password);
+        await this.backendService.registerUser(name);
       } catch (error) {
         this.accessFailure(error);
       }

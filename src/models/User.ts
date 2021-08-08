@@ -2,7 +2,7 @@ export default class User {
   id;
   name;
 
-  public constructor(id: string, name: string) {
+  public constructor(id = "", name = "") {
     this.id = id;
     this.name = name;
   }
