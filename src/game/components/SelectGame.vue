@@ -50,13 +50,16 @@ export default Vue.extend({
       }
       return arr;
     },
+    async updateGames(): Promise<void> {
+      this.loading = true;
+      const games = await this.backendService.getGames();
+      ArrayUtil.removeAll(this.games);
+      this._games().push(...games);
+      this.loading = false;
+    },
   },
   async created() {
-    this.loading = true;
-    const games = await this.backendService.getGames();
-    ArrayUtil.removeAll(this.games);
-    this._games().push(...games);
-    this.loading = false;
+    this.updateGames();
   },
 });
 </script>

@@ -42,12 +42,29 @@ export default class AuthService {
     store.commit("auth/login", userCredential.user);
   }
   public async getIdToken(): Promise<string> {
+    return this.getIdTokenWithRetries(0);
+  }
+
+  protected async getIdTokenWithRetries(retry: number): Promise<string> {
     const user = firebase.auth().currentUser;
-    if (user === null) {
+    if (user !== null) {
+      return await user.getIdToken(/* forceRefresh */ true);
+    }
+    const retries = [10, 50, 100, 150, 250, 1000];
+    if (retry > retries.length) {
       throw new Error("User not authenticated");
     }
-    return await user.getIdToken(/* forceRefresh */ true);
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        logger.info(`Retry attempt #${retry + 1}`);
+        this.getIdTokenWithRetries(retry + 1).then(
+          (token) => resolve(token),
+          (e) => reject(e)
+        );
+      }, retries[retry]);
+    });
   }
+
   public async logout(): Promise<void> {
     await firebase.auth().signOut();
     return Promise.resolve();

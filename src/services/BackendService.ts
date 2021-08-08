@@ -5,40 +5,23 @@ import GameStatus from "@/models/GameStatus";
 import GameRole from "@/models/GameRole";
 import { factory } from "@/utils/ConfigLog4j";
 import { Service } from "typedi";
-import { WebService } from "@/utils/WebService";
+import { BackendWebService } from "@/utils/WebService";
+import DataMapper from "./DataMapper";
 const logger = factory.getLogger("Service.GameService");
 
 @Service()
 export default class BackendService {
-  public getGames(): Promise<Array<Game>> {
-    logger.info("getGames");
-    const ws = new WebService()
-      .url("http://localhost:8888/api/accounts")
-      .get()
-      .call()
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log("FAIL", err);
-      });
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const games = [];
-        for (let i = 0; i < 10; i++) {
-          games.push(
-            this._createGame(
-              `${i}`,
-              `Game ${i}`,
-              `Master ${i}`,
-              GameStatus.OPEN
-            )
-          );
-        }
-        logger.info("getGames - complete");
-        resolve(games);
-      }, 2000);
-    });
+  protected dataMapper: DataMapper;
+
+  constructor(dataMapper: DataMapper) {
+    this.dataMapper = dataMapper;
+  }
+
+  public async getGames(): Promise<Array<Game>> {
+    const response = await new BackendWebService().url("/games").get().call();
+
+    const data = response.data as Array<any>;
+    return data.map(this.dataMapper.gameDeserialize);
   }
 
   public joinGame(gameId: string): Promise<void> {
@@ -51,14 +34,12 @@ export default class BackendService {
     });
   }
 
-  public createGame(name: string, gameType: GameType): Promise<Game> {
-    logger.info("createGame");
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        logger.info("createGame - complete");
-        resolve(this._createGame("123", name, "567", GameStatus.OPEN));
-      }, 500);
+  public async createGame(name: string, gameType: GameType): Promise<Game> {
+    const response = await new BackendWebService().url("/game").post().call({
+      name: name,
+      open: true,
     });
+    return this.dataMapper.gameDeserialize(response.data);
   }
 
   public getGamePlayers(gameId: string): Promise<Array<GamePlayer>> {
@@ -81,18 +62,5 @@ export default class BackendService {
         resolve(players);
       }, 500);
     });
-  }
-
-  private _createGame(
-    id: string,
-    name: string,
-    masterId: string,
-    status: GameStatus
-  ) {
-    const game = new Game();
-    game.id = id;
-    game.name = name;
-    game.status = status;
-    return game;
   }
 }

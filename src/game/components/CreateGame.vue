@@ -60,8 +60,8 @@ export default Vue.extend({
       logger.info(`Create game ${this.name} ${this.gameType}`);
       const gameType = this.gameTypeService.mapLabelToType(this.gameType);
       this.backendService.createGame(this.name, gameType).then((game) => {
-        logger.info(`Created game ${game.id}, joining.`);
-        RouterUtil.toGame(game.id);
+        logger.info(`Created game ${game.gameId}, joining.`);
+        RouterUtil.toGame(game.gameId);
       });
     },
   },
