@@ -3,7 +3,12 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <v-text-field v-model="email" label="E-Mail" required></v-text-field>
+          <v-text-field
+            v-model="email"
+            label="E-Mail"
+            required
+            autocomplete="email"
+          ></v-text-field>
         </v-col>
         <v-col cols="12">
           <v-text-field
@@ -12,6 +17,7 @@
             :type="showPassword ? 'text' : 'password'"
             label="Password"
             @click:append="showPassword = !showPassword"
+            autocomplete="current-password"
           ></v-text-field>
         </v-col>
         <v-col cols="12" v-if="error !== ''">
@@ -21,8 +27,16 @@
           <v-btn @click="login(email, password)" color="primary">
             Sign-in
           </v-btn>
+        </v-col>
+        <v-col cols="12">
           <v-btn @click="login('test@localhost.it', 'password')">
-            Dummy login - test@localhost.it
+            demo - test@localhost.it
+          </v-btn>
+          <v-btn @click="login('test2@localhost.it', 'password')">
+            demo - test2@localhost.it
+          </v-btn>
+          <v-btn @click="login('test3@localhost.it', 'password')">
+            demo - test3@localhost.it
           </v-btn>
         </v-col>
       </v-row>

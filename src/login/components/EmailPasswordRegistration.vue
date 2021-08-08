@@ -3,10 +3,20 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <v-text-field v-model="email" label="E-Mail" required></v-text-field>
+          <v-text-field
+            v-model="email"
+            label="E-Mail"
+            required
+            autocomplete="email"
+          ></v-text-field>
         </v-col>
         <v-col cols="12">
-          <v-text-field v-model="name" label="Username" required></v-text-field>
+          <v-text-field
+            v-model="name"
+            label="Username"
+            required
+            autocomplete="username"
+          ></v-text-field>
         </v-col>
         <v-col cols="12">
           <v-text-field
@@ -15,6 +25,7 @@
             :type="showPassword ? 'text' : 'password'"
             label="Password"
             @click:append="showPassword = !showPassword"
+            autocomplete="new-password"
           ></v-text-field>
         </v-col>
         <v-col cols="12" v-if="error !== ''">

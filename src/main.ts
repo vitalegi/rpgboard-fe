@@ -14,17 +14,9 @@ import firebase from "firebase/app";
 // firebase used modules
 import "firebase/analytics";
 import "firebase/auth";
-import { cookieUtil } from "./utils/CookieUtil";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDemNC_2rgPw7wgk5fEtBIaCTxvXNkYo3g",
-  authDomain: "rpg-board-30820.firebaseapp.com",
-  projectId: "rpg-board-30820",
-  storageBucket: "rpg-board-30820.appspot.com",
-  messagingSenderId: "726966105813",
-  appId: "1:726966105813:web:d4734c0dce9a60373ad45c",
-  measurementId: "G-32493M8J6R",
-};
+const firebaseConfig = JSON.parse(process.env.VUE_APP_FIREBASE_PUBLIC_CONFIG);
+
 // init firebase
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
