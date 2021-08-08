@@ -71,18 +71,20 @@ router.beforeEach((to, from, next) => {
     next();
     return;
   }
-  const authenticated = store.getters["auth/authenticated"];
-  if (authenticated) {
-    logger.info(
-      `User ${store.getters["auth/userId"]}, verified ${store.getters["auth/verified"]}`
-    );
-    next();
-    return;
-  }
-  logger.info(
-    `User is not logged in, abort navigation to ${to.name}, go to login [${authenticated}]`
-  );
-  next({ name: "Login" });
+
+  const authService = Container.get<AuthService>(AuthService);
+  authService
+    .getIdToken()
+    .then((token) => {
+      logger.info(`User is logged in`);
+      next();
+    })
+    .catch((e) => {
+      logger.info(
+        `User is not logged in, abort navigation to ${to.name}, go to login`
+      );
+      next({ name: "Login" });
+    });
 });
 
 export default router;

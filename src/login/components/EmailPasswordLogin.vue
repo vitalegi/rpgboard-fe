@@ -22,7 +22,7 @@
             Sign-in
           </v-btn>
           <v-btn @click="login('test@localhost.it', 'password')">
-            Dummy login
+            Dummy login - test@localhost.it
           </v-btn>
         </v-col>
       </v-row>
