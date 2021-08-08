@@ -2,7 +2,11 @@
   <v-container>
     <v-row v-if="!loading">
       <v-col cols="6" sm="4" v-for="game in _games()" :key="game.id">
-        <SelectableGamePreview :game="game" @select="joinGame" />
+        <SelectableGamePreview
+          :game="game"
+          @select="joinGame"
+          @delete="deleteGame"
+        />
       </v-col>
     </v-row>
     <v-row v-else>
@@ -49,6 +53,10 @@ export default Vue.extend({
         arr.push(i);
       }
       return arr;
+    },
+    async deleteGame(gameId: string): Promise<void> {
+      await this.backendService.deleteGame(gameId);
+      await this.updateGames();
     },
     async updateGames(): Promise<void> {
       this.loading = true;

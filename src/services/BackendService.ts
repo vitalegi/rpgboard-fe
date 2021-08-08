@@ -53,6 +53,14 @@ export default class BackendService {
     return this.dataMapper.gameDeserialize(response.data);
   }
 
+  public async deleteGame(gameId: string): Promise<Game> {
+    const response = await new BackendWebService()
+      .url(`/game/${gameId}`)
+      .delete()
+      .call();
+    return this.dataMapper.gameDeserialize(response.data);
+  }
+
   public getGamePlayers(gameId: string): Promise<Array<GamePlayer>> {
     logger.info("getGamePlayers");
     return new Promise((resolve, reject) => {
