@@ -6,6 +6,7 @@ import GameRole from "@/models/GameRole";
 import { factory } from "@/utils/ConfigLog4j";
 import { Service } from "typedi";
 import User from "@/models/User";
+import VisibilityPolicy from "@/models/VisibilityPolicy";
 const logger = factory.getLogger("Service.GameService");
 
 @Service()
@@ -14,7 +15,8 @@ export default class DataMapper {
     const game = new Game();
     game.gameId = entry.id;
     game.name = entry.name;
-    game.status = entry.open ? GameStatus.OPEN : GameStatus.CLOSE;
+    game.status = entry.status;
+    game.visibilityPolicy = entry.visibilityPolicy;
     game.type = entry.type;
     game.ownerId = entry.ownerId;
     return game;

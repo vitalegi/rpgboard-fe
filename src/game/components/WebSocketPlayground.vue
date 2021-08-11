@@ -20,11 +20,15 @@ import Vue from "vue";
 import firebase from "firebase/app";
 import EventBus from "vertx3-eventbus-client";
 import { factory } from "@/utils/ConfigLog4j";
-import { cookieUtil } from "@/utils/CookieUtil";
 import { BackendWebService } from "@/utils/WebService";
+import WebSocketClient from "@/services/WebSocketClient";
+import Container from "typedi";
 const logger = factory.getLogger("Game.Components.SelectGame");
 
 let eventBus: EventBus.EventBus;
+
+const eb = Container.get<WebSocketClient>(WebSocketClient);
+eb.init();
 
 export default Vue.extend({
   name: "WebSocketPlayground",
@@ -67,6 +71,12 @@ export default Vue.extend({
         },
         { Authorization: token }
       );
+      eb.register("external.outgoing.test", (error: Error, message: any) => {
+        console.log("received msg 1", error, message);
+      });
+      eb.register("external.outgoing.test", (error: Error, message: any) => {
+        console.log("received msg 2", error, message);
+      });
     },
     async getToken(): Promise<string> {
       const token = await firebase.auth().currentUser?.getIdToken();

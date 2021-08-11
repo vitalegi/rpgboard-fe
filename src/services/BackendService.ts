@@ -8,6 +8,7 @@ import { Service } from "typedi";
 import { BackendWebService } from "@/utils/WebService";
 import DataMapper from "./DataMapper";
 import User from "@/models/User";
+import VisibilityPolicy from "@/models/VisibilityPolicy";
 const logger = factory.getLogger("Service.GameService");
 
 @Service()
@@ -47,8 +48,9 @@ export default class BackendService {
   public async createGame(name: string, gameType: GameType): Promise<Game> {
     const response = await new BackendWebService().url("/game").post().call({
       name: name,
-      open: true,
       type: gameType,
+      status: VisibilityPolicy.PRIVATE,
+      visibilityPolicy: VisibilityPolicy.PUBLIC,
     });
     return this.dataMapper.gameDeserialize(response.data);
   }
