@@ -40,6 +40,7 @@ export default Vue.extend({
   props: {},
   data: () => ({
     dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
+    playersCallback: {},
   }),
   computed: {
     players(): Array<GamePlayer> {
@@ -53,6 +54,13 @@ export default Vue.extend({
     moduleName(): string {
       const gameId = this.$store.getters["game/getGameId"];
       return this.dd5eService.moduleName(gameId);
+    },
+    listener(): string {
+      const gameId = this.$store.getters["game/getGameId"];
+      return `${gameId}.players`;
+    },
+    handlePlayers(body: any): void {
+      console.log("handle", body);
     },
   },
 });

@@ -1,16 +1,9 @@
 import EventBus from "vertx3-eventbus-client";
-import Game from "@/models/Game";
-import GamePlayer from "@/models/GamePlayer";
-import { GameType } from "@/models/Types";
-import GameStatus from "@/models/GameStatus";
-import GameRole from "@/models/GameRole";
 import { Service } from "typedi";
-import { BackendWebService } from "@/utils/WebService";
-import { factory } from "@/utils/ConfigLog4j";
 import DataMapper from "./DataMapper";
-import GameTypeService from "@/game/services/GameTypeService";
 import AuthService from "@/login/services/AuthService";
-import auth from "@/login/store/AuthStore";
+import { default as VueEventBus } from "@/utils/EventBus";
+import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Service.WebSocketClient");
 
 @Service()
@@ -24,7 +17,7 @@ export default class BackendService {
     this.authService = authService;
   }
 
-  public async init() {
+  public async init(onopen: () => any) {
     if (this.eventBus !== null) {
       logger.info("eventBus already initialized");
       return;
@@ -35,19 +28,38 @@ export default class BackendService {
     this.eventBus.enableReconnect(true);
     this.eventBus.onopen = () => {
       logger.info("Connection established");
+      onopen();
     };
     this.eventBus.onerror = (error) => {
-      console.error("WebSocket error", error);
+      logger.error("WebSocket error", error);
     };
     this.eventBus.onclose = () => {
-      console.log("Close connection");
+      logger.info("Close connection");
     };
   }
-  public async register(
-    address: string,
-    callback?: (error: Error, message: any) => any
-  ) {
+  public async register(address: string) {
+    logger.info(`register ${address}`);
     const token = await this.authService.getIdToken();
-    this.eventBus?.registerHandler(address, { Authorization: token }, callback);
+    this.eventBus?.registerHandler(
+      address,
+      { Authorization: token },
+      this.messageHandler
+    );
+  }
+
+  public async unregister(address: string) {
+    logger.info(`unregister ${address}`);
+    const token = await this.authService.getIdToken();
+    this.eventBus?.unregisterHandler(address, { Authorization: token });
+  }
+
+  protected messageHandler(error: Error | null, message: any) {
+    if (error !== null) {
+      logger.error("Received a websocket error", error);
+    } else {
+      const target = `${message.body.gameId}.${message.body.topic}`;
+      logger.debug(`Emit msg to ${target}`);
+      VueEventBus.$emit(`${target}`, message.body.payload);
+    }
   }
 }

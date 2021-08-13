@@ -13,7 +13,7 @@ const logger = factory.getLogger("Service.GameService");
 export default class DataMapper {
   public gameDeserialize(entry: any): Game {
     const game = new Game();
-    game.gameId = entry.id;
+    game.gameId = entry.gameId;
     game.name = entry.name;
     game.status = entry.status;
     game.visibilityPolicy = entry.visibilityPolicy;

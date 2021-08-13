@@ -1,6 +1,5 @@
 <template>
   <div class="select-game">
-    <web-socket-playground />
     <create-game />
     <select-game />
   </div>
@@ -10,14 +9,12 @@
 import Vue from "vue";
 import SelectGame from "@/game/components/SelectGame.vue";
 import CreateGame from "@/game/components/CreateGame.vue";
-import WebSocketPlayground from "../components/WebSocketPlayground.vue";
 
 export default Vue.extend({
   name: "SelectGameView",
   components: {
     SelectGame,
     CreateGame,
-    WebSocketPlayground,
   },
 });
 </script>

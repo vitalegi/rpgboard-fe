@@ -28,6 +28,8 @@ import BackendService from "@/services/BackendService";
 import BoardContentService from "@/game/board/services/BoardContentService";
 import store from "@/store";
 import dd5e, { DD5eStoreService } from "../store/DD5eStore";
+import WebSocketClient from "@/services/WebSocketClient";
+import { default as VueEventBus } from "@/utils/EventBus";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Views.GameDD5eView");
 
@@ -46,6 +48,7 @@ export default Vue.extend({
       BoardContentService
     ),
     dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
+    webSocket: Container.get<WebSocketClient>(WebSocketClient),
   }),
   computed: {
     boardContent(): BoardContainer {
@@ -86,8 +89,20 @@ export default Vue.extend({
     moduleName(): string {
       return this.dd5eService.moduleName(this.gameId);
     },
+    playersListener(): string {
+      const gameId = this.$store.getters["game/getGameId"];
+      return `${gameId}.players`;
+    },
+    playersHandler(body: any): void {
+      console.log("handle", body);
+    },
   },
-  created() {
+  async created() {
+    await this.webSocket.init(() => {
+      this.webSocket.register(`external.outgoing.game.${this.gameId}`);
+      logger.info(`websocket listener is registered`);
+    });
+
     // setup stores
     logger.info(`Register gameId ${this.gameId}`);
     this.$store.commit("game/selectGame", this.gameId);
@@ -97,6 +112,8 @@ export default Vue.extend({
     // setup page resizer
     logger.info(`Start game ${this.gameId}`);
     window.addEventListener("resize", this.handleResize);
+
+    VueEventBus.$on(this.playersListener(), this.playersHandler);
   },
   beforeDestroy() {
     logger.info(`Unregister module ${this.moduleName()}`);
@@ -104,9 +121,15 @@ export default Vue.extend({
 
     logger.info("Leaving game");
     window.removeEventListener("resize", this.handleResize);
+
+    logger.info("Unregister websocket");
+    this.webSocket.unregister(`external.outgoing.game.${this.gameId}`);
+
+    logger.info(`Unregister EventBus listeners`);
+    VueEventBus.$off(this.playersListener(), this.playersHandler);
   },
   mounted() {
-    logger.info("Mounted, resize");
+    logger.debug("Mounted, resize");
     this.handleResize();
 
     // setup players
