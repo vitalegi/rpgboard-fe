@@ -29,14 +29,14 @@
           </v-btn>
         </v-col>
         <v-col cols="12">
-          <v-btn @click="login('test@localhost.it', 'password')">
-            demo - test@localhost.it
+          <v-btn @click="login('test1@localhost.it', 'password')">
+            test1@localhost.it
           </v-btn>
           <v-btn @click="login('test2@localhost.it', 'password')">
-            demo - test2@localhost.it
+            test2@localhost.it
           </v-btn>
           <v-btn @click="login('test3@localhost.it', 'password')">
-            demo - test3@localhost.it
+            test3@localhost.it
           </v-btn>
         </v-col>
       </v-row>

@@ -36,21 +36,11 @@ export default class BackendService {
     return this.dataMapper.userDeserialize(response.data);
   }
 
-  public joinGame(gameId: string): Promise<void> {
-    logger.info("joinGame");
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        logger.info("joinGame - complete");
-        resolve();
-      }, 500);
-    });
-  }
-
   public async createGame(name: string, gameType: GameType): Promise<Game> {
     const response = await new BackendWebService().url("/game").post().call({
       name: name,
       type: gameType,
-      status: VisibilityPolicy.PRIVATE,
+      status: GameStatus.OPEN,
       visibilityPolicy: VisibilityPolicy.PUBLIC,
     });
     return this.dataMapper.gameDeserialize(response.data);

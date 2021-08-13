@@ -2,7 +2,6 @@ import Game from "@/models/Game";
 import { factory } from "@/utils/ConfigLog4j";
 import { Service } from "typedi";
 import User from "@/models/User";
-import VisibilityPolicy from "@/models/VisibilityPolicy";
 import Board from "@/models/Board";
 const logger = factory.getLogger("Service.GameService");
 

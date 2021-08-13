@@ -1,6 +1,4 @@
-enum GameStatus {
-  OPEN = "OPEN",
-  CLOSE = "CLOSE",
+export default class GameStatus {
+  public static readonly OPEN = "OPEN";
+  public static readonly CLOSE = "CLOSE";
 }
-
-export default GameStatus;

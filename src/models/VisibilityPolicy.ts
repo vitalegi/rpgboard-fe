@@ -1,5 +1,5 @@
 export default class VisibilityPolicy {
-  public static PUBLIC = "PUBLIC";
-  public static PROTECTED = "PROTECTED";
-  public static PRIVATE = "PRIVATE";
+  public static readonly PUBLIC = "PUBLIC";
+  public static readonly PROTECTED = "PROTECTED";
+  public static readonly PRIVATE = "PRIVATE";
 }

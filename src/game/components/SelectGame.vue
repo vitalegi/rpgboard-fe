@@ -39,10 +39,7 @@ export default Vue.extend({
   computed: {},
   methods: {
     joinGame(gameId: string): void {
-      this.backendService.joinGame(gameId).then(() => {
-        logger.info(`Joined game ${gameId}`);
-        RouterUtil.toGame(gameId);
-      });
+      RouterUtil.toGame(gameId);
     },
     _games(): Array<Game> {
       return this.games as Array<Game>;
