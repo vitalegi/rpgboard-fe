@@ -1,12 +1,9 @@
 import Game from "@/models/Game";
-import GamePlayer from "@/models/GamePlayer";
-import { GameType } from "@/models/Types";
-import GameStatus from "@/models/GameStatus";
-import GameRole from "@/models/GameRole";
 import { factory } from "@/utils/ConfigLog4j";
 import { Service } from "typedi";
 import User from "@/models/User";
 import VisibilityPolicy from "@/models/VisibilityPolicy";
+import Board from "@/models/Board";
 const logger = factory.getLogger("Service.GameService");
 
 @Service()
@@ -27,5 +24,19 @@ export default class DataMapper {
     user.id = entry.id;
     user.name = entry.name;
     return user;
+  }
+
+  public boardDeserialize(entry: any): Board {
+    const board = new Board();
+    board.gameId = entry.gameId;
+    board.boardId = entry.boardId;
+    board.name = entry.name;
+    board.active = entry.active;
+    board.visibilityPolicy = entry.visibilityPolicy;
+    board.userId = entry.userId;
+    board.createDate = entry.createDate;
+    board.lastUpdate = entry.lastUpdate;
+
+    return board;
   }
 }

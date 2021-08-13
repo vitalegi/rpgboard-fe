@@ -9,6 +9,7 @@ import { BackendWebService } from "@/utils/WebService";
 import DataMapper from "./DataMapper";
 import User from "@/models/User";
 import VisibilityPolicy from "@/models/VisibilityPolicy";
+import Board from "@/models/Board";
 const logger = factory.getLogger("Service.GameService");
 
 @Service()
@@ -53,6 +54,23 @@ export default class BackendService {
       visibilityPolicy: VisibilityPolicy.PUBLIC,
     });
     return this.dataMapper.gameDeserialize(response.data);
+  }
+
+  public async createBoard(
+    gameId: string,
+    name: string,
+    visibilityPolicy: VisibilityPolicy,
+    active: boolean
+  ): Promise<Board> {
+    const response = await new BackendWebService()
+      .url(`/game/${gameId}/board`)
+      .post()
+      .call({
+        name: name,
+        visibilityPolicy: visibilityPolicy,
+        active: active,
+      });
+    return this.dataMapper.boardDeserialize(response.data);
   }
 
   public async deleteGame(gameId: string): Promise<Game> {

@@ -37,6 +37,7 @@ import GameTypeService from "@/game/services/GameTypeService";
 import BackendService from "@/services/BackendService";
 import RouterUtil from "@/utils/RouterUtil";
 import { factory } from "@/utils/ConfigLog4j";
+import VisibilityPolicy from "@/models/VisibilityPolicy";
 const logger = factory.getLogger("Game.Components.SelectGame");
 
 export default Vue.extend({
@@ -56,13 +57,19 @@ export default Vue.extend({
     },
   },
   methods: {
-    createGame() {
+    async createGame() {
       logger.info(`Create game ${this.name} ${this.gameType}`);
       const gameType = this.gameTypeService.mapLabelToType(this.gameType);
-      this.backendService.createGame(this.name, gameType).then((game) => {
-        logger.info(`Created game ${game.gameId}, joining.`);
-        RouterUtil.toGame(game.gameId);
-      });
+      const game = await this.backendService.createGame(this.name, gameType);
+      logger.info(`Created game ${game.gameId}, joining.`);
+      const board = await this.backendService.createBoard(
+        game.gameId,
+        "name",
+        VisibilityPolicy.PUBLIC,
+        true
+      );
+      logger.info(`Created board ${board.boardId}.`);
+      RouterUtil.toGame(game.gameId);
     },
   },
 });
