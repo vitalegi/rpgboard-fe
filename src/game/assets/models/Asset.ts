@@ -1,9 +1,14 @@
 export default class Asset {
-  id = "";
+  assetId = "";
+  gameId = "";
   name = "";
+  size = 0;
+  content = "";
+  userId = "";
   type: "IMAGE" = "IMAGE";
-  width = 0;
-  height = 0;
+  metadata = { width: 0, height: 0 };
+  createDate = "";
+  lastUpdate = "";
 }
 
 export class AssetPayload {

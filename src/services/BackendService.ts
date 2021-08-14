@@ -3,6 +3,7 @@ import GamePlayer from "@/models/GamePlayer";
 import { GameType } from "@/models/Types";
 import GameStatus from "@/models/GameStatus";
 import GameRole from "@/models/GameRole";
+import Asset from "@/game/assets/models/Asset";
 import { factory } from "@/utils/ConfigLog4j";
 import { Service } from "typedi";
 import { BackendWebService } from "@/utils/WebService";
@@ -114,5 +115,45 @@ export default class BackendService {
 
     const data = response.data as Array<any>;
     return data.map(this.dataMapper.boardElementDeserialize);
+  }
+
+  public async addAsset(
+    gameId: string,
+    name: string,
+    content: string,
+    metadata: any,
+    type: string
+  ): Promise<Asset> {
+    const response = await BackendWebService.url(`/game/${gameId}/asset`)
+      .post()
+      .call({ name: name, content: content, metadata: metadata, type: type });
+    return this.dataMapper.assetDeserialize(response.data);
+  }
+
+  public async getAssets(gameId: string): Promise<Array<Asset>> {
+    const response = await BackendWebService.url(`/game/${gameId}/assets`)
+      .get()
+      .call({});
+
+    const data = response.data as Array<any>;
+    return data.map(this.dataMapper.assetDeserialize);
+  }
+
+  public async getAsset(gameId: string, assetId: string): Promise<Asset> {
+    const response = await BackendWebService.url(
+      `/game/${gameId}/asset/${assetId}`
+    )
+      .get()
+      .call({});
+    return this.dataMapper.assetDeserialize(response.data);
+  }
+
+  public async deleteAsset(gameId: string, assetId: string): Promise<Asset> {
+    const response = await BackendWebService.url(
+      `/game/${gameId}/asset/${assetId}`
+    )
+      .delete()
+      .call({});
+    return this.dataMapper.assetDeserialize(response.data);
   }
 }

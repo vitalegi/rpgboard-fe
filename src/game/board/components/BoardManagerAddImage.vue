@@ -58,9 +58,11 @@ export default Vue.extend({
     },
   },
   methods: {
+    gameId(): string {
+      return this.$store.getters["game/getGameId"];
+    },
     async addNode(id: string, assetId: string): Promise<void> {
-      logger.info(`TODO add asset ${assetId} after ${id} item on backend`);
-      const asset = this.assetService.getAsset(assetId);
+      const asset = await this.assetService.getAsset(this.gameId(), assetId);
       const payload = await this.assetService.getPayload(assetId);
       const content = await this.boardContentService.createImage(
         asset,
@@ -77,7 +79,7 @@ export default Vue.extend({
       this.step = SELECT_TARGET;
     },
     async selectTarget(targetId: string): Promise<void> {
-      logger.info(`Select target ${targetId}x`);
+      logger.info(`Select target ${targetId}`);
       await this.addNode(targetId, this.assetId);
       this.dialog = false;
     },

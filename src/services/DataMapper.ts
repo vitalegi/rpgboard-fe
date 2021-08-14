@@ -4,6 +4,7 @@ import { Service } from "typedi";
 import User from "@/models/User";
 import Board from "@/models/Board";
 import BoardElement from "@/models/BoardElement";
+import Asset from "@/game/assets/models/Asset";
 const logger = factory.getLogger("Service.GameService");
 
 @Service()
@@ -52,5 +53,20 @@ export default class DataMapper {
     element.createDate = entry.createDate;
     element.lastUpdate = entry.lastUpdate;
     return element;
+  }
+
+  public assetDeserialize(entry: any): Asset {
+    const asset = new Asset();
+    asset.assetId = entry.assetId;
+    asset.gameId = entry.gameId;
+    asset.name = entry.name;
+    asset.size = entry.size;
+    asset.type = entry.type;
+    asset.metadata = entry.metadata;
+    asset.content = entry.content;
+    asset.userId = entry.userId;
+    asset.createDate = entry.createDate;
+    asset.lastUpdate = entry.lastUpdate;
+    return asset;
   }
 }

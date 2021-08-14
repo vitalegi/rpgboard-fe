@@ -1,37 +1,52 @@
-import { Service } from "typedi";
+import { Inject, Service } from "typedi";
 import store from "@/store";
 import Asset, { AssetPayload } from "../models/Asset";
 import { factory } from "@/utils/ConfigLog4j";
+import BackendService from "@/services/BackendService";
 const logger = factory.getLogger("Game.Assets.Services.AssetService");
 
 @Service()
 export default class AssetService {
+  public static readonly TYPE_IMAGE = "IMAGE";
+  //@Inject()
+  backendService: BackendService;
+
+  public constructor(backendService: BackendService) {
+    this.backendService = backendService;
+  }
+
   public async addAsset(
     gameId: string,
     name: string,
     content: string
   ): Promise<string> {
     logger.info(`Create new asset for game ${gameId}: ${name}`);
-    const asset = new Asset();
-    // TODO implement backend service
-    asset.id = Math.round(Math.random() * 10000000) + "";
-    asset.name = name;
-    asset.type = "IMAGE";
+    const asset = await this.backendService.addAsset(
+      gameId,
+      name,
+      content,
+      {},
+      AssetService.TYPE_IMAGE
+    );
+    // TODO remove payload
     const assetPayload = new AssetPayload();
-    assetPayload.id = asset.id;
+    assetPayload.id = asset.assetId;
     assetPayload.content = content;
     store.commit("assets/addAsset", asset);
     store.commit("assets/addPayload", assetPayload);
-    return Promise.resolve(asset.id);
+    return Promise.resolve(asset.assetId);
   }
 
-  public getAsset(assetId: string): Asset {
+  public async getAsset(gameId: string, assetId: string): Promise<Asset> {
     const assets: Array<Asset> = store.getters["assets/assets"];
-    const asset = assets.find((a) => a.id === assetId);
+    let asset = assets.find((a) => a.assetId === assetId);
     if (asset) {
       return asset;
     }
-    throw new Error(`Asset ${assetId} not found`);
+    logger.info(`Asset ${assetId} not found in cache, retrieve from service.`);
+    asset = await this.backendService.getAsset(gameId, assetId);
+    store.commit("assets/addAsset", asset);
+    return asset;
   }
 
   public async getPayload(assetId: string): Promise<AssetPayload> {

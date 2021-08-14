@@ -6,10 +6,11 @@ import CustomShape, {
 } from "../models/BoardContent";
 import random from "@/utils/RandomUtil";
 import Asset from "@/game/assets/models/Asset";
-import { factory } from "@/utils/ConfigLog4j";
 import Board from "@/models/Board";
 import BackendService from "@/services/BackendService";
 import BoardElement from "@/models/BoardElement";
+import { timestamp } from "@/utils/Time";
+import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Board.Services.BoardContentService");
 
 class BoardElementTree {
@@ -39,11 +40,13 @@ export default class BoardContentService {
   }
 
   protected createTree(elements: Array<BoardElement>): BoardElementTree {
-    logger.info("Create board tree");
+    const startTime = timestamp();
     const root = elements.filter((e) => e.parentId == null)[0];
     const out = this.createTreeElement(root, elements);
-    logger.info("Create board tree - end");
-    console.log(out);
+    const duration = timestamp() - startTime;
+    const rounded = Math.round((duration + Number.EPSILON) * 100) / 100;
+
+    logger.info(`Created board content tree in ${rounded}ms`);
     return out;
   }
 
@@ -319,18 +322,18 @@ export default class BoardContentService {
   public async createImage(asset: Asset, image: string): Promise<CustomShape> {
     const shape = new CustomShape({
       componentName: ShapeType.IMAGE,
-      id: `image-${asset.id}-${random(1000000)}`,
+      id: `image-${asset.assetId}-${random(1000000)}`,
       x: 0,
       y: 0,
       image: image,
       draggable: false,
       visible: true,
     });
-    if (asset.width > 0) {
-      shape.config.width = asset.width;
+    if (asset.metadata.width > 0) {
+      shape.config.width = asset.metadata.width;
     }
-    if (asset.height > 0) {
-      shape.config.height = asset.height;
+    if (asset.metadata.height > 0) {
+      shape.config.height = asset.metadata.height;
     }
 
     return shape;

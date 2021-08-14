@@ -56,7 +56,7 @@ export default Vue.extend({
       this.$emit("moveShape", event);
     },
     handleResize() {
-      logger.info("resize");
+      logger.debug("resize");
       this.boardWidth = (this.$refs.boardCanvas as any).$el.clientWidth;
     },
   },

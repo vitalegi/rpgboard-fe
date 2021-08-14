@@ -73,7 +73,7 @@ export default Vue.extend({
       const distanceFromBody = gameRect.top - bodyRect.top;
       const viewHeight = window.innerHeight - distanceFromBody;
       const internalViewHeight = viewHeight - 25;
-      logger.info(
+      logger.debug(
         `Resize view window_height=${Math.round(
           window.innerHeight
         )}, body_top=${Math.round(bodyRect.top)}, view_top=${Math.round(
@@ -99,6 +99,12 @@ export default Vue.extend({
     async loadBoard(board: BoardModel) {
       const boardContent = await this.boardContentService.initBoard(board);
       this.$store.commit(`board/setBoard`, boardContent);
+    },
+    async loadAssets() {
+      const assets = await this.backendService.getAssets(this.gameId);
+      logger.info(`Loaded ${assets.length} assets`);
+      store.commit("assets/addAssets", assets);
+      //assets.forEach((asset) => store.commit("assets/addAsset", asset));
     },
   },
   async created() {
@@ -150,6 +156,9 @@ export default Vue.extend({
     if (activeBoard) {
       this.loadBoard(activeBoard);
     }
+
+    // setup assets
+    this.loadAssets();
   },
 });
 </script>
