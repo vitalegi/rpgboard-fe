@@ -31,6 +31,7 @@ import dd5e, { DD5eStoreService } from "../store/DD5eStore";
 import WebSocketClient from "@/services/WebSocketClient";
 import { default as VueEventBus } from "@/utils/EventBus";
 import { factory } from "@/utils/ConfigLog4j";
+import { default as BoardModel } from "@/models/Board";
 const logger = factory.getLogger("Views.GameDD5eView");
 
 export default Vue.extend({
@@ -95,6 +96,10 @@ export default Vue.extend({
     boardsHandler(body: any): void {
       console.log("handle board", body);
     },
+    async loadBoard(board: BoardModel) {
+      const boardContent = await this.boardContentService.initBoard(board);
+      this.$store.commit(`board/setBoard`, boardContent);
+    },
   },
   async created() {
     await this.webSocket.init(() => {
@@ -129,7 +134,7 @@ export default Vue.extend({
     VueEventBus.$off(`${this.moduleName()}.players`, this.playersHandler);
     VueEventBus.$off(`${this.moduleName()}.boards`, this.boardsHandler);
   },
-  mounted() {
+  async mounted() {
     logger.debug("Mounted, resize");
     this.handleResize();
 
@@ -141,6 +146,10 @@ export default Vue.extend({
     // setup board content
     const boardContent = this.boardContentService.createBoardContent();
     this.$store.commit(`board/setBoard`, boardContent);
+    const activeBoard = await this.backendService.getActiveBoard(this.gameId);
+    if (activeBoard) {
+      this.loadBoard(activeBoard);
+    }
   },
 });
 </script>

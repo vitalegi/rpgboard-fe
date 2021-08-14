@@ -38,7 +38,8 @@ export default Vue.extend({
   }),
   computed: {},
   methods: {
-    joinGame(gameId: string): void {
+    async joinGame(gameId: string): Promise<void> {
+      await this.backendService.joinGame(gameId);
       RouterUtil.toGame(gameId);
     },
     _games(): Array<Game> {

@@ -3,6 +3,7 @@ import { factory } from "@/utils/ConfigLog4j";
 import { Service } from "typedi";
 import User from "@/models/User";
 import Board from "@/models/Board";
+import BoardElement from "@/models/BoardElement";
 const logger = factory.getLogger("Service.GameService");
 
 @Service()
@@ -37,5 +38,19 @@ export default class DataMapper {
     board.lastUpdate = entry.lastUpdate;
 
     return board;
+  }
+  public boardElementDeserialize(entry: any): BoardElement {
+    const element = new BoardElement();
+    element.boardId = entry.boardId;
+    element.entryId = entry.entryId;
+    element.parentId = entry.parentId;
+    element.entryPosition = entry.entryPosition;
+    element.updatePolicy = entry.updatePolicy;
+    element.visibilityPolicy = entry.visibilityPolicy;
+    element.config = entry.config;
+    element.userId = entry.userId;
+    element.createDate = entry.createDate;
+    element.lastUpdate = entry.lastUpdate;
+    return element;
   }
 }

@@ -3,6 +3,7 @@ import BoardContentService from "../services/BoardContentService";
 import Container from "typedi";
 import Vue from "vue";
 import { Module } from "vuex";
+import Board from "@/models/Board";
 
 const board: Module<any, any> = {
   namespaced: true,
@@ -39,7 +40,6 @@ const board: Module<any, any> = {
   getters: {
     board: (state: any) => state.board,
   },
-  actions: {},
   modules: {},
 };
 

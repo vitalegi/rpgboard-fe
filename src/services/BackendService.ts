@@ -10,6 +10,7 @@ import DataMapper from "./DataMapper";
 import User from "@/models/User";
 import VisibilityPolicy from "@/models/VisibilityPolicy";
 import Board from "@/models/Board";
+import BoardElement from "@/models/BoardElement";
 const logger = factory.getLogger("Service.GameService");
 
 @Service()
@@ -46,6 +47,12 @@ export default class BackendService {
       visibilityPolicy: VisibilityPolicy.PUBLIC,
     });
     return this.dataMapper.gameDeserialize(response.data);
+  }
+  public async joinGame(gameId: string): Promise<void> {
+    const response = await BackendWebService.url(`/game/${gameId}/join`)
+      .post()
+      .call({});
+    console.log("joinGame? ", response);
   }
 
   public async createBoard(
@@ -91,5 +98,21 @@ export default class BackendService {
         resolve(players);
       }, 500);
     });
+  }
+
+  public async getActiveBoard(gameId: string): Promise<Board | null> {
+    const response = await BackendWebService.url(`/game/${gameId}/activeBoard`)
+      .get()
+      .call();
+    return this.dataMapper.boardDeserialize(response.data);
+  }
+
+  public async getBoardElements(boardId: string): Promise<Array<BoardElement>> {
+    const response = await BackendWebService.url(`/board/${boardId}/elements`)
+      .get()
+      .call();
+
+    const data = response.data as Array<any>;
+    return data.map(this.dataMapper.boardElementDeserialize);
   }
 }

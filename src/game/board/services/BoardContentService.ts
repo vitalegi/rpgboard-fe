@@ -1,4 +1,4 @@
-import { Service } from "typedi";
+import Container, { Service } from "typedi";
 import CustomShape, {
   BoardContainer,
   Grid,
@@ -7,10 +7,62 @@ import CustomShape, {
 import random from "@/utils/RandomUtil";
 import Asset from "@/game/assets/models/Asset";
 import { factory } from "@/utils/ConfigLog4j";
+import Board from "@/models/Board";
+import BackendService from "@/services/BackendService";
+import BoardElement from "@/models/BoardElement";
 const logger = factory.getLogger("Game.Board.Services.BoardContentService");
+
+class BoardElementTree {
+  value: BoardElement | null = null;
+  children = new Array<BoardElementTree>();
+}
 
 @Service()
 export default class BoardContentService {
+  protected backendService = Container.get<BackendService>(BackendService);
+
+  public async initBoard(board: Board): Promise<BoardContainer> {
+    const elements = await this.backendService.getBoardElements(board.boardId);
+
+    const container = new BoardContainer();
+    container.grid = new Grid(true, 70, 0, 0);
+
+    const layer = new CustomShape({
+      componentName: ShapeType.LAYOUT,
+      id: "layer-N",
+      visible: true,
+      draggable: true,
+    });
+    container.layers.push(layer);
+    this.createTree(elements);
+    return container;
+  }
+
+  protected createTree(elements: Array<BoardElement>): BoardElementTree {
+    logger.info("Create board tree");
+    const root = elements.filter((e) => e.parentId == null)[0];
+    const out = this.createTreeElement(root, elements);
+    logger.info("Create board tree - end");
+    console.log(out);
+    return out;
+  }
+
+  protected createTreeElement(
+    parent: BoardElement,
+    elements: Array<BoardElement>
+  ): BoardElementTree {
+    const element = new BoardElementTree();
+    element.value = parent;
+    const reducedElements = elements
+      .filter((e) => e.parentId != parent.entryId)
+      .filter((e) => e.entryId != parent.entryId);
+
+    element.children = elements
+      .filter((e) => e.parentId == parent.entryId)
+      .map((child) => this.createTreeElement(child, reducedElements));
+    return element;
+  }
+
   public createBoardContent(): BoardContainer {
     const container = new BoardContainer();
     container.grid = new Grid(true, 70, 0, 0);

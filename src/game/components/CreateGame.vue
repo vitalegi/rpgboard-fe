@@ -69,6 +69,8 @@ export default Vue.extend({
         true
       );
       logger.info(`Created board ${board.boardId}.`);
+      await this.backendService.joinGame(game.gameId);
+      logger.info(`Joined game ${game.gameId}.`);
       RouterUtil.toGame(game.gameId);
     },
   },
