@@ -7,6 +7,13 @@ const logger = factory.getLogger("Service.GameService");
 
 @Service()
 export default class DataMapper {
+  public userDeserialize(entry: any): User {
+    const user = new User();
+    user.userId = entry.userId;
+    user.name = entry.name;
+    return user;
+  }
+
   public gameDeserialize(entry: any): Game {
     const game = new Game();
     game.gameId = entry.gameId;
@@ -16,13 +23,6 @@ export default class DataMapper {
     game.type = entry.type;
     game.ownerId = entry.ownerId;
     return game;
-  }
-
-  public userDeserialize(entry: any): User {
-    const user = new User();
-    user.id = entry.id;
-    user.name = entry.name;
-    return user;
   }
 
   public boardDeserialize(entry: any): Board {

@@ -14,6 +14,8 @@ import firebase from "firebase/app";
 // firebase used modules
 import "firebase/analytics";
 import "firebase/auth";
+import Container from "typedi";
+import AuthService from "./login/services/AuthService";
 
 const firebaseConfig = JSON.parse(process.env.VUE_APP_FIREBASE_PUBLIC_CONFIG);
 
@@ -22,10 +24,11 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 
 firebase.auth().onAuthStateChanged((user) => {
+  const authService = Container.get<AuthService>(AuthService);
   if (user) {
-    store.commit("auth/login", user);
+    authService.successfulLogin(user);
   } else {
-    store.commit("auth/logout");
+    authService.logout();
   }
 });
 

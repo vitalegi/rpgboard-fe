@@ -89,12 +89,11 @@ export default Vue.extend({
     moduleName(): string {
       return this.dd5eService.moduleName(this.gameId);
     },
-    playersListener(): string {
-      const gameId = this.$store.getters["game/getGameId"];
-      return `${gameId}.players`;
-    },
     playersHandler(body: any): void {
-      console.log("handle", body);
+      console.log("handle players", body);
+    },
+    boardsHandler(body: any): void {
+      console.log("handle board", body);
     },
   },
   async created() {
@@ -113,7 +112,8 @@ export default Vue.extend({
     logger.info(`Start game ${this.gameId}`);
     window.addEventListener("resize", this.handleResize);
 
-    VueEventBus.$on(this.playersListener(), this.playersHandler);
+    VueEventBus.$on(`${this.moduleName()}.players`, this.playersHandler);
+    VueEventBus.$on(`${this.moduleName()}.boards`, this.boardsHandler);
   },
   beforeDestroy() {
     logger.info(`Unregister module ${this.moduleName()}`);
@@ -126,7 +126,8 @@ export default Vue.extend({
     this.webSocket.unregister(`external.outgoing.game.${this.gameId}`);
 
     logger.info(`Unregister EventBus listeners`);
-    VueEventBus.$off(this.playersListener(), this.playersHandler);
+    VueEventBus.$off(`${this.moduleName()}.players`, this.playersHandler);
+    VueEventBus.$off(`${this.moduleName()}.boards`, this.boardsHandler);
   },
   mounted() {
     logger.debug("Mounted, resize");

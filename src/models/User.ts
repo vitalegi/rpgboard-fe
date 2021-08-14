@@ -1,13 +1,13 @@
 export default class User {
-  id;
+  userId;
   name;
 
-  public constructor(id = "", name = "") {
-    this.id = id;
+  public constructor(userId = "", name = "") {
+    this.userId = userId;
     this.name = name;
   }
 
   public toString() {
-    return `id=${this.id} name=${this.name}`;
+    return `userId=${this.userId} name=${this.name}`;
   }
 }

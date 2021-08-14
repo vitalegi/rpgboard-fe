@@ -19,17 +19,19 @@ export default class BackendService {
   constructor(dataMapper: DataMapper) {
     this.dataMapper = dataMapper;
   }
-
+  public async getCurrentUser(): Promise<User> {
+    const response = await BackendWebService.url("/user").get().call();
+    return this.dataMapper.userDeserialize(response.data);
+  }
   public async getGames(): Promise<Array<Game>> {
-    const response = await new BackendWebService().url("/games").get().call();
+    const response = await BackendWebService.url("/games").get().call();
 
     const data = response.data as Array<any>;
     return data.map(this.dataMapper.gameDeserialize);
   }
 
   public async registerUser(name: string): Promise<User> {
-    const response = await new BackendWebService()
-      .url("/user/registration")
+    const response = await BackendWebService.url("/user/registration")
       .post()
       .call({ name: name });
 
@@ -37,7 +39,7 @@ export default class BackendService {
   }
 
   public async createGame(name: string, gameType: GameType): Promise<Game> {
-    const response = await new BackendWebService().url("/game").post().call({
+    const response = await BackendWebService.url("/game").post().call({
       name: name,
       type: gameType,
       status: GameStatus.OPEN,
@@ -52,8 +54,7 @@ export default class BackendService {
     visibilityPolicy: VisibilityPolicy,
     active: boolean
   ): Promise<Board> {
-    const response = await new BackendWebService()
-      .url(`/game/${gameId}/board`)
+    const response = await BackendWebService.url(`/game/${gameId}/board`)
       .post()
       .call({
         name: name,
@@ -64,8 +65,7 @@ export default class BackendService {
   }
 
   public async deleteGame(gameId: string): Promise<Game> {
-    const response = await new BackendWebService()
-      .url(`/game/${gameId}`)
+    const response = await BackendWebService.url(`/game/${gameId}`)
       .delete()
       .call();
     return this.dataMapper.gameDeserialize(response.data);

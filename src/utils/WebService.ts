@@ -1,12 +1,10 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { timestamp } from "@/utils/Time";
 import { factory } from "@/utils/ConfigLog4j";
-import Container from "typedi";
+import Container, { Inject } from "typedi";
 import AuthService from "@/login/services/AuthService";
 
 const logger = factory.getLogger("Utils.WebService");
-
-const authService = Container.get<AuthService>(AuthService);
 
 type HttpMethod =
   | "get"
@@ -154,13 +152,28 @@ export abstract class WebService {
 }
 
 export class BackendWebService extends WebService {
+  protected authService: AuthService;
+
+  public static url(resource: string): BackendWebService {
+    const service = new BackendWebService(
+      Container.get<AuthService>(AuthService)
+    );
+    service.url(resource);
+    return service;
+  }
+
+  public constructor(authService: AuthService) {
+    super();
+    this.authService = authService;
+  }
+
   public url(resource: string): WebService {
     const fullUrl = `${process.env.VUE_APP_BACKEND}/api${resource}`;
     return super.url(fullUrl);
   }
 
   protected async auth(): Promise<void> {
-    const token = await authService.getIdToken();
+    const token = await this.authService.getIdToken();
     super.header("Authorization", token);
   }
 }

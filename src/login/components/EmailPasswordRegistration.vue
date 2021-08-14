@@ -60,7 +60,6 @@ export default Vue.extend({
     showPassword: false,
     error: "",
     authService: Container.get<AuthService>(AuthService),
-    backendService: Container.get<BackendService>(BackendService),
   }),
   methods: {
     async register(
@@ -70,8 +69,7 @@ export default Vue.extend({
     ): Promise<void> {
       try {
         this.error = "";
-        await this.authService.signup(email, password);
-        await this.backendService.registerUser(name);
+        await this.authService.signup(email, name, password);
       } catch (error) {
         this.accessFailure(error);
       }

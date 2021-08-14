@@ -1,11 +1,21 @@
 <template>
   <v-app>
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/login" v-if="!isAuthenticated()">Login</router-link>
-      <router-link to="/logout" v-else>Logout</router-link>
-    </div>
+    <v-container id="nav">
+      <v-row>
+        <v-col style="text-align: left">
+          <router-link to="/" class="bolder">Home</router-link> |
+          <router-link to="/about" class="bolder">About</router-link>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col style="text-align: right">
+          <router-link to="/login" v-if="!isAuthenticated()">Login</router-link>
+          <span v-else>
+            Benvenuto, {{ username }}!
+            <router-link to="/logout">Non sei tu?</router-link>
+          </span>
+        </v-col>
+      </v-row>
+    </v-container>
     <router-view />
   </v-app>
 </template>
@@ -21,6 +31,15 @@ export default Vue.extend({
   data: () => ({
     //
   }),
+  computed: {
+    username(): string {
+      const user = this.$store.getters["auth/localUser"];
+      if (user == null) {
+        return "";
+      }
+      return user.name;
+    },
+  },
   methods: {
     isAuthenticated(): boolean {
       return this.$store.getters["auth/authenticated"];
@@ -35,19 +54,22 @@ export default Vue.extend({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
 }
 
 #nav {
   padding: 30px;
 
   a {
-    font-weight: bold;
+    //font-weight: bold;
 
     &.router-link-exact-active {
       color: white;
       text-decoration-line: none;
     }
   }
+}
+
+.bolder {
+  font-weight: bolder;
 }
 </style>

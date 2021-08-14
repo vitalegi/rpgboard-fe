@@ -1,7 +1,8 @@
-import { Inject, Service } from "typedi";
+import Container, { Inject, Service } from "typedi";
 import firebase from "firebase/app";
 import store from "@/store";
 import { factory } from "@/utils/ConfigLog4j";
+import BackendService from "@/services/BackendService";
 const logger = factory.getLogger("Login.Services.AuthService");
 
 @Service()
@@ -10,43 +11,53 @@ export default class AuthService {
 
   public async signup(
     email: string,
+    username: string,
     password: string
   ): Promise<firebase.auth.UserCredential> {
-    const user = await firebase
+    const credentials = await firebase
       .auth()
       .createUserWithEmailAndPassword(email, password);
 
-    this.successfulLogin(user);
+    await this.backendService().registerUser(username);
+
+    if (credentials.user) {
+      await this.successfulLogin(credentials.user);
+    }
     logger.info("sign up done");
     await firebase.auth().currentUser?.sendEmailVerification();
     logger.info("notification sent");
-    return user;
+    return credentials;
   }
   public async login(
     email: string,
     password: string
   ): Promise<firebase.auth.UserCredential> {
-    const user = await firebase
+    const credentials = await firebase
       .auth()
       .signInWithEmailAndPassword(email, password);
-    this.successfulLogin(user);
 
-    return user;
+    if (credentials.user) {
+      await this.successfulLogin(credentials.user);
+    }
+    return credentials;
   }
+  // not used, not working
   public loginFacebook(): Promise<void> {
     const provider = new firebase.auth.FacebookAuthProvider();
     return firebase.auth().signInWithRedirect(provider);
   }
-  protected successfulLogin(
-    userCredential: firebase.auth.UserCredential
-  ): void {
-    store.commit("auth/login", userCredential.user);
+  public async successfulLogin(user: firebase.User): Promise<void> {
+    store.commit("auth/login", user);
+    store.commit(
+      "auth/localUser",
+      await this.backendService().getCurrentUser()
+    );
   }
   public async getIdToken(): Promise<string> {
     return (await this.getUser()).getIdToken();
   }
 
-  public async getUser(): Promise<firebase.User> {
+  protected async getUser(): Promise<firebase.User> {
     const firstAccess = this.firstAccess;
     this.firstAccess = false;
     return this.getUserWithRetries(firstAccess);
@@ -85,6 +96,11 @@ export default class AuthService {
 
   public async logout(): Promise<void> {
     await firebase.auth().signOut();
+    store.commit("auth/logout");
     return Promise.resolve();
+  }
+
+  protected backendService() {
+    return Container.get<BackendService>(BackendService);
   }
 }
