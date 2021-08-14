@@ -30,19 +30,39 @@ export default class BoardContentService {
 
     const layer = new CustomShape({
       componentName: ShapeType.LAYOUT,
-      id: "layer-N",
+      id: "Layer",
       visible: true,
       draggable: true,
     });
     container.layers.push(layer);
-    this.createTree(elements);
+    const tree = this.createTree(elements);
+    if (tree) {
+      layer.children.push(this.treeToShape(tree));
+    }
     return container;
   }
 
-  protected createTree(elements: Array<BoardElement>): BoardElementTree {
+  protected treeToShape(element: BoardElementTree): CustomShape {
+    const el = element.value;
+    const shape = new CustomShape(el?.config);
+    shape.children = element.children.map((e) => this.treeToShape(e));
+    return shape;
+  }
+
+  protected createTree(elements: Array<BoardElement>): BoardElementTree | null {
     const startTime = timestamp();
-    const root = elements.filter((e) => e.parentId == null)[0];
-    const out = this.createTreeElement(root, elements);
+    const rootElements = elements.filter((e) => e.parentId == null);
+    if (rootElements.length === 0) {
+      return null;
+    }
+    if (rootElements.length > 1) {
+      throw new Error(
+        `Wrong configuration received, expecting 1 root element, found ${
+          rootElements.length
+        }: ${JSON.stringify(rootElements)}`
+      );
+    }
+    const out = this.createTreeElement(rootElements[0], elements);
     const duration = timestamp() - startTime;
     const rounded = Math.round((duration + Number.EPSILON) * 100) / 100;
 

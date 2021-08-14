@@ -1,8 +1,8 @@
 <template>
   <v-list v-if="assets.length > 0">
-    <v-list-item v-for="asset in assets" :key="asset.id">
+    <v-list-item v-for="asset in assets" :key="asset.assetId">
       <v-list-item-action v-if="selectable">
-        <v-btn elevation="2" icon @click="select(asset.id)">
+        <v-btn elevation="2" icon @click="select(asset.assetId)">
           <v-icon>mdi-plus-box</v-icon>
         </v-btn>
       </v-list-item-action>
@@ -10,7 +10,7 @@
         {{ asset.name }}
       </v-list-item-content>
       <v-list-item-avatar>
-        <v-img :src="asset.content"></v-img>
+        <v-img :src="assetContentSrc(asset)"></v-img>
       </v-list-item-avatar>
     </v-list-item>
   </v-list>
@@ -37,6 +37,9 @@ export default Vue.extend({
   methods: {
     select(id: string): void {
       this.$emit("select", id);
+    },
+    assetContentSrc(asset: Asset): string {
+      return `${process.env.VUE_APP_BACKEND}/content/game/${asset.gameId}/asset/${asset.assetId}`;
     },
   },
 });

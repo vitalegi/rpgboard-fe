@@ -63,10 +63,13 @@ export default Vue.extend({
     },
     async addNode(id: string, assetId: string): Promise<void> {
       const asset = await this.assetService.getAsset(this.gameId(), assetId);
-      const payload = await this.assetService.getPayload(assetId);
+      const payload = await this.assetService.getPayload(
+        this.gameId(),
+        assetId
+      );
       const content = await this.boardContentService.createImage(
         asset,
-        payload.content
+        payload
       );
       this.$store.commit(`board/addNode`, {
         siblingId: id,

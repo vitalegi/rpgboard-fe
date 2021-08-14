@@ -10,8 +10,3 @@ export default class Asset {
   createDate = "";
   lastUpdate = "";
 }
-
-export class AssetPayload {
-  id = "";
-  content = "";
-}

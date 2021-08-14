@@ -1,6 +1,6 @@
-import { Inject, Service } from "typedi";
+import { Service } from "typedi";
 import store from "@/store";
-import Asset, { AssetPayload } from "../models/Asset";
+import Asset from "../models/Asset";
 import { factory } from "@/utils/ConfigLog4j";
 import BackendService from "@/services/BackendService";
 const logger = factory.getLogger("Game.Assets.Services.AssetService");
@@ -8,7 +8,6 @@ const logger = factory.getLogger("Game.Assets.Services.AssetService");
 @Service()
 export default class AssetService {
   public static readonly TYPE_IMAGE = "IMAGE";
-  //@Inject()
   backendService: BackendService;
 
   public constructor(backendService: BackendService) {
@@ -28,18 +27,11 @@ export default class AssetService {
       {},
       AssetService.TYPE_IMAGE
     );
-    // TODO remove payload
-    const assetPayload = new AssetPayload();
-    assetPayload.id = asset.assetId;
-    assetPayload.content = content;
-    store.commit("assets/addAsset", asset);
-    store.commit("assets/addPayload", assetPayload);
     return Promise.resolve(asset.assetId);
   }
 
   public async getAsset(gameId: string, assetId: string): Promise<Asset> {
-    const assets: Array<Asset> = store.getters["assets/assets"];
-    let asset = assets.find((a) => a.assetId === assetId);
+    let asset: Asset = store.getters["assets/asset"](assetId);
     if (asset) {
       return asset;
     }
@@ -49,11 +41,7 @@ export default class AssetService {
     return asset;
   }
 
-  public async getPayload(assetId: string): Promise<AssetPayload> {
-    const payload: AssetPayload = store.getters["assets/payloadById"](assetId);
-    if (payload) {
-      return payload;
-    }
-    throw new Error(`Payload ${assetId} not found`);
+  public async getPayload(gameId: string, assetId: string): Promise<string> {
+    return await (await this.getAsset(gameId, assetId)).content;
   }
 }

@@ -150,8 +150,6 @@ export default Vue.extend({
       .then((players) => this.updatePlayers(players));
 
     // setup board content
-    const boardContent = this.boardContentService.createBoardContent();
-    this.$store.commit(`board/setBoard`, boardContent);
     const activeBoard = await this.backendService.getActiveBoard(this.gameId);
     if (activeBoard) {
       this.loadBoard(activeBoard);
