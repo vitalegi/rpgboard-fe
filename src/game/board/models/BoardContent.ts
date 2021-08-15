@@ -1,3 +1,6 @@
+import Board from "@/models/Board";
+import BoardElement from "@/models/BoardElement";
+
 export class ShapeType {
   public static IMAGE = "image-shape";
   public static GROUP = "v-group";
@@ -36,6 +39,8 @@ export class Grid {
 }
 
 export class BoardContainer {
+  board = new Board();
+  elements = new Array<BoardElement>();
   layers = Array<CustomShape>();
   grid = new Grid();
 }

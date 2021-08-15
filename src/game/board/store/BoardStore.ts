@@ -3,7 +3,7 @@ import BoardContentService from "../services/BoardContentService";
 import Container from "typedi";
 import Vue from "vue";
 import { Module } from "vuex";
-import Board from "@/models/Board";
+import BoardElement from "@/models/BoardElement";
 
 const board: Module<any, any> = {
   namespaced: true,

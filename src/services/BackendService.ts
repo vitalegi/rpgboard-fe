@@ -12,6 +12,7 @@ import User from "@/models/User";
 import VisibilityPolicy from "@/models/VisibilityPolicy";
 import Board from "@/models/Board";
 import BoardElement from "@/models/BoardElement";
+import { config } from "vue/types/umd";
 const logger = factory.getLogger("Service.GameService");
 
 @Service()
@@ -155,5 +156,26 @@ export default class BackendService {
       .delete()
       .call({});
     return this.dataMapper.assetDeserialize(response.data);
+  }
+
+  public async addBoardElement(
+    boardId: string,
+    config: any,
+    parentId: string | null,
+    updatePolicy: string,
+    visibilityPolicy: string,
+    entryPosition: number
+  ): Promise<BoardElement> {
+    const response = await BackendWebService.url(`/board/${boardId}/element`)
+      .post()
+      .call({
+        boardId: boardId,
+        parentId: parentId,
+        config: config,
+        updatePolicy: updatePolicy,
+        visibilityPolicy: visibilityPolicy,
+        entryPosition: entryPosition,
+      });
+    return this.dataMapper.boardElementDeserialize(response.data);
   }
 }

@@ -97,13 +97,15 @@ export default Vue.extend({
       console.log("handle board", body);
     },
     async loadBoard(board: BoardModel) {
-      const boardContent = await this.boardContentService.initBoard(board);
-      this.$store.commit(`board/setBoard`, boardContent);
+      const elements = await this.backendService.getBoardElements(
+        board.boardId
+      );
+      await this.boardContentService.init(board, elements);
     },
     async loadAssets() {
       const assets = await this.backendService.getAssets(this.gameId);
       logger.info(`Loaded ${assets.length} assets`);
-      store.commit("assets/addAssets", assets);
+      store.commit("assets/reset", assets);
       //assets.forEach((asset) => store.commit("assets/addAsset", asset));
     },
   },

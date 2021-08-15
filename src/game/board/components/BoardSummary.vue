@@ -40,6 +40,8 @@ import IconButton from "@/components/IconButton.vue";
 import BoardManagerItemOptions from "./BoardManagerItemOptions.vue";
 import CustomShape, { BoardContainer } from "../models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
+import Container from "typedi";
+import BoardContentService from "../services/BoardContentService";
 const logger = factory.getLogger("Game.Board.Components.BoardSummary");
 
 type TreeEntry = {
@@ -56,7 +58,11 @@ export default Vue.extend({
     selectable: { type: Boolean, default: false },
     showActions: { type: Boolean, default: false },
   },
-  data: () => ({}),
+  data: () => ({
+    boardContentService: Container.get<BoardContentService>(
+      BoardContentService
+    ),
+  }),
   computed: {},
   methods: {
     getBoard(): BoardContainer {
@@ -82,12 +88,23 @@ export default Vue.extend({
       this.$store.commit(`board/deleteNode`, id);
     },
     items(): Array<TreeEntry> {
-      return this.getBoard().layers.map(this.mapShape);
+      const hierarchy = this.boardContentService.createHierarchy(
+        this.getBoard().elements,
+        (element) => {
+          return {
+            id: element.entryId,
+            name: element.config?.name,
+            config: element.config,
+            children: new Array<TreeEntry>(),
+          };
+        }
+      );
+      return hierarchy as TreeEntry[];
     },
     mapShape(shape: CustomShape): TreeEntry {
       const element: TreeEntry = {
         id: shape.config.id,
-        name: shape.config.id,
+        name: shape.config.name,
         config: shape.config,
         children: new Array<TreeEntry>(),
       };

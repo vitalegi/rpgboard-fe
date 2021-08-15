@@ -15,6 +15,10 @@ const assets: Module<any, any> = {
     addAssets(state: any, assets: Array<Asset>) {
       state.assets.push(...assets);
     },
+    reset(state: any, assets: Array<Asset>) {
+      state.assets.splice(0);
+      state.assets.push(...assets);
+    },
     removeAsset(state: any, id: string) {
       const assets = state.assets as Array<Asset>;
       const index = assets.findIndex((asset) => asset.assetId === id);

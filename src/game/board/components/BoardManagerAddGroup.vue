@@ -27,6 +27,8 @@
       <v-card-title class="text-h5 lighten-2"> Select target </v-card-title>
       <v-card-text>
         <BoardSummary :selectable="true" @select="selectTarget"></BoardSummary>
+        <v-spacer></v-spacer>
+        <v-btn @click="selectTarget(null)">Add a layer</v-btn>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -38,6 +40,8 @@ import Container from "typedi";
 import BoardSummary from "./BoardSummary.vue";
 import BoardContentService from "../services/BoardContentService";
 import AssetService from "@/game/assets/services/AssetService";
+import BackendService from "@/services/BackendService";
+import { BoardContainer, ShapeType } from "../models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Board.Components.BoardManagerAddGroup");
 
@@ -52,11 +56,16 @@ export default Vue.extend({
       BoardContentService
     ),
     assetService: Container.get<AssetService>(AssetService),
+    backendService: Container.get<BackendService>(BackendService),
     dialog: false,
     step: SELECT_NAME,
     name: "",
   }),
   computed: {
+    boardId(): string {
+      const container = this.$store.getters["board/board"] as BoardContainer;
+      return container.board.boardId;
+    },
     selectNameStep(): boolean {
       return this.step === SELECT_NAME;
     },
@@ -65,21 +74,38 @@ export default Vue.extend({
     },
   },
   methods: {
-    async addGroup(id: string, name: string): Promise<void> {
-      logger.info(`TODO add group ${name} after ${id} item on backend`);
-      const group = await this.boardContentService.createGroup(name);
-      this.$store.commit(`board/addNode`, {
-        siblingId: id,
-        node: group,
-      });
+    async addGroup(
+      name: string,
+      parentId: string,
+      entryPosition: number
+    ): Promise<void> {
+      await this.boardContentService.addGroup(
+        this.boardId,
+        name,
+        parentId,
+        entryPosition
+      );
     },
+
+    async addLayer(name: string, entryPosition: number): Promise<void> {
+      await this.boardContentService.addLayer(
+        this.boardId,
+        name,
+        entryPosition
+      );
+    },
+
     selectName(): void {
       logger.info(`Select name ${this.name}`);
       this.step = SELECT_TARGET;
     },
-    async selectTarget(targetId: string): Promise<void> {
+    async selectTarget(targetId: string | null): Promise<void> {
       logger.info(`Select target ${targetId}`);
-      await this.addGroup(targetId, this.name.trim());
+      if (targetId) {
+        await this.addGroup("group name TODO", targetId, 0);
+      } else {
+        await this.addLayer("layer name TODO", 0);
+      }
       this.dialog = false;
     },
   },

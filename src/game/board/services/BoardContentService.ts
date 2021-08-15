@@ -10,35 +10,43 @@ import Board from "@/models/Board";
 import BackendService from "@/services/BackendService";
 import BoardElement from "@/models/BoardElement";
 import { timestamp } from "@/utils/Time";
+import store from "@/store";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Board.Services.BoardContentService");
 
-class BoardElementTree {
-  value: BoardElement | null = null;
-  children = new Array<BoardElementTree>();
-}
+type TreeNode = {
+  children: Array<TreeNode>;
+};
+
+type BoardElementTree = {
+  value: BoardElement | null;
+  children: Array<BoardElementTree>;
+};
 
 @Service()
 export default class BoardContentService {
   protected backendService = Container.get<BackendService>(BackendService);
 
-  public async initBoard(board: Board): Promise<BoardContainer> {
-    const elements = await this.backendService.getBoardElements(board.boardId);
-
+  public async init(
+    board: Board,
+    elements: Array<BoardElement>
+  ): Promise<BoardContainer> {
     const container = new BoardContainer();
+    container.board = board;
+    container.elements = elements;
     container.grid = new Grid(true, 70, 0, 0);
-
-    const layer = new CustomShape({
-      componentName: ShapeType.LAYOUT,
-      id: "Layer",
-      visible: true,
-      draggable: true,
+    const tree = this.createHierarchy(elements, (element) => {
+      return {
+        value: element,
+        children: new Array<TreeNode>(),
+      };
     });
-    container.layers.push(layer);
-    const tree = this.createTree(elements);
     if (tree) {
-      layer.children.push(this.treeToShape(tree));
+      container.layers = tree.map((root) =>
+        this.treeToShape(root as BoardElementTree)
+      );
     }
+    store.commit(`board/setBoard`, container);
     return container;
   }
 
@@ -49,20 +57,15 @@ export default class BoardContentService {
     return shape;
   }
 
-  protected createTree(elements: Array<BoardElement>): BoardElementTree | null {
+  public createHierarchy(
+    elements: Array<BoardElement>,
+    processor: (element: BoardElement) => TreeNode
+  ): TreeNode[] {
     const startTime = timestamp();
     const rootElements = elements.filter((e) => e.parentId == null);
-    if (rootElements.length === 0) {
-      return null;
-    }
-    if (rootElements.length > 1) {
-      throw new Error(
-        `Wrong configuration received, expecting 1 root element, found ${
-          rootElements.length
-        }: ${JSON.stringify(rootElements)}`
-      );
-    }
-    const out = this.createTreeElement(rootElements[0], elements);
+    const out = rootElements.map((root) =>
+      this.createHierarchyNode(root, elements, processor)
+    );
     const duration = timestamp() - startTime;
     const rounded = Math.round((duration + Number.EPSILON) * 100) / 100;
 
@@ -70,19 +73,21 @@ export default class BoardContentService {
     return out;
   }
 
-  protected createTreeElement(
-    parent: BoardElement,
-    elements: Array<BoardElement>
-  ): BoardElementTree {
-    const element = new BoardElementTree();
-    element.value = parent;
+  protected createHierarchyNode(
+    current: BoardElement,
+    elements: Array<BoardElement>,
+    processor: (element: BoardElement) => TreeNode
+  ): TreeNode {
+    const element = processor(current);
     const reducedElements = elements
-      .filter((e) => e.parentId != parent.entryId)
-      .filter((e) => e.entryId != parent.entryId);
+      .filter((e) => e.parentId != current.entryId)
+      .filter((e) => e.entryId != current.entryId);
 
     element.children = elements
-      .filter((e) => e.parentId == parent.entryId)
-      .map((child) => this.createTreeElement(child, reducedElements));
+      .filter((e) => e.parentId == current.entryId)
+      .map((child) =>
+        this.createHierarchyNode(child, reducedElements, processor)
+      );
     return element;
   }
 
@@ -327,6 +332,14 @@ export default class BoardContentService {
     }
   }
 
+  public createLayer(name: string): CustomShape {
+    return new CustomShape({
+      componentName: ShapeType.LAYOUT,
+      visible: true,
+      draggable: true,
+    });
+  }
+
   public createGroup(name: string): CustomShape {
     return new CustomShape({
       componentName: ShapeType.GROUP,
@@ -357,6 +370,58 @@ export default class BoardContentService {
     }
 
     return shape;
+  }
+
+  public async addGroup(
+    boardId: string,
+    name: string,
+    parentId: string,
+    entryPosition: number
+  ): Promise<void> {
+    const config = {
+      componentName: ShapeType.GROUP,
+      name: name,
+      x: 0,
+      y: 0,
+      visible: true,
+      draggable: true,
+    };
+    this.addElement(boardId, config, parentId, entryPosition);
+  }
+
+  public async addLayer(
+    boardId: string,
+    name: string,
+    entryPosition: number
+  ): Promise<void> {
+    const config = {
+      componentName: ShapeType.LAYOUT,
+      name: name,
+      x: 0,
+      y: 0,
+      visible: true,
+      draggable: true,
+    };
+    this.addElement(boardId, config, null, entryPosition);
+  }
+
+  async addElement(
+    boardId: string,
+    config: any,
+    parentId: string | null,
+    entryPosition: number
+  ): Promise<void> {
+    const entry = await this.backendService.addBoardElement(
+      boardId,
+      config,
+      parentId,
+      "PRIVATE",
+      "PUBLIC",
+      entryPosition
+    );
+    const container = store.getters["board/board"] as BoardContainer;
+    container.elements.push(entry);
+    this.init(container.board, container.elements);
   }
 
   protected getElementById(

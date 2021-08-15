@@ -38,6 +38,7 @@ import BackendService from "@/services/BackendService";
 import RouterUtil from "@/utils/RouterUtil";
 import { factory } from "@/utils/ConfigLog4j";
 import VisibilityPolicy from "@/models/VisibilityPolicy";
+import BoardContentService from "../board/services/BoardContentService";
 const logger = factory.getLogger("Game.Components.SelectGame");
 
 export default Vue.extend({
@@ -49,6 +50,9 @@ export default Vue.extend({
     valid: false,
     required: [(v: string) => !!v || "Required field"],
     backendService: Container.get<BackendService>(BackendService),
+    boardContentService: Container.get<BoardContentService>(
+      BoardContentService
+    ),
     gameTypeService: Container.get<GameTypeService>(GameTypeService),
   }),
   computed: {
@@ -69,6 +73,8 @@ export default Vue.extend({
         true
       );
       logger.info(`Created board ${board.boardId}.`);
+      await this.boardContentService.addLayer(board.boardId, "Layer", 0);
+
       await this.backendService.joinGame(game.gameId);
       logger.info(`Joined game ${game.gameId}.`);
       RouterUtil.toGame(game.gameId);

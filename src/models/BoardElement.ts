@@ -7,7 +7,7 @@ export default class BoardElement {
   public entryPosition = 0;
   public updatePolicy = "";
   public visibilityPolicy = VisibilityPolicy.PRIVATE;
-  public config = new Object();
+  public config: any = new Object();
   public userId = "";
   public createDate = "";
   public lastUpdate = "";
