@@ -252,6 +252,11 @@ export default class BoardContentService {
       board.boardId,
       entry
     );
+    this.updateLocally(out);
+  }
+
+  public async updateLocally(entry: BoardElement): Promise<void> {
+    const board = store.getters["board/board"] as Board;
     const elements = store.getters["board/elements"] as BoardElement[];
     const entryIndex = this.findElementIndexById(elements, entry.entryId);
     elements.splice(entryIndex, 1, entry);
@@ -266,6 +271,11 @@ export default class BoardContentService {
       board.boardId,
       entryId
     );
+    this.deleteLocally(entryId);
+  }
+
+  public async deleteLocally(entryId: string): Promise<void> {
+    const board = store.getters["board/board"] as Board;
     const elements = store.getters["board/elements"] as BoardElement[];
     const entryIndex = this.findElementIndexById(elements, entryId);
     elements.splice(entryIndex, 1);
@@ -491,6 +501,10 @@ export default class BoardContentService {
       "PUBLIC",
       entryPosition
     );
+    this.addElementLocally(entry);
+  }
+
+  public async addElementLocally(entry: BoardElement): Promise<void> {
     const container = store.getters["board/container"] as BoardContainer;
     container.elements.push(entry);
     this.init(container.board, container.elements);

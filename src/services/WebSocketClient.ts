@@ -59,7 +59,7 @@ export default class BackendService {
     } else {
       const target = `${message.body.gameId}.${message.body.topic}`;
       logger.debug(`Emit msg to ${target}`);
-      VueEventBus.$emit(`${target}`, message.body.payload);
+      VueEventBus.$emit(target, message.body);
     }
   }
 }

@@ -32,6 +32,8 @@ import WebSocketClient from "@/services/WebSocketClient";
 import { default as VueEventBus } from "@/utils/EventBus";
 import { factory } from "@/utils/ConfigLog4j";
 import { default as BoardModel } from "@/models/Board";
+import User from "@/models/User";
+import DataMapper from "@/services/DataMapper";
 const logger = factory.getLogger("Views.GameDD5eView");
 
 export default Vue.extend({
@@ -49,6 +51,7 @@ export default Vue.extend({
       BoardContentService
     ),
     dd5eService: Container.get<DD5eStoreService>(DD5eStoreService),
+    dataMapper: Container.get<DataMapper>(DataMapper),
     webSocket: Container.get<WebSocketClient>(WebSocketClient),
   }),
   computed: {
@@ -93,8 +96,33 @@ export default Vue.extend({
     playersHandler(body: any): void {
       console.log("handle players", body);
     },
-    boardsHandler(body: any): void {
-      console.log("handle board", body);
+    boardsHandler(message: any): void {
+      logger.debug(`Received ${JSON.stringify(message)}`);
+      const user = this.$store.getters["auth/localUser"] as User;
+      const userId = user.userId;
+      if (userId === message.userId) {
+        // TODO if user has multiple pages open, should update all of them. TBD
+        logger.debug(
+          `Action received was triggered by this user, don't update`
+        );
+        return;
+      }
+      const container = store.getters["board/container"] as BoardContainer;
+      if (message.action === "ADD") {
+        container.elements.push(message.payload);
+        this.boardContentService.init(container.board, container.elements);
+        this.boardContentService.addElementLocally(
+          this.dataMapper.boardElementDeserialize(message.payload)
+        );
+      } else if (message.action === "UPDATE") {
+        this.boardContentService.updateLocally(
+          this.dataMapper.boardElementDeserialize(message.payload)
+        );
+      } else if (message.action === "DELETE") {
+        this.boardContentService.deleteLocally(message.payload.entryId);
+      } else {
+        logger.error(`Don't know how to handle incoming message ${message}`);
+      }
     },
     async loadBoard(board: BoardModel) {
       const elements = await this.backendService.getBoardElements(
@@ -106,7 +134,6 @@ export default Vue.extend({
       const assets = await this.backendService.getAssets(this.gameId);
       logger.info(`Loaded ${assets.length} assets`);
       store.commit("assets/reset", assets);
-      //assets.forEach((asset) => store.commit("assets/addAsset", asset));
     },
   },
   async created() {
@@ -125,8 +152,10 @@ export default Vue.extend({
     logger.info(`Start game ${this.gameId}`);
     window.addEventListener("resize", this.handleResize);
 
-    VueEventBus.$on(`${this.moduleName()}.players`, this.playersHandler);
-    VueEventBus.$on(`${this.moduleName()}.boards`, this.boardsHandler);
+    logger.info(`Attach eventbus listener: ${this.gameId}.players`);
+    VueEventBus.$on(`${this.gameId}.players`, this.playersHandler);
+    logger.info(`Attach eventbus listener: ${this.gameId}.boards`);
+    VueEventBus.$on(`${this.gameId}.boards`, this.boardsHandler);
   },
   beforeDestroy() {
     logger.info(`Unregister module ${this.moduleName()}`);
@@ -139,8 +168,10 @@ export default Vue.extend({
     this.webSocket.unregister(`external.outgoing.game.${this.gameId}`);
 
     logger.info(`Unregister EventBus listeners`);
-    VueEventBus.$off(`${this.moduleName()}.players`, this.playersHandler);
-    VueEventBus.$off(`${this.moduleName()}.boards`, this.boardsHandler);
+    logger.info(`Detach eventbus listener: ${this.gameId}.players`);
+    VueEventBus.$off(`${this.gameId}.players`, this.playersHandler);
+    logger.info(`Detach eventbus listener: ${this.gameId}.boards`);
+    VueEventBus.$off(`${this.gameId}.boards`, this.boardsHandler);
   },
   async mounted() {
     logger.debug("Mounted, resize");
