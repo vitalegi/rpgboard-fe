@@ -1,7 +1,7 @@
 <template>
   <v-card id="create" height="90%">
     <v-container fluid>
-      <v-row class="child-flex">
+      <v-row>
         <v-col cols="10">
           <v-card>
             <v-responsive :aspect-ratio="16 / 4">

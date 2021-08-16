@@ -1,7 +1,7 @@
 <template>
   <v-card id="game" ref="gameView" :min-height="viewHeight">
     <v-container fluid>
-      <v-row class="child-flex">
+      <v-row>
         <v-col cols="12" md="6" lg="8">
           <board
             :boardHeight="internalViewHeight"
