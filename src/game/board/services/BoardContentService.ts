@@ -244,12 +244,57 @@ export default class BoardContentService {
     return gridGroup;
   }
 
-  public updateVisibility(content: BoardContainer, id: string): void {
-    const target = this.getElementById(content.layers, id);
-    if (target === null) {
-      throw new Error(`Cannot find element ${id} in board.`);
+  public async update(entry: BoardElement): Promise<void> {
+    logger.info(`update board entry ${entry.entryId}`);
+    const board = store.getters["board/board"] as Board;
+    // try to update backend, if succeed, update locally
+    const out = await this.backendService.updateBoardElement(
+      board.boardId,
+      entry
+    );
+    const elements = store.getters["board/elements"] as BoardElement[];
+    const entryIndex = this.findElementIndexById(elements, entry.entryId);
+    elements.splice(entryIndex, 1, entry);
+    this.init(board, elements);
+  }
+
+  public async delete(entryId: string): Promise<void> {
+    logger.info(`delete board entry ${entryId}`);
+    const board = store.getters["board/board"] as Board;
+    // try to update backend, if succeed, update locally
+    const out = await this.backendService.deleteBoardElement(
+      board.boardId,
+      entryId
+    );
+    const elements = store.getters["board/elements"] as BoardElement[];
+    const entryIndex = this.findElementIndexById(elements, entryId);
+    elements.splice(entryIndex, 1);
+    this.init(board, elements);
+  }
+
+  protected findElementIndexById(
+    elements: BoardElement[],
+    entryId: string
+  ): number {
+    const entryIndex = elements.findIndex((e) => e.entryId == entryId);
+    if (entryIndex === -1) {
+      throw new Error(`Cannot find element ${entryId} in board.`);
     }
-    target.config.visible = !target.config.visible;
+    return entryIndex;
+  }
+
+  protected findElementById(
+    elements: BoardElement[],
+    entryId: string
+  ): BoardElement {
+    return elements[this.findElementIndexById(elements, entryId)];
+  }
+
+  public updateVisibility(content: BoardContainer, entryId: string): void {
+    const elements = store.getters["board/elements"] as BoardElement[];
+    const entry = this.findElementById(elements, entryId);
+    entry.config.visible = !entry.config.visible;
+    this.update(entry);
   }
 
   public updateDraggable(content: BoardContainer, id: string): void {
@@ -446,7 +491,7 @@ export default class BoardContentService {
       "PUBLIC",
       entryPosition
     );
-    const container = store.getters["board/board"] as BoardContainer;
+    const container = store.getters["board/container"] as BoardContainer;
     container.elements.push(entry);
     this.init(container.board, container.elements);
   }

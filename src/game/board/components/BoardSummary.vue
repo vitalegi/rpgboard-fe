@@ -63,14 +63,15 @@ export default Vue.extend({
       BoardContentService
     ),
   }),
-  computed: {},
-  methods: {
-    getBoard(): BoardContainer {
-      return this.$store.getters[`board/board`];
+  computed: {
+    container(): BoardContainer {
+      return this.$store.getters[`board/container`];
     },
-    changeVisibility(id: string): void {
-      logger.info(`TODO change visibility of ${id} item on backend`);
-      this.$store.commit(`board/updateBoardVisibility`, id);
+  },
+  methods: {
+    changeVisibility(entryId: string): void {
+      logger.info(`change visibility for ${entryId}`);
+      this.boardContentService.updateVisibility(this.container, entryId);
     },
     changeDraggable(id: string): void {
       logger.info(`TODO change draggable of ${id} item on backend`);
@@ -83,13 +84,12 @@ export default Vue.extend({
         variation: variation,
       });
     },
-    deleteNode(id: string): void {
-      logger.info(`TODO delete ${id} item on backend`);
-      this.$store.commit(`board/deleteNode`, id);
+    deleteNode(entryId: string): void {
+      this.boardContentService.delete(entryId);
     },
     items(): Array<TreeEntry> {
       const hierarchy = this.boardContentService.createHierarchy(
-        this.getBoard().elements,
+        this.container.elements,
         (element) => {
           return {
             id: element.entryId,

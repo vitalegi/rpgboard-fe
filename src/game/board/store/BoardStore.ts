@@ -16,9 +16,13 @@ const board: Module<any, any> = {
     setBoard(state: any, content: BoardContainer) {
       Vue.set(state, "container", content);
     },
-    updateBoardVisibility(state: any, id: string) {
+    addNode(state: any, entry: { siblingId: string; node: CustomShape }) {
       const service = Container.get<BoardContentService>(BoardContentService);
-      service.updateVisibility(state.container, id);
+      service.addNode(state.container, entry.siblingId, entry.node);
+    },
+    deleteNode(state: any, id: string) {
+      const service = Container.get<BoardContentService>(BoardContentService);
+      service.deleteNode(state.container, id);
     },
     updateBoardDraggable(state: any, id: string) {
       const service = Container.get<BoardContentService>(BoardContentService);
@@ -28,18 +32,12 @@ const board: Module<any, any> = {
       const service = Container.get<BoardContentService>(BoardContentService);
       service.moveNode(state.container, entry.id, entry.variation);
     },
-    deleteNode(state: any, id: string) {
-      const service = Container.get<BoardContentService>(BoardContentService);
-      service.deleteNode(state.container, id);
-    },
-    addNode(state: any, entry: { siblingId: string; node: CustomShape }) {
-      const service = Container.get<BoardContentService>(BoardContentService);
-      service.addNode(state.container, entry.siblingId, entry.node);
-    },
   },
   getters: {
-    board: (state: any) => state.container,
+    container: (state: any) => state.container,
+    board: (state: any) => state.container.board,
     boardId: (state: any) => state.container.board.boardId,
+    elements: (state: any) => state.container.elements,
   },
   modules: {},
 };

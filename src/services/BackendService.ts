@@ -118,6 +118,35 @@ export default class BackendService {
     return data.map(this.dataMapper.boardElementDeserialize);
   }
 
+  public async updateBoardElement(
+    boardId: string,
+    entry: BoardElement
+  ): Promise<BoardElement> {
+    const response = await BackendWebService.url(`/board/${boardId}/element`)
+      .patch()
+      .call({
+        entryId: entry.entryId,
+        parentId: entry.parentId,
+        entryPosition: entry.entryPosition,
+        config: entry.config,
+        updatePolicy: entry.updatePolicy,
+        visibilityPolicy: entry.visibilityPolicy,
+      });
+    return this.dataMapper.boardElementDeserialize(response.data);
+  }
+
+  public async deleteBoardElement(
+    boardId: string,
+    entryId: string
+  ): Promise<BoardElement> {
+    const response = await BackendWebService.url(
+      `/board/${boardId}/element/${entryId}`
+    )
+      .delete()
+      .call({});
+    return this.dataMapper.boardElementDeserialize(response.data);
+  }
+
   public async addAsset(
     gameId: string,
     name: string,

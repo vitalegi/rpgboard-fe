@@ -6,7 +6,7 @@
       </v-btn>
     </template>
 
-    <v-card v-if="selectNameStep">
+    <v-card v-if="selectNameStep" outlined>
       <v-card-title class="text-h5 lighten-2"> Group name </v-card-title>
       <v-card-text>
         <v-text-field
@@ -63,8 +63,7 @@ export default Vue.extend({
   }),
   computed: {
     boardId(): string {
-      const container = this.$store.getters["board/board"] as BoardContainer;
-      return container.board.boardId;
+      return this.$store.getters["board/boardId"];
     },
     selectNameStep(): boolean {
       return this.step === SELECT_NAME;

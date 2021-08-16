@@ -53,7 +53,7 @@ export default Vue.extend({
   }),
   computed: {
     boardContent(): BoardContainer {
-      return this.$store.getters[`board/board`];
+      return this.$store.getters[`board/container`];
     },
   },
   methods: {
