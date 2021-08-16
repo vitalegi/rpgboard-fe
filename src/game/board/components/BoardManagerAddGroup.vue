@@ -41,7 +41,7 @@ import BoardSummary from "./BoardSummary.vue";
 import BoardContentService from "../services/BoardContentService";
 import AssetService from "@/game/assets/services/AssetService";
 import BackendService from "@/services/BackendService";
-import { BoardContainer, ShapeType } from "../models/BoardContent";
+import { BoardContainer } from "../models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Board.Components.BoardManagerAddGroup");
 
@@ -102,9 +102,9 @@ export default Vue.extend({
     async selectTarget(targetId: string | null): Promise<void> {
       logger.info(`Select target ${targetId}`);
       if (targetId) {
-        await this.addGroup("group name TODO", targetId, 0);
+        await this.addGroup(this.name, targetId, 0);
       } else {
-        await this.addLayer("layer name TODO", 0);
+        await this.addLayer(this.name, 0);
       }
       this.dialog = false;
     },

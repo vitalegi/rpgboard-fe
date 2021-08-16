@@ -27,7 +27,8 @@ export default class AssetService {
       {},
       AssetService.TYPE_IMAGE
     );
-    return Promise.resolve(asset.assetId);
+    store.commit("assets/addAsset", asset);
+    return asset.assetId;
   }
 
   public async getAsset(gameId: string, assetId: string): Promise<Asset> {
@@ -42,6 +43,7 @@ export default class AssetService {
   }
 
   public async getPayload(gameId: string, assetId: string): Promise<string> {
-    return await (await this.getAsset(gameId, assetId)).content;
+    const asset = await this.getAsset(gameId, assetId);
+    return asset.content;
   }
 }

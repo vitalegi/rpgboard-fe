@@ -61,20 +61,14 @@ export default Vue.extend({
     gameId(): string {
       return this.$store.getters["game/getGameId"];
     },
-    async addNode(id: string, assetId: string): Promise<void> {
+    async addNode(parentId: string, assetId: string): Promise<void> {
       const asset = await this.assetService.getAsset(this.gameId(), assetId);
-      const payload = await this.assetService.getPayload(
-        this.gameId(),
-        assetId
-      );
-      const content = await this.boardContentService.createImage(
+      await this.boardContentService.addImage(
+        this.$store.getters["board/boardId"],
         asset,
-        payload
+        parentId,
+        0
       );
-      this.$store.commit(`board/addNode`, {
-        siblingId: id,
-        node: content,
-      });
     },
     selectAsset(assetId: string): void {
       logger.info(`Select asset ${assetId}`);

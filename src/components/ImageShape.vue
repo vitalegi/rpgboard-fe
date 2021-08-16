@@ -17,6 +17,9 @@ export default Vue.extend({
     config: Object,
   },
   computed: {
+    gameId(): string {
+      return this.$store.getters["game/getGameId"];
+    },
     combinedConfig: function () {
       const config: Record<string, unknown> = ObjectUtil.shallowCopy(
         this.config
@@ -25,9 +28,14 @@ export default Vue.extend({
       return config;
     },
   },
-  mounted() {
+  methods: {
+    assetContentSrc(gameId: string, assetId: string): string {
+      return `${process.env.VUE_APP_BACKEND}/content/game/${gameId}/asset/${assetId}`;
+    },
+  },
+  async mounted() {
     const image = new window.Image();
-    image.src = this.config.image;
+    image.src = this.assetContentSrc(this.gameId, this.config.assetId);
     image.onload = () => {
       this.renderedImage = image as HTMLImageElement;
     };

@@ -9,36 +9,37 @@ const board: Module<any, any> = {
   namespaced: true,
   state: () => {
     return {
-      board: new BoardContainer(),
+      container: new BoardContainer(),
     };
   },
   mutations: {
     setBoard(state: any, content: BoardContainer) {
-      Vue.set(state, "board", content);
+      Vue.set(state, "container", content);
     },
     updateBoardVisibility(state: any, id: string) {
       const service = Container.get<BoardContentService>(BoardContentService);
-      service.updateVisibility(state.board, id);
+      service.updateVisibility(state.container, id);
     },
     updateBoardDraggable(state: any, id: string) {
       const service = Container.get<BoardContentService>(BoardContentService);
-      service.updateDraggable(state.board, id);
+      service.updateDraggable(state.container, id);
     },
     moveNode(state: any, entry: { id: string; variation: number }) {
       const service = Container.get<BoardContentService>(BoardContentService);
-      service.moveNode(state.board, entry.id, entry.variation);
+      service.moveNode(state.container, entry.id, entry.variation);
     },
     deleteNode(state: any, id: string) {
       const service = Container.get<BoardContentService>(BoardContentService);
-      service.deleteNode(state.board, id);
+      service.deleteNode(state.container, id);
     },
     addNode(state: any, entry: { siblingId: string; node: CustomShape }) {
       const service = Container.get<BoardContentService>(BoardContentService);
-      service.addNode(state.board, entry.siblingId, entry.node);
+      service.addNode(state.container, entry.siblingId, entry.node);
     },
   },
   getters: {
-    board: (state: any) => state.board,
+    board: (state: any) => state.container,
+    boardId: (state: any) => state.container.board.boardId,
   },
   modules: {},
 };

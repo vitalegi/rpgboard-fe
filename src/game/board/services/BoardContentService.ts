@@ -372,6 +372,33 @@ export default class BoardContentService {
     return shape;
   }
 
+  public async addImage(
+    boardId: string,
+    asset: Asset,
+    parentId: string,
+    entryPosition: number
+  ): Promise<void> {
+    logger.info(
+      `Adding image, board=${boardId}, asset=${asset.assetId}, parentId=${parentId}, entryPosition=${entryPosition}`
+    );
+    const config: any = {
+      componentName: ShapeType.IMAGE,
+      x: 0,
+      y: 0,
+      name: asset.name,
+      assetId: asset.assetId,
+      draggable: true,
+      visible: true,
+    };
+    if (asset.metadata.width > 0) {
+      config.width = asset.metadata.width;
+    }
+    if (asset.metadata.height > 0) {
+      config.height = asset.metadata.height;
+    }
+    await this.addElement(boardId, config, parentId, entryPosition);
+  }
+
   public async addGroup(
     boardId: string,
     name: string,
