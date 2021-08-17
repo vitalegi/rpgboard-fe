@@ -65,12 +65,12 @@ export default Vue.extend({
   }),
   computed: {},
   methods: {
-    changeVisibility(entryId: string): void {
+    async changeVisibility(entryId: string): Promise<void> {
       logger.info(`change visibility for ${entryId}`);
-      this.boardContentService.updateVisibility(entryId);
+      await this.boardContentService.updateVisibility(entryId);
     },
-    changeDraggable(id: string): void {
-      logger.info(`TODO change draggable of ${id} item on backend`);
+    async changeDraggable(entryId: string): Promise<void> {
+      await this.boardContentService.updateDraggable(entryId);
     },
     move(id: string, variation: number): void {
       logger.info(`TODO move ${id} of ${variation} item on backend`);

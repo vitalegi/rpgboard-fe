@@ -117,7 +117,8 @@ export default class BackendService {
 
   public async updateBoardElement(
     boardId: string,
-    entry: BoardElement
+    entry: BoardElement,
+    persist = false
   ): Promise<BoardElement> {
     const response = await BackendWebService.url(`/board/${boardId}/element`)
       .patch()
@@ -128,6 +129,7 @@ export default class BackendService {
         config: entry.config,
         updatePolicy: entry.updatePolicy,
         visibilityPolicy: entry.visibilityPolicy,
+        persist: persist,
       });
     return this.dataMapper.boardElementDeserialize(response.data);
   }

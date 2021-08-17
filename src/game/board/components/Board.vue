@@ -62,16 +62,22 @@ export default Vue.extend({
         TimeUtil.diffMillis(TimeUtil.now(), this.lastDragDropNotification) > 100
       ) {
         this.lastDragDropNotification = TimeUtil.now();
-        logger.info(
-          `X=${event.evt.clientX} Y=${event.evt.clientY} ID=${
-            event.target.attrs.id
-          }, raw=${JSON.stringify(event.target)}`
+        this.boardContentService.dragShape(
+          event.target.attrs.id,
+          event.evt.clientX,
+          event.evt.clientY,
+          false
         );
       }
     },
     dragend(event: any) {
       this.lastDragDropNotification = TimeUtil.now();
-      this.$emit("moveShape", event);
+      this.boardContentService.dragShape(
+        event.target.attrs.id,
+        event.evt.clientX,
+        event.evt.clientY,
+        true
+      );
     },
     handleResize() {
       logger.debug("resize");

@@ -121,7 +121,7 @@ export default class BoardContentService {
     return gridGroup;
   }
 
-  public async update(entry: BoardElement): Promise<void> {
+  protected async update(entry: BoardElement): Promise<void> {
     logger.info(`update board entry ${entry.entryId}`);
     const board = store.getters["board/board"] as Board;
     // try to update backend, if succeed, update locally
@@ -143,15 +143,32 @@ export default class BoardContentService {
     store.commit(`board/deleteElement`, entryId);
   }
 
-  public updateVisibility(entryId: string): void {
+  public async updateVisibility(entryId: string): Promise<void> {
     const elements = store.getters["board/elements"] as BoardElement[];
     const entry = this.findElementById(elements, entryId);
     entry.config.visible = !entry.config.visible;
-    this.update(entry);
+    await this.update(entry);
   }
 
-  public async dragShape(entryId: string, x: number, y: number): Promise<void> {
+  public async updateDraggable(entryId: string): Promise<void> {
+    const elements = store.getters["board/elements"] as BoardElement[];
+    const entry = this.findElementById(elements, entryId);
+    entry.config.draggable = !entry.config.draggable;
+    await this.update(entry);
+  }
+
+  public async dragShape(
+    entryId: string,
+    x: number,
+    y: number,
+    dragEnd: boolean
+  ): Promise<void> {
     logger.info(`Move ${entryId} to (${x}, ${y})`);
+    const entry = store.getters["board/element"](entryId) as BoardElement;
+    //entry.config.x = x;
+    //entry.config.y = y;
+    //store.commit(`board/updateElement`, entry);
+    //await this.backendService.updateBoardElement(entry.boardId, entry, dragEnd);
   }
 
   public createLayer(name: string): CustomShape {

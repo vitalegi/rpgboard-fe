@@ -78,12 +78,6 @@ export default Vue.extend({
   }),
   computed: {
     canDelete(): boolean {
-      console.log(
-        this.$store.getters["auth/authenticated"],
-        this.$store.getters["auth/userId"],
-        this.$store.getters["auth/localUser"].userId,
-        this.game.ownerId
-      );
       return this.$store.getters["auth/localUser"].userId === this.game.ownerId;
     },
   },
