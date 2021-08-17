@@ -1,7 +1,7 @@
 <template>
   <v-stage :width="boardWidth" :height="boardHeight" ref="boardCanvas">
     <v-layer
-      v-for="(layer, layerIndex) in boardContent.layers"
+      v-for="(layer, layerIndex) in shapes"
       :key="layerIndex"
       :config="layer.config"
     >
@@ -25,7 +25,10 @@ import TimeUtil from "@/utils/TimeUtil";
 import GenericShape from "@/components/GenericShape.vue";
 
 import { factory } from "@/utils/ConfigLog4j";
-import { BoardContainer } from "../models/BoardContent";
+import CustomShape from "../models/BoardContent";
+import BoardElement from "@/models/BoardElement";
+import BoardContentService from "../services/BoardContentService";
+import Container from "typedi";
 const logger = factory.getLogger("Game.Board.Components.Board");
 
 export default Vue.extend({
@@ -33,12 +36,23 @@ export default Vue.extend({
   components: { GenericShape },
   props: {
     boardHeight: Number,
-    boardContent: BoardContainer,
+    elements: {
+      type: Array,
+    },
   },
   data: () => ({
     boardWidth: 0,
     lastDragDropNotification: TimeUtil.now(),
+    boardContentService: Container.get<BoardContentService>(
+      BoardContentService
+    ),
   }),
+  computed: {
+    shapes(): CustomShape[] {
+      const elements = this.elements as Array<BoardElement>;
+      return this.boardContentService.createShapesTree(elements);
+    },
+  },
   methods: {
     dragstart(event: any) {
       return;

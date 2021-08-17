@@ -37,10 +37,3 @@ export class Grid {
     this.offsetY = offsetY;
   }
 }
-
-export class BoardContainer {
-  board = new Board();
-  elements = new Array<BoardElement>();
-  layers = Array<CustomShape>();
-  grid = new Grid();
-}

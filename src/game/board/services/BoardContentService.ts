@@ -1,9 +1,5 @@
 import Container, { Service } from "typedi";
-import CustomShape, {
-  BoardContainer,
-  Grid,
-  ShapeType,
-} from "../models/BoardContent";
+import CustomShape, { Grid, ShapeType } from "../models/BoardContent";
 import random from "@/utils/RandomUtil";
 import Asset from "@/game/assets/models/Asset";
 import Board from "@/models/Board";
@@ -30,11 +26,12 @@ export default class BoardContentService {
   public async init(
     board: Board,
     elements: Array<BoardElement>
-  ): Promise<BoardContainer> {
-    const container = new BoardContainer();
-    container.board = board;
-    container.elements = elements;
-    container.grid = new Grid(true, 70, 0, 0);
+  ): Promise<void> {
+    store.commit(`board/setBoard`, board);
+    store.commit(`board/setElements`, elements);
+  }
+
+  public createShapesTree(elements: Array<BoardElement>): CustomShape[] {
     const tree = this.createHierarchy(elements, (element) => {
       return {
         value: element,
@@ -42,12 +39,9 @@ export default class BoardContentService {
       };
     });
     if (tree) {
-      container.layers = tree.map((root) =>
-        this.treeToShape(root as BoardElementTree)
-      );
+      return tree.map((root) => this.treeToShape(root as BoardElementTree));
     }
-    store.commit(`board/setBoard`, container);
-    return container;
+    throw new Error(`With the elements provided, no shape was built`);
   }
 
   protected treeToShape(element: BoardElementTree): CustomShape {
@@ -89,117 +83,6 @@ export default class BoardContentService {
         this.createHierarchyNode(child, reducedElements, processor)
       );
     return element;
-  }
-
-  public createBoardContent(): BoardContainer {
-    const container = new BoardContainer();
-    container.grid = new Grid(true, 70, 0, 0);
-
-    const layer = new CustomShape({
-      componentName: ShapeType.LAYOUT,
-      id: "layer-1",
-      visible: true,
-      draggable: true,
-    });
-    container.layers.push(layer);
-
-    const mainGroup = new CustomShape({
-      componentName: ShapeType.GROUP,
-      id: "background-group",
-      name: "background-group",
-      x: 0,
-      y: 0,
-      visible: true,
-    });
-    layer.children.push(mainGroup);
-
-    mainGroup.children.push(
-      new CustomShape({
-        componentName: ShapeType.RECTANGLE,
-        id: "background",
-        name: "background",
-        x: 2,
-        y: 2,
-        width: 800,
-        height: 396,
-        stroke: "black",
-        fill: "white",
-        strokeWidth: 4,
-        visible: true,
-      })
-    );
-    mainGroup.children.push(this.createGrid(container.grid, 800, 400));
-
-    for (let i = 0; i < 1; i++) {
-      mainGroup.children.push(
-        new CustomShape({
-          componentName: ShapeType.CIRCLE,
-          id: `random-circle-${i}`,
-          x: random(500) + 100,
-          y: random(300) + 100,
-          radius: random(50) + 10,
-          fill: "red",
-          stroke: "black",
-          strokeWidth: 4,
-          visible: true,
-        })
-      );
-
-      mainGroup.children.push(
-        new CustomShape({
-          componentName: ShapeType.IMAGE,
-          id: `random-image-${i}`,
-          x: random(500) + 100,
-          y: random(300) + 100,
-          width: 20,
-          height: 20,
-          image: "https://vuejs.org/images/logo.png",
-          draggable: true,
-          visible: true,
-        })
-      );
-    }
-    mainGroup.children.push(
-      new CustomShape({
-        componentName: ShapeType.IMAGE,
-        id: "big-image",
-        x: 200,
-        y: 22,
-        width: 60,
-        height: 60,
-        image: "https://vuejs.org/images/logo.png",
-        draggable: true,
-        visible: true,
-      })
-    );
-    mainGroup.children.push(
-      new CustomShape({
-        componentName: ShapeType.CIRCLE,
-        id: "pink-circle",
-        x: 450,
-        y: 250,
-        radius: 70,
-        fill: "pink",
-        stroke: "black",
-        strokeWidth: 4,
-        visible: true,
-      })
-    );
-    mainGroup.children.push(
-      new CustomShape({
-        componentName: ShapeType.CIRCLE,
-        id: "yellow-circle",
-        x: 90,
-        y: 60,
-        radius: 50,
-        fill: "yellow",
-        stroke: "black",
-        strokeWidth: 4,
-        draggable: true,
-        visible: true,
-      })
-    );
-    return container;
   }
 
   public createGrid(grid: Grid, width: number, height: number): CustomShape {
@@ -252,15 +135,7 @@ export default class BoardContentService {
       board.boardId,
       entry
     );
-    this.updateLocally(out);
-  }
-
-  public async updateLocally(entry: BoardElement): Promise<void> {
-    const board = store.getters["board/board"] as Board;
-    const elements = store.getters["board/elements"] as BoardElement[];
-    const entryIndex = this.findElementIndexById(elements, entry.entryId);
-    elements.splice(entryIndex, 1, entry);
-    this.init(board, elements);
+    store.commit(`board/updateElement`, out);
   }
 
   public async delete(entryId: string): Promise<void> {
@@ -271,15 +146,7 @@ export default class BoardContentService {
       board.boardId,
       entryId
     );
-    this.deleteLocally(entryId);
-  }
-
-  public async deleteLocally(entryId: string): Promise<void> {
-    const board = store.getters["board/board"] as Board;
-    const elements = store.getters["board/elements"] as BoardElement[];
-    const entryIndex = this.findElementIndexById(elements, entryId);
-    elements.splice(entryIndex, 1);
-    this.init(board, elements);
+    store.commit(`board/deleteElement`, entryId);
   }
 
   protected findElementIndexById(
@@ -300,91 +167,11 @@ export default class BoardContentService {
     return elements[this.findElementIndexById(elements, entryId)];
   }
 
-  public updateVisibility(content: BoardContainer, entryId: string): void {
+  public updateVisibility(entryId: string): void {
     const elements = store.getters["board/elements"] as BoardElement[];
     const entry = this.findElementById(elements, entryId);
     entry.config.visible = !entry.config.visible;
     this.update(entry);
-  }
-
-  public updateDraggable(content: BoardContainer, id: string): void {
-    const target = this.getElementById(content.layers, id);
-    if (target === null) {
-      throw new Error(`Cannot find element ${id} in board.`);
-    }
-    target.config.draggable = !target.config.draggable;
-  }
-
-  public moveNode(
-    content: BoardContainer,
-    id: string,
-    indexVariation: number
-  ): void {
-    const target = this.getElementById(content.layers, id);
-    if (target === null) {
-      throw new Error(`Cannot find element ${id} in board.`);
-    }
-    const parent = this.getParentById(content.layers, id);
-    if (parent === null) {
-      throw new Error(`"Cannot find parent for ${id} in board`);
-    }
-    const oldIndex = parent?.children.findIndex((e) => e.config.id === id);
-    if (oldIndex === undefined) {
-      throw new Error(`Cannot find index for ${id} in ${parent.config.id}`);
-    }
-    const newIndex = oldIndex + indexVariation;
-    if (newIndex < 0 || newIndex >= parent.children.length) {
-      logger.info(`Trying to move ${id} to position ${newIndex}, skip`);
-      return;
-    }
-    const element = parent.children.splice(oldIndex, 1)[0];
-    parent.children.splice(newIndex, 0, element);
-  }
-
-  public deleteNode(content: BoardContainer, id: string): void {
-    const target = this.getElementById(content.layers, id);
-    if (target === null) {
-      throw new Error(`Cannot find element ${id} in board.`);
-    }
-    const parent = this.getParentById(content.layers, id);
-    if (parent === null) {
-      throw new Error(`"Cannot find parent for ${id} in board`);
-    }
-    const index = parent?.children.findIndex((e) => e.config.id === id);
-    if (index === undefined) {
-      throw new Error(`Cannot find index for ${id} in ${parent.config.id}`);
-    }
-    parent.children.splice(index, 1)[0];
-  }
-
-  public addNode(
-    content: BoardContainer,
-    referenceId: string,
-    asset: CustomShape
-  ): void {
-    const reference = this.getElementById(content.layers, referenceId);
-    if (reference === null) {
-      throw new Error(`Cannot find element ${referenceId} in board.`);
-    }
-    if (ShapeType.isFolder(reference)) {
-      logger.info(`Inserting in a folder`);
-      reference.children.push(asset);
-    } else {
-      logger.info(`Inserting near an asset`);
-      const parent = this.getParentById(content.layers, referenceId);
-      if (parent === null) {
-        throw new Error(`"Cannot find parent for ${referenceId} in board`);
-      }
-      const index = parent?.children.findIndex(
-        (e) => e.config.id === referenceId
-      );
-      if (index === undefined) {
-        throw new Error(
-          `Cannot find index for ${referenceId} in ${parent.config.id}`
-        );
-      }
-      parent.children.splice(index + 1, 0, asset);
-    }
   }
 
   public createLayer(name: string): CustomShape {
@@ -501,13 +288,7 @@ export default class BoardContentService {
       "PUBLIC",
       entryPosition
     );
-    this.addElementLocally(entry);
-  }
-
-  public async addElementLocally(entry: BoardElement): Promise<void> {
-    const container = store.getters["board/container"] as BoardContainer;
-    container.elements.push(entry);
-    this.init(container.board, container.elements);
+    store.commit("board/addElement", entry);
   }
 
   protected getElementById(

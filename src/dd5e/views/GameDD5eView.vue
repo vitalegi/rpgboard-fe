@@ -5,7 +5,7 @@
         <v-col cols="12" md="6" lg="8">
           <board
             :boardHeight="internalViewHeight"
-            :boardContent="boardContent"
+            :elements="boardElements"
             @moveShape="move"
           ></board>
         </v-col>
@@ -23,17 +23,16 @@ import { Container } from "typedi";
 import GameMenus from "@/dd5e/components/GameMenus.vue";
 import Board from "@/game/board/components/Board.vue";
 import GamePlayer from "@/models/GamePlayer";
-import { BoardContainer } from "@/game/board/models/BoardContent";
 import BackendService from "@/services/BackendService";
 import BoardContentService from "@/game/board/services/BoardContentService";
 import store from "@/store";
 import dd5e, { DD5eStoreService } from "../store/DD5eStore";
 import WebSocketClient from "@/services/WebSocketClient";
 import { default as VueEventBus } from "@/utils/EventBus";
-import { factory } from "@/utils/ConfigLog4j";
 import { default as BoardModel } from "@/models/Board";
 import User from "@/models/User";
 import DataMapper from "@/services/DataMapper";
+import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Views.GameDD5eView");
 
 export default Vue.extend({
@@ -55,8 +54,8 @@ export default Vue.extend({
     webSocket: Container.get<WebSocketClient>(WebSocketClient),
   }),
   computed: {
-    boardContent(): BoardContainer {
-      return this.$store.getters[`board/container`];
+    boardElements() {
+      return this.$store.getters[`board/elements`];
     },
   },
   methods: {
@@ -107,19 +106,18 @@ export default Vue.extend({
         );
         return;
       }
-      const container = store.getters["board/container"] as BoardContainer;
       if (message.action === "ADD") {
-        container.elements.push(message.payload);
-        this.boardContentService.init(container.board, container.elements);
-        this.boardContentService.addElementLocally(
+        store.commit(
+          "board/addElement",
           this.dataMapper.boardElementDeserialize(message.payload)
         );
       } else if (message.action === "UPDATE") {
-        this.boardContentService.updateLocally(
+        store.commit(
+          `board/updateElement`,
           this.dataMapper.boardElementDeserialize(message.payload)
         );
       } else if (message.action === "DELETE") {
-        this.boardContentService.deleteLocally(message.payload.entryId);
+        store.commit(`board/deleteElement`, message.payload.entryId);
       } else {
         logger.error(`Don't know how to handle incoming message ${message}`);
       }

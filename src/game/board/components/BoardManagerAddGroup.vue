@@ -41,7 +41,6 @@ import BoardSummary from "./BoardSummary.vue";
 import BoardContentService from "../services/BoardContentService";
 import AssetService from "@/game/assets/services/AssetService";
 import BackendService from "@/services/BackendService";
-import { BoardContainer } from "../models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Board.Components.BoardManagerAddGroup");
 

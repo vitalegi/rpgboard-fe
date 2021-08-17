@@ -38,7 +38,7 @@
 import Vue from "vue";
 import IconButton from "@/components/IconButton.vue";
 import BoardManagerItemOptions from "./BoardManagerItemOptions.vue";
-import CustomShape, { BoardContainer } from "../models/BoardContent";
+import CustomShape from "../models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
 import Container from "typedi";
 import BoardContentService from "../services/BoardContentService";
@@ -63,33 +63,24 @@ export default Vue.extend({
       BoardContentService
     ),
   }),
-  computed: {
-    container(): BoardContainer {
-      return this.$store.getters[`board/container`];
-    },
-  },
+  computed: {},
   methods: {
     changeVisibility(entryId: string): void {
       logger.info(`change visibility for ${entryId}`);
-      this.boardContentService.updateVisibility(this.container, entryId);
+      this.boardContentService.updateVisibility(entryId);
     },
     changeDraggable(id: string): void {
       logger.info(`TODO change draggable of ${id} item on backend`);
-      this.$store.commit(`board/updateBoardDraggable`, id);
     },
     move(id: string, variation: number): void {
       logger.info(`TODO move ${id} of ${variation} item on backend`);
-      this.$store.commit(`board/moveNode`, {
-        id: id,
-        variation: variation,
-      });
     },
     deleteNode(entryId: string): void {
       this.boardContentService.delete(entryId);
     },
     items(): Array<TreeEntry> {
       const hierarchy = this.boardContentService.createHierarchy(
-        this.container.elements,
+        this.$store.getters["board/elements"],
         (element) => {
           return {
             id: element.entryId,

@@ -1,43 +1,61 @@
-import CustomShape, { BoardContainer } from "../models/BoardContent";
 import BoardContentService from "../services/BoardContentService";
 import Container from "typedi";
 import Vue from "vue";
 import { Module } from "vuex";
 import BoardElement from "@/models/BoardElement";
 
+import { factory } from "@/utils/ConfigLog4j";
+import Board from "@/models/Board";
+const logger = factory.getLogger("Game.Board.Store.BoardStore");
+
 const board: Module<any, any> = {
   namespaced: true,
   state: () => {
     return {
-      container: new BoardContainer(),
+      board: new Board(),
+      elements: new Array<BoardElement>(),
     };
   },
   mutations: {
-    setBoard(state: any, content: BoardContainer) {
-      Vue.set(state, "container", content);
+    setBoard(state: any, board: Board) {
+      Vue.set(state, "board", board);
     },
-    addNode(state: any, entry: { siblingId: string; node: CustomShape }) {
-      const service = Container.get<BoardContentService>(BoardContentService);
-      service.addNode(state.container, entry.siblingId, entry.node);
+    setElements(state: any, elements: BoardElement[]) {
+      Vue.set(state, "elements", elements);
     },
-    deleteNode(state: any, id: string) {
-      const service = Container.get<BoardContentService>(BoardContentService);
-      service.deleteNode(state.container, id);
+    addElement(state: any, element: BoardElement) {
+      logger.info(`Add locally ${JSON.stringify(element)}`);
+      state.elements.push(element);
+      console.log("elements", state.elements);
     },
-    updateBoardDraggable(state: any, id: string) {
-      const service = Container.get<BoardContentService>(BoardContentService);
-      service.updateDraggable(state.container, id);
+    updateElement(state: any, element: BoardElement) {
+      logger.info(`Update locally ${JSON.stringify(element)}`);
+      const elements = state.elements as BoardElement[];
+      const index = elements.findIndex((e) => e.entryId === element.entryId);
+      if (index !== -1) {
+        elements.splice(index, 1, element);
+      } else {
+        throw new Error(`Element ${element.entryId} not found locally`);
+      }
+    },
+    deleteElement(state: any, entryId: string) {
+      logger.info(`Update locally ${entryId}`);
+      const elements = state.elements as BoardElement[];
+      const index = elements.findIndex((e) => e.entryId === entryId);
+      if (index !== -1) {
+        elements.splice(index, 1);
+      } else {
+        throw new Error(`Element ${entryId} not found locally`);
+      }
     },
     moveNode(state: any, entry: { id: string; variation: number }) {
-      const service = Container.get<BoardContentService>(BoardContentService);
-      service.moveNode(state.container, entry.id, entry.variation);
+      // TODO implement
     },
   },
   getters: {
-    container: (state: any) => state.container,
-    board: (state: any) => state.container.board,
-    boardId: (state: any) => state.container.board.boardId,
-    elements: (state: any) => state.container.elements,
+    board: (state: any) => state.board,
+    boardId: (state: any) => state.board.boardId,
+    elements: (state: any) => state.elements,
   },
   modules: {},
 };
