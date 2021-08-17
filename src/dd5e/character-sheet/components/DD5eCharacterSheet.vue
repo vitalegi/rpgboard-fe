@@ -88,7 +88,7 @@ export default Vue.extend({
     },
     moveAbility(dragAbility: string, dropAbility: string): void {
       logger.info(`Move ${dragAbility} before ${dropAbility}`);
-      console.log(this.player.abilities.map((a) => a.name).join(", "));
+      logger.debug(this.player.abilities.map((a) => a.name).join(", "));
       const fromIndex = this.player.abilities.findIndex(
         (a) => a.name === dragAbility
       );
@@ -98,7 +98,7 @@ export default Vue.extend({
       logger.info(`Move ${fromIndex} to ${toIndex}`);
       const ability = this.player.abilities.splice(fromIndex, 1)[0];
       this.player.abilities.splice(toIndex, 0, ability);
-      console.log(this.player.abilities.map((a) => a.name).join(", "));
+      logger.debug(this.player.abilities.map((a) => a.name).join(", "));
     },
     updateSkill(id: string, proficiency: boolean): void {
       logger.info(`Update skill ${id} proficiency to ${proficiency}`);

@@ -31,35 +31,24 @@ export default class BoardContentService {
     store.commit(`board/setElements`, elements);
   }
 
-  public createShapesTree(elements: Array<BoardElement>): CustomShape[] {
-    const tree = this.createHierarchy(elements, (element) => {
-      return {
-        value: element,
-        children: new Array<TreeNode>(),
-      };
-    });
-    if (tree) {
-      return tree.map((root) => this.treeToShape(root as BoardElementTree));
-    }
-    throw new Error(`With the elements provided, no shape was built`);
-  }
-
-  protected treeToShape(element: BoardElementTree): CustomShape {
-    const el = element.value;
-    const shape = new CustomShape(el?.config);
-    shape.children = element.children.map((e) => this.treeToShape(e));
-    return shape;
+  public createShapes(elements: Array<BoardElement>): CustomShape[] {
+    return this.createHierarchy(
+      elements,
+      this.shapeProcessorFactory()
+    ) as CustomShape[];
   }
 
   public createHierarchy(
     elements: Array<BoardElement>,
-    processor: (element: BoardElement) => TreeNode
+    processor: (element: BoardElement) => TreeNode | null
   ): TreeNode[] {
     const startTime = timestamp();
     const rootElements = elements.filter((e) => e.parentId == null);
-    const out = rootElements.map((root) =>
-      this.createHierarchyNode(root, elements, processor)
-    );
+    const out = rootElements
+      .map((root) => this.createHierarchyNode(root, elements, processor))
+      .filter((e) => e !== null)
+      .map((e) => e as TreeNode);
+
     const duration = timestamp() - startTime;
     const rounded = Math.round((duration + Number.EPSILON) * 100) / 100;
 
@@ -70,9 +59,12 @@ export default class BoardContentService {
   protected createHierarchyNode(
     current: BoardElement,
     elements: Array<BoardElement>,
-    processor: (element: BoardElement) => TreeNode
-  ): TreeNode {
+    processor: (element: BoardElement) => TreeNode | null
+  ): TreeNode | null {
     const element = processor(current);
+    if (!element) {
+      return null;
+    }
     const reducedElements = elements
       .filter((e) => e.parentId != current.entryId)
       .filter((e) => e.entryId != current.entryId);
@@ -81,7 +73,9 @@ export default class BoardContentService {
       .filter((e) => e.parentId == current.entryId)
       .map((child) =>
         this.createHierarchyNode(child, reducedElements, processor)
-      );
+      )
+      .filter((e) => e !== null)
+      .map((e) => e as TreeNode);
     return element;
   }
 
@@ -149,29 +143,15 @@ export default class BoardContentService {
     store.commit(`board/deleteElement`, entryId);
   }
 
-  protected findElementIndexById(
-    elements: BoardElement[],
-    entryId: string
-  ): number {
-    const entryIndex = elements.findIndex((e) => e.entryId == entryId);
-    if (entryIndex === -1) {
-      throw new Error(`Cannot find element ${entryId} in board.`);
-    }
-    return entryIndex;
-  }
-
-  protected findElementById(
-    elements: BoardElement[],
-    entryId: string
-  ): BoardElement {
-    return elements[this.findElementIndexById(elements, entryId)];
-  }
-
   public updateVisibility(entryId: string): void {
     const elements = store.getters["board/elements"] as BoardElement[];
     const entry = this.findElementById(elements, entryId);
     entry.config.visible = !entry.config.visible;
     this.update(entry);
+  }
+
+  public async dragShape(entryId: string, x: number, y: number): Promise<void> {
+    logger.info(`Move ${entryId} to (${x}, ${y})`);
   }
 
   public createLayer(name: string): CustomShape {
@@ -346,5 +326,66 @@ export default class BoardContentService {
       }
     }
     return null;
+  }
+
+  protected findElementIndexById(
+    elements: BoardElement[],
+    entryId: string
+  ): number {
+    const entryIndex = elements.findIndex((e) => e.entryId == entryId);
+    if (entryIndex === -1) {
+      throw new Error(`Cannot find element ${entryId} in board.`);
+    }
+    return entryIndex;
+  }
+
+  protected findElementById(
+    elements: BoardElement[],
+    entryId: string
+  ): BoardElement {
+    return elements[this.findElementIndexById(elements, entryId)];
+  }
+
+  protected shapeProcessorFactory(): (
+    element: BoardElement
+  ) => TreeNode | null {
+    return (element: BoardElement) => {
+      const userId = store.getters["auth/userId"];
+      const shape = new CustomShape(element.config);
+      shape.config.id = element.entryId;
+      shape.config.visible = this.shapeVisibility(userId, element);
+      if (!shape.config.visible) {
+        return null;
+      }
+      return shape;
+    };
+  }
+
+  protected shapeVisibility(userId: string, element: BoardElement): boolean {
+    if (element.config.visible && this.isShapeVisibleForUser(userId, element)) {
+      return true;
+    }
+    return false;
+  }
+
+  protected isShapeVisibleForUser(
+    userId: string,
+    element: BoardElement
+  ): boolean {
+    if (element.visibilityPolicy === "PUBLIC") {
+      logger.debug(`Shape ${element.entryId} is public`);
+      return true;
+    }
+    if (element.visibilityPolicy === "PRIVATE") {
+      if (element.userId === userId) {
+        logger.debug(`Shape ${element.entryId} is private and I'm the owner`);
+        return true;
+      }
+      logger.debug(`Shape ${element.entryId} is private and I'm NOT the owner`);
+      return false;
+    }
+    throw new Error(
+      `Unknown visibility policy for ${element.entryId}, ${element.visibilityPolicy}`
+    );
   }
 }

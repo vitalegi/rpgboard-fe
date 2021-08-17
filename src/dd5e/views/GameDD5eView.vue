@@ -6,7 +6,6 @@
           <board
             :boardHeight="internalViewHeight"
             :elements="boardElements"
-            @moveShape="move"
           ></board>
         </v-col>
         <v-col cols="12" md="6" lg="4">
@@ -62,11 +61,6 @@ export default Vue.extend({
     updatePlayers(players: Array<GamePlayer>) {
       logger.info(`Update players, count: ${players.length}`);
       this.$store.commit(`${this.moduleName()}/replacePlayers`, players);
-    },
-    move(event: any) {
-      logger.info(
-        `X=${event.evt.clientX} Y=${event.evt.clientY} ID=${event.target.attrs.id}`
-      );
     },
     handleResize() {
       const gameView = (this.$refs.gameView as any).$el;

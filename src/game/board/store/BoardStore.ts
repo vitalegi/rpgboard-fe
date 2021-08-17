@@ -26,7 +26,6 @@ const board: Module<any, any> = {
     addElement(state: any, element: BoardElement) {
       logger.info(`Add locally ${JSON.stringify(element)}`);
       state.elements.push(element);
-      console.log("elements", state.elements);
     },
     updateElement(state: any, element: BoardElement) {
       logger.info(`Update locally ${JSON.stringify(element)}`);
@@ -56,6 +55,8 @@ const board: Module<any, any> = {
     board: (state: any) => state.board,
     boardId: (state: any) => state.board.boardId,
     elements: (state: any) => state.elements,
+    element: (state: any) => (elementId: string) =>
+      (state.elements as BoardElement[]).find((e) => e.entryId === elementId),
   },
   modules: {},
 };

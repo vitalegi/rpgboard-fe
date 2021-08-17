@@ -50,7 +50,7 @@ export default Vue.extend({
   computed: {
     shapes(): CustomShape[] {
       const elements = this.elements as Array<BoardElement>;
-      return this.boardContentService.createShapesTree(elements);
+      return this.boardContentService.createShapes(elements);
     },
   },
   methods: {
@@ -62,7 +62,11 @@ export default Vue.extend({
         TimeUtil.diffMillis(TimeUtil.now(), this.lastDragDropNotification) > 100
       ) {
         this.lastDragDropNotification = TimeUtil.now();
-        this.$emit("moveShape", event);
+        logger.info(
+          `X=${event.evt.clientX} Y=${event.evt.clientY} ID=${
+            event.target.attrs.id
+          }, raw=${JSON.stringify(event.target)}`
+        );
       }
     },
     dragend(event: any) {

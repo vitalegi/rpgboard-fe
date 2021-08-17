@@ -74,7 +74,7 @@ export default Vue.extend({
       }
     },
     accessFailure(error: any): void {
-      console.error(error);
+      logger.error(error);
       this.error = this.mapErrorCode(error.code);
     },
     mapErrorCode(code: string): string {

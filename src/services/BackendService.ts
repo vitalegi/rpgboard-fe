@@ -51,10 +51,7 @@ export default class BackendService {
     return this.dataMapper.gameDeserialize(response.data);
   }
   public async joinGame(gameId: string): Promise<void> {
-    const response = await BackendWebService.url(`/game/${gameId}/join`)
-      .post()
-      .call({});
-    console.log("joinGame? ", response);
+    await BackendWebService.url(`/game/${gameId}/join`).post().call({});
   }
 
   public async createBoard(
