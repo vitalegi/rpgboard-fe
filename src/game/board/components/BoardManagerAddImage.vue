@@ -31,6 +31,7 @@ import BoardContentService from "../services/BoardContentService";
 import AssetsSummary from "@/game/assets/components/AssetsSummary.vue";
 import AssetService from "@/game/assets/services/AssetService";
 import { factory } from "@/utils/ConfigLog4j";
+import BoardElement from "@/models/BoardElement";
 const logger = factory.getLogger("Game.Board.Components.BoardManagerAddImage");
 
 const SELECT_ASSET = "SELECT_ASSET";
@@ -61,15 +62,6 @@ export default Vue.extend({
     gameId(): string {
       return this.$store.getters["game/getGameId"];
     },
-    async addNode(parentId: string, assetId: string): Promise<void> {
-      const asset = await this.assetService.getAsset(this.gameId(), assetId);
-      await this.boardContentService.addImage(
-        this.$store.getters["board/boardId"],
-        asset,
-        parentId,
-        0
-      );
-    },
     selectAsset(assetId: string): void {
       logger.info(`Select asset ${assetId}`);
       this.assetId = assetId;
@@ -79,6 +71,24 @@ export default Vue.extend({
       logger.info(`Select target ${targetId}`);
       await this.addNode(targetId, this.assetId);
       this.dialog = false;
+    },
+    async addNode(parentId: string, assetId: string): Promise<void> {
+      const asset = await this.assetService.getAsset(this.gameId(), assetId);
+      await this.boardContentService.addImage(
+        this.$store.getters["board/boardId"],
+        asset,
+        parentId,
+        this.elementPosition(parentId)
+      );
+    },
+    elementPosition(parentId: string | null): number {
+      const elements = this.$store.getters["board/elements"] as BoardElement[];
+      const position =
+        elements
+          .filter((e) => e.parentId === parentId)
+          .map((e) => e.entryPosition)
+          .reduce((prev, curr) => Math.max(prev, curr), 0) + 1;
+      return position;
     },
   },
   watch: {

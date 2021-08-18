@@ -15,11 +15,6 @@ type TreeNode = {
   children: Array<TreeNode>;
 };
 
-type BoardElementTree = {
-  value: BoardElement | null;
-  children: Array<BoardElementTree>;
-};
-
 @Service()
 export default class BoardContentService {
   protected backendService = Container.get<BackendService>(BackendService);
@@ -44,7 +39,9 @@ export default class BoardContentService {
     processor: (element: BoardElement) => TreeNode | null
   ): TreeNode[] {
     const startTime = timestamp();
-    const rootElements = elements.filter((e) => e.parentId == null);
+    const rootElements = elements
+      .filter((e) => e.parentId == null)
+      .sort((a, b) => a.entryPosition - b.entryPosition);
     const out = rootElements
       .map((root) => this.createHierarchyNode(root, elements, processor))
       .filter((e) => e !== null)
@@ -72,6 +69,7 @@ export default class BoardContentService {
 
     element.children = elements
       .filter((e) => e.parentId == current.entryId)
+      .sort((a, b) => a.entryPosition - b.entryPosition)
       .map((child) =>
         this.createHierarchyNode(child, reducedElements, processor)
       )
@@ -122,17 +120,6 @@ export default class BoardContentService {
     return gridGroup;
   }
 
-  protected async update(entry: BoardElement): Promise<void> {
-    logger.info(`update board entry ${entry.entryId}`);
-    const board = store.getters["board/board"] as Board;
-    // try to update backend, if succeed, update locally
-    const out = await this.backendService.updateBoardElement(
-      board.boardId,
-      entry
-    );
-    store.commit(`board/updateElement`, out);
-  }
-
   public async delete(entryId: string): Promise<void> {
     logger.info(`delete board entry ${entryId}`);
     const board = store.getters["board/board"] as Board;
@@ -158,6 +145,17 @@ export default class BoardContentService {
     await this.update(entry);
   }
 
+  protected async update(entry: BoardElement): Promise<void> {
+    logger.info(`update board entry ${entry.entryId}`);
+    const board = store.getters["board/board"] as Board;
+    // try to update backend, if succeed, update locally
+    const out = await this.backendService.updateBoardElement(
+      board.boardId,
+      entry
+    );
+    store.commit(`board/updateElement`, out);
+  }
+
   public async dragShape(
     entryId: string,
     x: number,
@@ -170,46 +168,6 @@ export default class BoardContentService {
     copy.config.x = x;
     copy.config.y = y;
     await this.backendService.updateBoardElement(entry.boardId, copy, dragEnd);
-  }
-
-  public createLayer(name: string): CustomShape {
-    return new CustomShape({
-      componentName: ShapeType.LAYOUT,
-      visible: true,
-      draggable: true,
-    });
-  }
-
-  public createGroup(name: string): CustomShape {
-    return new CustomShape({
-      componentName: ShapeType.GROUP,
-      id: `group-${random(1000000)}`,
-      name: name,
-      x: 0,
-      y: 0,
-      visible: true,
-      draggable: true,
-    });
-  }
-
-  public async createImage(asset: Asset, image: string): Promise<CustomShape> {
-    const shape = new CustomShape({
-      componentName: ShapeType.IMAGE,
-      id: `image-${asset.assetId}-${random(1000000)}`,
-      x: 0,
-      y: 0,
-      image: image,
-      draggable: false,
-      visible: true,
-    });
-    if (asset.metadata.width > 0) {
-      shape.config.width = asset.metadata.width;
-    }
-    if (asset.metadata.height > 0) {
-      shape.config.height = asset.metadata.height;
-    }
-
-    return shape;
   }
 
   public async addImage(
@@ -287,63 +245,6 @@ export default class BoardContentService {
       entryPosition
     );
     store.commit("board/addElement", entry);
-  }
-
-  protected getElementById(
-    elements: Array<CustomShape>,
-    id: string
-  ): CustomShape | null {
-    for (let i = 0; i < elements.length; i++) {
-      const out = this._getElementById(elements[i], id);
-      if (out !== null) {
-        return out;
-      }
-    }
-    return null;
-  }
-
-  protected _getElementById(
-    element: CustomShape,
-    id: string
-  ): CustomShape | null {
-    if (element.config.id === id) {
-      return element;
-    }
-    for (let i = 0; i < element.children.length; i++) {
-      const out = this._getElementById(element.children[i], id);
-      if (out !== null) {
-        return out;
-      }
-    }
-    return null;
-  }
-
-  protected getParentById(
-    elements: Array<CustomShape>,
-    id: string
-  ): CustomShape | null {
-    for (let i = 0; i < elements.length; i++) {
-      const out = this._getParentById(elements[i], id);
-      if (out !== null) {
-        return out;
-      }
-    }
-    return null;
-  }
-  protected _getParentById(
-    element: CustomShape,
-    id: string
-  ): CustomShape | null {
-    for (let i = 0; i < element.children.length; i++) {
-      if (element.children[i].config.id === id) {
-        return element;
-      }
-      const out = this._getParentById(element.children[i], id);
-      if (out !== null) {
-        return out;
-      }
-    }
-    return null;
   }
 
   protected findElementIndexById(

@@ -42,6 +42,7 @@ import BoardContentService from "../services/BoardContentService";
 import AssetService from "@/game/assets/services/AssetService";
 import BackendService from "@/services/BackendService";
 import { factory } from "@/utils/ConfigLog4j";
+import BoardElement from "@/models/BoardElement";
 const logger = factory.getLogger("Game.Board.Components.BoardManagerAddGroup");
 
 const SELECT_NAME = "SELECT_NAME";
@@ -99,12 +100,22 @@ export default Vue.extend({
     },
     async selectTarget(targetId: string | null): Promise<void> {
       logger.info(`Select target ${targetId}`);
+      const position = this.elementPosition(targetId);
       if (targetId) {
-        await this.addGroup(this.name, targetId, 0);
+        await this.addGroup(this.name, targetId, position);
       } else {
-        await this.addLayer(this.name, 0);
+        await this.addLayer(this.name, position);
       }
       this.dialog = false;
+    },
+    elementPosition(parentId: string | null): number {
+      const elements = this.$store.getters["board/elements"] as BoardElement[];
+      const position =
+        elements
+          .filter((e) => e.parentId === parentId)
+          .map((e) => e.entryPosition)
+          .reduce((prev, curr) => Math.max(prev, curr), 0) + 1;
+      return position;
     },
   },
   watch: {
