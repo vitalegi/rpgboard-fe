@@ -59,13 +59,13 @@ export default Vue.extend({
     },
     dragmove(event: any) {
       if (
-        TimeUtil.diffMillis(TimeUtil.now(), this.lastDragDropNotification) > 100
+        TimeUtil.diffMillis(TimeUtil.now(), this.lastDragDropNotification) > 20
       ) {
         this.lastDragDropNotification = TimeUtil.now();
         this.boardContentService.dragShape(
           event.target.attrs.id,
-          event.evt.clientX,
-          event.evt.clientY,
+          event.target.attrs.x,
+          event.target.attrs.y,
           false
         );
       }
@@ -74,8 +74,8 @@ export default Vue.extend({
       this.lastDragDropNotification = TimeUtil.now();
       this.boardContentService.dragShape(
         event.target.attrs.id,
-        event.evt.clientX,
-        event.evt.clientY,
+        event.target.attrs.x,
+        event.target.attrs.y,
         true
       );
     },

@@ -8,6 +8,7 @@ import BoardElement from "@/models/BoardElement";
 import { timestamp } from "@/utils/Time";
 import store from "@/store";
 import { factory } from "@/utils/ConfigLog4j";
+import ObjectUtil from "@/utils/ObjectUtil";
 const logger = factory.getLogger("Game.Board.Services.BoardContentService");
 
 type TreeNode = {
@@ -165,10 +166,10 @@ export default class BoardContentService {
   ): Promise<void> {
     logger.info(`Move ${entryId} to (${x}, ${y})`);
     const entry = store.getters["board/element"](entryId) as BoardElement;
-    //entry.config.x = x;
-    //entry.config.y = y;
-    //store.commit(`board/updateElement`, entry);
-    //await this.backendService.updateBoardElement(entry.boardId, entry, dragEnd);
+    const copy = ObjectUtil.hardCopy(entry);
+    copy.config.x = x;
+    copy.config.y = y;
+    await this.backendService.updateBoardElement(entry.boardId, copy, dragEnd);
   }
 
   public createLayer(name: string): CustomShape {

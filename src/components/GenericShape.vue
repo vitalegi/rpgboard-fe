@@ -2,9 +2,9 @@
   <component
     :is="component"
     :config="config"
-    @dragstart="dragstart"
-    @dragmove="dragmove"
-    @dragend="dragend"
+    :dragstart="dragstart"
+    :dragmove="dragmove"
+    :dragend="dragend"
   >
     <generic-shape
       v-for="(child, index) in children"
@@ -35,7 +35,6 @@ export default Vue.extend({
     children: Array,
   },
   data: () => ({}),
-  methods: {},
   computed: {},
 });
 </script>

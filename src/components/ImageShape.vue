@@ -1,5 +1,10 @@
 <template>
-  <v-image :config="combinedConfig"></v-image>
+  <v-image
+    :config="combinedConfig"
+    @dragstart="dragstart"
+    @dragend="dragend"
+    @dragmove="dragmove"
+  ></v-image>
 </template>
 
 <script lang="ts">
@@ -15,6 +20,9 @@ export default Vue.extend({
   }),
   props: {
     config: Object,
+    dragstart: Function,
+    dragmove: Function,
+    dragend: Function,
   },
   computed: {
     gameId(): string {
