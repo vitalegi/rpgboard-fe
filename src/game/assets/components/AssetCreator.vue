@@ -9,6 +9,9 @@
       :rules="required"
     ></v-text-field>
     <v-btn @click="upload()" :disabled="!canUpload"> Upload </v-btn>
+    <v-overlay :value="overlay">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
   </v-form>
 </template>
 
@@ -22,7 +25,7 @@ import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Game.Assets.Components.AssetCreator");
 
 export default Vue.extend({
-  name: "AssetsSummary",
+  name: "AssetCreator",
   components: { FileUpload },
   props: {
     assets: Array,
@@ -32,6 +35,7 @@ export default Vue.extend({
     name: "",
     file: new FileContent(),
     fileReady: false,
+    overlay: false,
     assetService: Container.get<AssetService>(AssetService),
   }),
   computed: {
@@ -57,7 +61,16 @@ export default Vue.extend({
       this.fileReady = true;
     },
     async upload(): Promise<void> {
-      this.assetService.addAsset(this.gameId(), this.name, this.file.content);
+      try {
+        this.overlay = true;
+        await this.assetService.addAsset(
+          this.gameId(),
+          this.name,
+          this.file.content
+        );
+      } finally {
+        this.overlay = false;
+      }
     },
   },
 });

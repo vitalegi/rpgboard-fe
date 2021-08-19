@@ -1,76 +1,59 @@
 <template>
-  <v-container>
-    <v-row dense no-gutters>
-      <v-col cols="12" style="text-align: right">
-        <IconButton
-          type="eye"
-          :selected="element.config.visible"
-          :editable="true"
-          @change="changeVisibility(element.entryId)"
-        />
-        <v-dialog v-model="dialogDelete" max-width="600" scrollable>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              icon
-              small
-              color="error"
-              style="margin-left: 5px"
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>Danger zone</v-card-title>
-            <v-card-text
-              >This action can't be undone, do you want to proceed?</v-card-text
-            >
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn text @click="dialogDelete = false"> Abort </v-btn>
-              <v-btn
-                text
-                @click="
-                  deleteNode(element.entryId);
-                  dialogDelete = false;
-                "
-              >
-                Proceed
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-col>
-      <v-col cols="12">
-        <v-text-field
-          v-model="order"
-          label="Order"
-          placeholder="1"
-          @change="move(element.entryId, order)"
-          :rules="[number]"
-        ></v-text-field>
-      </v-col>
-      <v-col cols="12">
-        <v-select
-          v-model="updatePolicy"
-          :items="policies"
-          label="Update Policy"
-        ></v-select>
-      </v-col>
-      <v-col cols="12">
-        <v-select
-          v-model="visibilityPolicy"
-          :items="policies"
-          label="Visibility Policy"
-        ></v-select>
-      </v-col>
-      <v-col cols="2"> ID </v-col>
-      <v-col cols="10">
-        {{ element.entryId }}
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-card outlined>
+    <v-card-title>{{ element.config.name }}</v-card-title>
+    <v-card-text>
+      <v-container>
+        <v-row dense no-gutters>
+          <v-col cols="12" style="text-align: right">
+            <IconButton
+              type="eye"
+              :selected="element.config.visible"
+              :editable="true"
+              @change="changeVisibility(element.entryId)"
+            />
+            <ConfirmAction @confirm="deleteNode(element.entryId)">
+              <template v-slot:entrypoint="{ on, attrs }">
+                <v-btn icon small color="error" v-bind="attrs" v-on="on">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+              <template v-slot:title> Danger zone </template>
+              <template v-slot:message>
+                L'azione non è reversibile, vuoi procedere?
+              </template>
+            </ConfirmAction>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+              v-model="order"
+              label="Order"
+              placeholder="1"
+              @change="move(element.entryId, order)"
+              :rules="[number]"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-select
+              v-model="updatePolicy"
+              :items="policies"
+              label="Update Policy"
+            ></v-select>
+          </v-col>
+          <v-col cols="12">
+            <v-select
+              v-model="visibilityPolicy"
+              :items="policies"
+              label="Visibility Policy"
+            ></v-select>
+          </v-col>
+          <v-col cols="2"> ID </v-col>
+          <v-col cols="10">
+            {{ element.entryId }}
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -82,11 +65,12 @@ import BoardContentService from "../services/BoardContentService";
 import BoardElement from "@/models/BoardElement";
 import NumberUtil from "@/utils/NumberUtil";
 import VisibilityPolicy from "@/models/VisibilityPolicy";
+import ConfirmAction from "@/components/ConfirmAction.vue";
 const logger = factory.getLogger("Game.Board.Components.BoardSummary");
 
 export default Vue.extend({
   name: "BoardElementConfig",
-  components: { IconButton },
+  components: { IconButton, ConfirmAction },
   props: {
     element: { type: BoardElement },
   },
@@ -98,7 +82,6 @@ export default Vue.extend({
     order: 0,
     updatePolicy: "",
     visibilityPolicy: "",
-    dialogDelete: false,
   }),
   computed: {
     rightColWidth(): number {

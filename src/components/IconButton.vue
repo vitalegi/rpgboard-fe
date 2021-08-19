@@ -11,7 +11,7 @@ import { factory } from "@/utils/ConfigLog4j";
 const logger = factory.getLogger("Components.IconButton");
 
 export default Vue.extend({
-  name: "AssetsSummary",
+  name: "IconButton",
   components: {},
   props: {
     selected: Boolean,

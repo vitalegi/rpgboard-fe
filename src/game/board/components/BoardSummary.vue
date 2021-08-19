@@ -32,7 +32,6 @@ export default Vue.extend({
   },
   props: {
     selectable: { type: Boolean, default: false },
-    showActions: { type: Boolean, default: false },
   },
   data: () => ({
     boardContentService: Container.get<BoardContentService>(

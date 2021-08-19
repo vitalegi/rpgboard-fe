@@ -31,7 +31,13 @@ export default Vue.extend({
   data: () => ({}),
   computed: {
     assets(): Array<Asset> {
-      return this.$store.getters["assets/assets"];
+      const assets = this.$store.getters["assets/assets"] as Asset[];
+      return assets.sort((a, b) => {
+        if (a.name !== b.name) {
+          return a.name > b.name ? 1 : -1;
+        }
+        return a.assetId > b.assetId ? 1 : -1;
+      });
     },
   },
   methods: {
