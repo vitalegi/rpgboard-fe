@@ -118,7 +118,7 @@ export default class BackendService {
   public async updateBoardElement(
     boardId: string,
     entry: BoardElement,
-    persist = false
+    persist = true
   ): Promise<BoardElement> {
     const response = await BackendWebService.url(`/board/${boardId}/element`)
       .patch()

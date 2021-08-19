@@ -142,6 +142,7 @@ export default class BoardContentService {
   public async updateVisibility(entryId: string): Promise<void> {
     const elements = store.getters["board/elements"] as BoardElement[];
     const entry = this.findElementById(elements, entryId);
+    logger.info(`Update visibility of ${entryId} from ${entry.config.visible}`);
     entry.config.visible = !entry.config.visible;
     await this.update(entry);
   }
@@ -149,7 +150,51 @@ export default class BoardContentService {
   public async updateDraggable(entryId: string): Promise<void> {
     const elements = store.getters["board/elements"] as BoardElement[];
     const entry = this.findElementById(elements, entryId);
+    logger.info(
+      `Update draggability of ${entryId} from ${entry.config.draggable}`
+    );
     entry.config.draggable = !entry.config.draggable;
+    await this.update(entry);
+  }
+
+  public async updateSize(
+    entryId: string,
+    width: number,
+    height: number
+  ): Promise<void> {
+    const elements = store.getters["board/elements"] as BoardElement[];
+    const entry = this.findElementById(elements, entryId);
+    logger.info(
+      `Update size of ${entryId} from (${entry.config.width},${entry.config.height}) to (${width},${height})`
+    );
+    entry.config.width = width;
+    entry.config.height = height;
+    await this.update(entry);
+  }
+  public async updateCoordinates(
+    entryId: string,
+    x: number,
+    y: number
+  ): Promise<void> {
+    const elements = store.getters["board/elements"] as BoardElement[];
+    const entry = this.findElementById(elements, entryId);
+    logger.info(
+      `Update coordinates of ${entryId} from (${entry.config.x},${entry.config.y}) to (${x},${y})`
+    );
+    entry.config.x = x;
+    entry.config.y = y;
+    await this.update(entry);
+  }
+  public async updatePosition(
+    entryId: string,
+    entryPosition: number
+  ): Promise<void> {
+    const elements = store.getters["board/elements"] as BoardElement[];
+    const entry = this.findElementById(elements, entryId);
+    logger.info(
+      `Update position of ${entryId} from ${entry.entryPosition} to ${entryPosition}`
+    );
+    entry.entryPosition = entryPosition;
     await this.update(entry);
   }
 

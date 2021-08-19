@@ -28,7 +28,7 @@
               v-model="order"
               label="Order"
               placeholder="1"
-              @change="move(element.entryId, order)"
+              @change="updateEntryPosition(element.entryId, order)"
               :rules="[number]"
             ></v-text-field>
           </v-col>
@@ -45,6 +45,46 @@
               :items="policies"
               label="Visibility Policy"
             ></v-select>
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+              v-model="x"
+              label="X (px)"
+              placeholder="800"
+              :rules="[number]"
+              @change="move(element.entryId, x, y)"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+              v-model="y"
+              label="Y (px)"
+              placeholder="800"
+              @change="move(element.entryId, x, y)"
+              :rules="[number]"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="4">
+            Ratio<br />
+            {{ ratio(width, height) }}
+          </v-col>
+          <v-col cols="4">
+            <v-text-field
+              v-model="width"
+              label="Width (px)"
+              placeholder="800"
+              @change="resize(element.entryId, width, height)"
+              :rules="[number]"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="4">
+            <v-text-field
+              v-model="height"
+              label="Height (px)"
+              placeholder="600"
+              @change="resize(element.entryId, width, height)"
+              :rules="[number]"
+            ></v-text-field>
           </v-col>
           <v-col cols="2"> ID </v-col>
           <v-col cols="10">
@@ -82,6 +122,10 @@ export default Vue.extend({
     order: 0,
     updatePolicy: "",
     visibilityPolicy: "",
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
   }),
   computed: {
     rightColWidth(): number {
@@ -103,8 +147,40 @@ export default Vue.extend({
     async changeDraggable(entryId: string): Promise<void> {
       await this.boardContentService.updateDraggable(entryId);
     },
-    move(id: string, variation: number): void {
-      logger.info(`TODO move ${id} of ${variation} item on backend`);
+    async updateEntryPosition(
+      entryId: string,
+      newPosition: string
+    ): Promise<void> {
+      if (NumberUtil.isNumber(newPosition)) {
+        await this.boardContentService.updatePosition(
+          entryId,
+          NumberUtil.parse(newPosition)
+        );
+      }
+    },
+    async resize(
+      entryId: string,
+      width: string,
+      height: string
+    ): Promise<void> {
+      if (!NumberUtil.isNumber(width) || !NumberUtil.isNumber(height)) {
+        return;
+      }
+      this.boardContentService.updateSize(
+        entryId,
+        NumberUtil.parse(width),
+        NumberUtil.parse(height)
+      );
+    },
+    async move(entryId: string, x: string, y: string): Promise<void> {
+      if (!NumberUtil.isNumber(x) || !NumberUtil.isNumber(y)) {
+        return;
+      }
+      this.boardContentService.updateCoordinates(
+        entryId,
+        NumberUtil.parse(x),
+        NumberUtil.parse(y)
+      );
     },
     deleteNode(entryId: string): void {
       this.boardContentService.delete(entryId);
@@ -115,11 +191,18 @@ export default Vue.extend({
       }
       return "not-a-number";
     },
+    ratio(x: number, y: number): number {
+      return Math.round((x / y + Number.EPSILON) * 100) / 100;
+    },
   },
   mounted() {
     this.order = this.element.entryPosition;
     this.updatePolicy = this.element.updatePolicy;
     this.visibilityPolicy = this.element.visibilityPolicy;
+    this.x = this.element.config.x;
+    this.y = this.element.config.y;
+    this.width = this.element.config.width;
+    this.height = this.element.config.height;
   },
 });
 </script>

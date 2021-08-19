@@ -2,7 +2,7 @@
   <div>
     <v-row dense no-gutters>
       <!-- recreate hierarchy, if depth is too high, block it to prevent failure in the template -->
-      <v-col v-if="depth > 1" :cols="Math.min(depth - 1, 7)"> </v-col>
+      <v-col v-if="depth > 1" :cols="indentation"> </v-col>
       <!-- left button to show children -->
       <v-col cols="1">
         <v-btn icon small v-if="element.children.length > 0">
@@ -13,11 +13,10 @@
         </v-btn>
       </v-col>
       <!-- title of this entry -->
-      <v-col class="label">
+      <v-col class="label" :cols="12 - indentation - 2">
         <slot name="title" v-bind:element="element"></slot>
       </v-col>
       <!-- additional content on the right -->
-      <v-spacer></v-spacer>
       <v-col cols="1" align style="text-align: right">
         <slot name="append" v-bind:element="element">
           <v-btn icon small>
@@ -77,6 +76,9 @@ export default Vue.extend({
     showBody: false,
   }),
   computed: {
+    indentation(): number {
+      return Math.min(this.depth - 1, 7);
+    },
     entryStyle(): string {
       return `margin-left:${(this.depth - 1) * 20}px`;
     },

@@ -32,7 +32,8 @@ const board: Module<any, any> = {
       const elements = state.elements as BoardElement[];
       const index = elements.findIndex((e) => e.entryId === element.entryId);
       if (index !== -1) {
-        elements.splice(index, 1, element);
+        elements.splice(index, 1);
+        elements.push(element);
       } else {
         throw new Error(`Element ${element.entryId} not found locally`);
       }
