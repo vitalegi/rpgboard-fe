@@ -41,7 +41,7 @@ export default class BoardContentService {
     const startTime = timestamp();
     const rootElements = elements
       .filter((e) => e.parentId == null)
-      .sort((a, b) => a.entryPosition - b.entryPosition);
+      .sort(this.sortElements);
     const out = rootElements
       .map((root) => this.createHierarchyNode(root, elements, processor))
       .filter((e) => e !== null)
@@ -69,13 +69,21 @@ export default class BoardContentService {
 
     element.children = elements
       .filter((e) => e.parentId == current.entryId)
-      .sort((a, b) => a.entryPosition - b.entryPosition)
+      .sort(this.sortElements)
       .map((child) =>
         this.createHierarchyNode(child, reducedElements, processor)
       )
       .filter((e) => e !== null)
       .map((e) => e as TreeNode);
     return element;
+  }
+
+  protected sortElements(a: BoardElement, b: BoardElement): number {
+    const pos = a.entryPosition - b.entryPosition;
+    if (pos !== 0) {
+      return pos;
+    }
+    return a.entryId > b.entryId ? 1 : -1;
   }
 
   public createGrid(grid: Grid, width: number, height: number): CustomShape {

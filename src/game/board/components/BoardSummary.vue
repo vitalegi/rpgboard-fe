@@ -1,59 +1,35 @@
 <template>
-  <v-treeview :items="items()" class="v-treeview-node__label">
-    <template v-slot:prepend="{ item }" v-if="selectable">
-      <v-btn elevation="2" icon @click="select(item.id)">
-        <v-icon>mdi-plus-box</v-icon>
+  <tree-menu :elements="items()">
+    <template v-slot:title="slotProps">
+      {{ slotProps.element.node.config.name }}
+    </template>
+    <template v-slot:body="slotProps">
+      <BoardElementConfig :element="slotProps.element.node" />
+    </template>
+    <template v-slot:append="slotProps" v-if="selectable">
+      <v-btn icon @click="select(slotProps.element.node.entryId)">
+        <v-icon>mdi-check</v-icon>
       </v-btn>
     </template>
-    <template v-slot:append="{ item }" v-if="showActions">
-      <IconButton
-        type="eye"
-        :selected="item.config.visible"
-        :editable="true"
-        @change="changeVisibility(item.id)"
-      />
-      <v-btn icon small @click="move(item.id, +1)">
-        <v-icon>mdi-chevron-down</v-icon>
-      </v-btn>
-      <v-btn icon small @click="move(item.id, -1)">
-        <v-icon>mdi-chevron-up</v-icon>
-      </v-btn>
-      <v-btn icon small>
-        <v-icon>mdi-cog-outline</v-icon>
-      </v-btn>
-      <v-btn icon small @click="deleteNode(item.id)">
-        <v-icon>mdi-delete</v-icon>
-      </v-btn>
-      <BoardManagerItemOptions
-        :config="item.config"
-        :disabled="false"
-        @changeVisibility="changeVisibility(item.id)"
-        @changeDraggable="changeDraggable(item.id)"
-      />
-    </template>
-  </v-treeview>
+  </tree-menu>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import IconButton from "@/components/IconButton.vue";
-import BoardManagerItemOptions from "./BoardManagerItemOptions.vue";
-import CustomShape from "../models/BoardContent";
 import { factory } from "@/utils/ConfigLog4j";
 import Container from "typedi";
+import TreeMenu from "@/components/TreeMenu.vue";
 import BoardContentService from "../services/BoardContentService";
+import BoardElementConfig from "./BoardElementConfig.vue";
+import BoardElement from "@/models/BoardElement";
 const logger = factory.getLogger("Game.Board.Components.BoardSummary");
-
-type TreeEntry = {
-  id: string;
-  name: string;
-  config: any;
-  children: Array<TreeEntry>;
-};
 
 export default Vue.extend({
   name: "BoardSummary",
-  components: { IconButton, BoardManagerItemOptions },
+  components: {
+    TreeMenu,
+    BoardElementConfig,
+  },
   props: {
     selectable: { type: Boolean, default: false },
     showActions: { type: Boolean, default: false },
@@ -65,55 +41,21 @@ export default Vue.extend({
   }),
   computed: {},
   methods: {
-    async changeVisibility(entryId: string): Promise<void> {
-      logger.info(`change visibility for ${entryId}`);
-      await this.boardContentService.updateVisibility(entryId);
-    },
-    async changeDraggable(entryId: string): Promise<void> {
-      await this.boardContentService.updateDraggable(entryId);
-    },
-    move(id: string, variation: number): void {
-      logger.info(`TODO move ${id} of ${variation} item on backend`);
-    },
-    deleteNode(entryId: string): void {
-      this.boardContentService.delete(entryId);
-    },
-    items(): Array<TreeEntry> {
-      const hierarchy = this.boardContentService.createHierarchy(
-        this.$store.getters["board/elements"],
-        (element) => {
-          return {
-            id: element.entryId,
-            name: element.config?.name,
-            config: element.config,
-            children: new Array<TreeEntry>(),
-          };
-        }
-      );
-      return hierarchy as TreeEntry[];
-    },
-    mapShape(shape: CustomShape): TreeEntry {
-      const element: TreeEntry = {
-        id: shape.config.id,
-        name: shape.config.name,
-        config: shape.config,
-        children: new Array<TreeEntry>(),
-      };
-      const children = shape.children;
-      if (children !== undefined && children.length > 0) {
-        element.children = children.map((child) => this.mapShape(child));
-      }
-      return element;
-    },
     select(id: string): void {
       this.$emit("select", id);
+    },
+    items(): Array<Record<string, unknown>> {
+      const elements = this.$store.getters["board/elements"] as BoardElement[];
+      return this.boardContentService.createHierarchy(elements, (e) => {
+        return {
+          id: e.entryId,
+          node: e,
+          children: new Array<any>(),
+        };
+      });
     },
   },
 });
 </script>
 
-<style scoped lang="scss">
-.v-treeview-node__label {
-  text-align: left;
-}
-</style>
+<style scoped lang="scss"></style>
